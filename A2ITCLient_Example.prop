@@ -1,0 +1,39 @@
+# Properties for production environnement
+prod.dbserver.name=eole
+prod.dbserver.ip=1.2.3.4
+prod.dbserver.port=1234
+prod.dbserver.dbname=bdd
+prod.dbserver.login=user
+prod.dbserver.passwd=passwd
+prod.dbserver.informixserver=bdd
+prod.dbserver.drivername=Informix
+prod.dbserver.driverclass=com.informix.jdbc.IfxDriver
+prod.dbserver.nb.thread=8
+
+prod.webserver.name=Intent Technologies - Production
+prod.webserver.ip=https://xxx
+prod.webserver.port=80
+prod.webserver.path=api/v1/
+prod.webserver.authpath=oauth/
+prod.webserver.login=user
+prod.webserver.passwd=password
+
+# Properties for pre-production environnement
+pre-prod.dbserver.name=zephir
+pre-prod.dbserver.ip=1.2.3.4
+pre-prod.dbserver.port=1234
+pre-prod.dbserver.dbname=bdd
+pre-prod.dbserver.login=user
+pre-prod.dbserver.passwd=passwd
+pre-prod.dbserver.informixserver=bdd
+pre-prod.dbserver.drivername=Informix
+pre-prod.dbserver.driverclass=com.informix.jdbc.IfxDriver
+pre-prod.dbserver.nb.thread=8
+
+pre-prod.webserver.name=Intent Technologies - Sandbox
+pre-prod.webserver.ip=https://xxx
+pre-prod.webserver.port=80
+pre-prod.webserver.path=api/v1/
+pre-prod.webserver.authpath=oauth/
+pre-prod.webserver.login=user
+pre-prod.webserver.passwd=password
