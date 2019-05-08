@@ -16,8 +16,10 @@ où :
 - Java 6 ou supérieur.
 - Driver Mongodb pour Java
 - JDBC Informix
+- Jackson
 - OKHttp
 - OKIO
+- Kotlin
 
 ## Fichier des paramètres : 
 
