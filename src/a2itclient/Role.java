@@ -4,7 +4,7 @@ package a2itclient;
  * Classe définissant un rôle pour un utilisateur
  *
  * @author Thierry Baribaud
- * @version 1.02
+ * @version 1.03
  */
 public class Role {
 
@@ -13,6 +13,20 @@ public class Role {
      */
     private String name;
 
+    /**
+     * Constructeur principal de la classe Role
+     */
+    public Role() {
+        }
+    
+    /**
+     * Constructeur secondaire de la classe Role
+     * @param name nom du rôle
+     */
+    public Role(String name) {
+        this.name = name;
+    }
+    
     /**
      * @return retourne le nom du rôle
      */

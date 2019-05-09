@@ -6,7 +6,7 @@ import java.util.List;
  * Classe définissant un utilisateur
  *
  * @author Thierry Baribaud
- * @version 1.02
+ * @version 1.03
  */
 public class User {
 
@@ -19,10 +19,24 @@ public class User {
     private String creationDate;
     private String phone;
     private String mobile;
-    private List<Role> entityRoles;
-    private List<Role> userRoles;
+    private Roles entityRoles;
+    private Roles userRoles;
     private String jid;
 
+    /**
+     * Constructeur principal de la classe User
+     */
+    public User() {
+        this.domain = "anstel.intent";
+        
+        Roles _entityRoles = new Roles();
+        _entityRoles.add(new Role("serviceProvider"));
+        setEntityRoles(_entityRoles);
+        
+        Roles _userRoles = new Roles();
+        _userRoles.add(new Role("user"));
+        setUserRoles(_userRoles);
+    }
     /**
      * @return the id
      */
@@ -159,21 +173,21 @@ public class User {
     /**
      * @param entityRoles the entityRoles to set
      */
-    public void setEntityRoles(List<Role> entityRoles) {
+    public void setEntityRoles(Roles entityRoles) {
         this.entityRoles = entityRoles;
     }
 
     /**
      * @return the userRoles
      */
-    public List<Role> getUserRoles() {
+    public Roles getUserRoles() {
         return userRoles;
     }
 
     /**
      * @param userRoles the userRoles to set
      */
-    public void setUserRoles(List<Role> userRoles) {
+    public void setUserRoles(Roles userRoles) {
         this.userRoles = userRoles;
     }
 
@@ -200,17 +214,17 @@ public class User {
     public String toString() {
         return "user:{"
                 + "id:" + id
-                + "domain:" + domain
-                + "email:" + email
-                + "username:" + username
-                + "firstname:" + firstname
-                + "lastname:" + lastname
-                + "creationDate:" + creationDate
-                + "phone:" + phone
-                + "mobile:" + mobile
-                + "entityRoles:" + entityRoles
-                + "userRoles:" + userRoles
-                + "jid:" + jid
+                + ", domain:" + domain
+                + ", email:" + email
+                + ", username:" + username
+                + ", firstname:" + firstname
+                + ", lastname:" + lastname
+                + ", creationDate:" + creationDate
+                + ", phone:" + phone
+                + ", mobile:" + mobile
+                + ", entityRoles:" + entityRoles
+                + ", userRoles:" + userRoles
+                + ", jid:" + jid
                 + "}";
     }
 }

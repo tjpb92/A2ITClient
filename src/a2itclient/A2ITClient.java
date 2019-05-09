@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * Connecteur Anstel / Intent Technologies (lien montant)
  *
  * @author Thierry Baribaud
- * @version 1.02
+ * @version 1.03
  */
 public class A2ITClient {
 
@@ -72,7 +72,7 @@ public class A2ITClient {
      *
      * @param args arguments en ligne de commande
      * @throws java.io.IOException en cas d'erreur d'entrée/sortie.
-     * @throws utils.WebServerException en cas d'erreur avec le serveur Web.
+     * @throws bkgpi2a.WebServerException en cas d'erreur avec le serveur Web.
      * @throws utils.DBServerException en cas d'erreur avec le serveur de base
      * de données.
      */
@@ -162,7 +162,11 @@ public class A2ITClient {
 
                     if (json != null) {
                         users = objectMapper.readValue(json, Users.class);
-                        System.out.println(users);
+                        System.out.println(users.size()+" user(s) found");
+//                        System.out.println(users);
+                        for (User user:users) {
+                            System.out.println(user);
+                        }
                     }
                 } catch (Exception exception) {
                     Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
