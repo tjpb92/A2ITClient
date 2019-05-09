@@ -11,17 +11,23 @@ import okhttp3.Response;
 import utils.ApplicationProperties;
 import utils.DBServer;
 import utils.DBServerException;
-import utils.Identifiants;
-import utils.WebServer;
-import utils.WebServerException;
+import bkgpi2a.Identifiants;
+import bkgpi2a.WebServer;
+import bkgpi2a.WebServerException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Connecteur Anstel / Intent Technologies (lien montant)
  *
  * @author Thierry Baribaud
- * @version 1.00
+ * @version 1.02
  */
 public class A2ITClient {
+
+    /**
+     * Common Jackson object mapper
+     */
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * webServerType : prod pour le serveur de production, pre-prod pour le
@@ -74,6 +80,9 @@ public class A2ITClient {
         ApplicationProperties applicationProperties;
         DBServer dbServer;
         WebServer webServer;
+        String json;
+        Token token;
+        Users users;
 
         System.out.println("Création d'une instance de A2ITClient ...");
         System.out.println("Analyse des arguments de la ligne de commande ...");
@@ -127,8 +136,39 @@ public class A2ITClient {
 //            System.out.println("response:" + response);
             System.out.println("response.code():" + response.code());
             System.out.println("response.message():" + response.message());
-            System.out.println("response.body():" + response.body().string());
+            json = response.body().string();
+            System.out.println("response.body():" + json);
 //            System.out.println("response.headers():" + response.headers());
+
+            if (json != null) {
+                try {
+                    token = objectMapper.readValue(json, Token.class);
+                    System.out.println(token);
+
+                    Request request2 = new Request.Builder()
+                            .url("https://apisandbox.hubintent.com/api/users/v1/users")
+                            .get()
+                            .addHeader("content-type", "application/json; charset=utf-8")
+                            .addHeader("cache-control", "no-cache")
+                            .addHeader("Authorization", "Bearer " + token.getAccess_token())
+                            .build();
+                    OkHttpClient client2 = new OkHttpClient();
+                    Response response2 = client2.newCall(request2).execute();
+                    System.out.println("response:" + response2);
+                    System.out.println("response2.code():" + response2.code());
+                    System.out.println("response2.message():" + response2.message());
+                    json = response2.body().string();
+                    System.out.println("response2.body():" + json);
+
+                    if (json != null) {
+                        users = objectMapper.readValue(json, Users.class);
+                        System.out.println(users);
+                    }
+                } catch (Exception exception) {
+                    Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                }
+            }
+
         } else {
             usage();
         }

@@ -1,3 +1,8 @@
 # My .gitignore file
 
 A2ITClient.prop
+*.json
+
+/nbproject/private/
+/build/
+/dist/
