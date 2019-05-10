@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
 /**
  * Jeux de tests pour la classe Asset
  * @author Thierry Baribaud
- * @version 1.04
+ * @version 1.05
  */
 public class AssetTest {
     
@@ -46,87 +46,6 @@ public class AssetTest {
     @After
     public void tearDown() {
     }
-
-//    /**
-//     * Test of getCategory method, of class Asset.
-//     */
-//    @Test
-//    public void testGetCategory() {
-//        System.out.println("getCategory");
-//        Asset instance = new Asset();
-//        String expResult = "";
-//        String result = instance.getCategory();
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-//    /**
-//     * Test of setCategory method, of class Asset.
-//     */
-//    @Test
-//    public void testSetCategory() {
-//        System.out.println("setCategory");
-//        String category = "";
-//        Asset instance = new Asset();
-//        instance.setCategory(category);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-//    /**
-//     * Test of getLinks method, of class Asset.
-//     */
-//    @Test
-//    public void testGetLinks() {
-//        System.out.println("getLinks");
-//        Asset instance = new Asset();
-//        Map<String, Link> expResult = null;
-//        Map<String, Link> result = instance.getLinks();
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-//    /**
-//     * Test of setLinks method, of class Asset.
-//     */
-//    @Test
-//    public void testSetLinks() {
-//        System.out.println("setLinks");
-//        Map<String, Link> links = null;
-//        Asset instance = new Asset();
-//        instance.setLinks(links);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-//    /**
-//     * Test of getOwner method, of class Asset.
-//     */
-//    @Test
-//    public void testGetOwner() {
-//        System.out.println("getOwner");
-//        Asset instance = new Asset();
-//        Owner expResult = null;
-//        Owner result = instance.getOwner();
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-//    /**
-//     * Test of setOwner method, of class Asset.
-//     */
-//    @Test
-//    public void testSetOwner() {
-//        System.out.println("setOwner");
-//        Owner owner = null;
-//        Asset instance = new Asset();
-//        instance.setOwner(owner);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
 
     /**
      * Test of serialization from and to a file in Json format, of class Asset.
@@ -171,6 +90,7 @@ public class AssetTest {
             
         } catch (IOException ex) {
             Logger.getLogger(LinksTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail(ex.getMessage());
         }
         assertNotNull(asset);
         assertNotNull(expAsset);

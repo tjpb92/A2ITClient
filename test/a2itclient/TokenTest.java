@@ -1,10 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package a2itclient;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -13,11 +13,17 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 
 /**
- *
+ * Jeux de tests pour tester la classe Token
  * @author Thierry Baribaud
+ * @version 1.05
  */
 public class TokenTest {
     
+    /**
+     * Common Jackson object mapper
+     */
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
     public TokenTest() {
     }
     
@@ -36,100 +42,29 @@ public class TokenTest {
     @After
     public void tearDown() throws Exception {
     }
-
+  
     /**
-     * Test of getAccess_token method, of class Token.
+     * Test of serialization from and to a file in Json format, of class Token.
      */
     @Test
-    public void testGetAccess_token() {
-        System.out.println("getAccess_token");
-        Token instance = new Token();
-        String expResult = "";
-        String result = instance.getAccess_token();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+    public void testJsonSerialization() {
+        System.out.println("Token.jsonSerialization");
 
-    /**
-     * Test of setAccess_token method, of class Token.
-     */
-    @Test
-    public void testSetAccess_token() {
-        System.out.println("setAccess_token");
-        String access_token = "";
-        Token instance = new Token();
-        instance.setAccess_token(access_token);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+        String filename = "Token.json";
+        String testFilename = "testToken.json";
+        Token token = null;
+        Token expToken = null;
 
-    /**
-     * Test of getToken_type method, of class Token.
-     */
-    @Test
-    public void testGetToken_type() {
-        System.out.println("getToken_type");
-        Token instance = new Token();
-        String expResult = "";
-        String result = instance.getToken_type();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        try {
+            token = objectMapper.readValue(new File(filename), Token.class);
+            objectMapper.writeValue(new File(testFilename), token);
+            expToken = objectMapper.readValue(new File(filename), Token.class);
+        } catch (IOException ex) {
+            Logger.getLogger(RoleTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail(ex.getMessage());
+        }
+        assertNotNull(token);
+        assertNotNull(expToken);
+        assertEquals(token.toString(), expToken.toString());
     }
-
-    /**
-     * Test of setToken_type method, of class Token.
-     */
-    @Test
-    public void testSetToken_type() {
-        System.out.println("setToken_type");
-        String token_type = "";
-        Token instance = new Token();
-        instance.setToken_type(token_type);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getExpires_in method, of class Token.
-     */
-    @Test
-    public void testGetExpires_in() {
-        System.out.println("getExpires_in");
-        Token instance = new Token();
-        int expResult = 0;
-        int result = instance.getExpires_in();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of setExpires_in method, of class Token.
-     */
-    @Test
-    public void testSetExpires_in() {
-        System.out.println("setExpires_in");
-        int expires_in = 0;
-        Token instance = new Token();
-        instance.setExpires_in(expires_in);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of toString method, of class Token.
-     */
-    @Test
-    public void testToString() {
-        System.out.println("toString");
-        Token instance = new Token();
-        String expResult = "";
-        String result = instance.toString();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-    
 }

@@ -16,7 +16,7 @@ import org.junit.Before;
  * Programme de test de la classe Role
  *
  * @author Thierry Baribaud
- * @version 1.03
+ * @version 1.05
  */
 public class RoleTest {
 
@@ -82,25 +82,27 @@ public class RoleTest {
     }
 
     /**
-     * Test of serialization to and from a file in Json format, of class Role.
+     * Test of serialization from and to a file in Json format, of class Role.
      */
     @Test
     public void testJsonSerialization() {
         System.out.println("Role.jsonSerialization");
 
-        String fileName = "testRole.json";
-        String name = "Admin";
-        Role expResult = new Role();
-        Role result = new Role();
-        result.setName(name);
+        String filename = "Role.json";
+        String testFilename = "testRole.json";
+        Role role = null;
+        Role expRole = null;
 
         try {
-            objectMapper.writeValue(new File(fileName), result);
-            expResult = objectMapper.readValue(new File(fileName), Role.class);
+            role = objectMapper.readValue(new File(filename), Role.class);
+            objectMapper.writeValue(new File(testFilename), role);
+            expRole = objectMapper.readValue(new File(filename), Role.class);
         } catch (IOException ex) {
             Logger.getLogger(RoleTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail(ex.getMessage());
         }
-        assertEquals(expResult.toString(), result.toString());
+        assertNotNull(role);
+        assertNotNull(expRole);
+        assertEquals(role.toString(), expRole.toString());
     }
-
 }

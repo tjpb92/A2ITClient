@@ -100,18 +100,24 @@ public class ThirdPartyTest {
     @Test
     public void testToString() {
         System.out.println("ThirdParty.toString");
-        String reference = "Anstel";
         Owner entity = new Owner("label", "logo");
+        String reference = "Anstel";
+        String contacts = "toto, titi";
+
         ThirdParty instance = new ThirdParty();
-        instance.setReference(reference);
         instance.setEntity(entity);
+        instance.setContacts(contacts);
+        instance.setReference(reference);
+
         String result = instance.toString();
-        
+//        System.out.println(result);
+
         String expResult = "thirdParty:{"
                 + "entity:" + entity
+                + ", contacts:" + contacts
                 + ", reference:" + reference
                 + "}";
-        
+
         assertEquals(expResult, result);
     }
 
@@ -134,6 +140,7 @@ public class ThirdPartyTest {
             expThirdParty = objectMapper.readValue(new File(testFilename), ThirdParty.class);
         } catch (IOException ex) {
             Logger.getLogger(RoleTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail(ex.getMessage());
         }
         assertNotNull(thirdParty);
         assertNotNull(expThirdParty);

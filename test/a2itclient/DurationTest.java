@@ -11,18 +11,19 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Programme permettant de tester la classe Roles
+ * Jeux de tests pour tester la classe Duration
+ *
  * @author Thierry Baribaud
- * @version 1.03
+ * @version 1.05
  */
-public class RolesTest {
+public class DurationTest {
 
     /**
      * Common Jackson object mapper
      */
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public RolesTest() {
+    public DurationTest() {
     }
 
     @BeforeClass
@@ -34,27 +35,28 @@ public class RolesTest {
     }
 
     /**
-     * Test of serialization from and to a file in Json format, of class Roles.
+     * Test of serialization from and to a file in Json format, of class
+     * Duration.
      */
     @Test
     public void testJsonSerialization() {
-        System.out.println("Roles.jsonSerialization");
+        System.out.println("Duration.jsonSerialization");
 
-        String filename = "Roles.json";
-        String testFilename = "testRoles.json";
-        Roles roles = null;
-        Roles expRoles = null;
+        String filename = "Duration.json";
+        String testFilename = "testDuration.json";
+        Duration duration = null;
+        Duration expDuration = null;
 
         try {
-            roles = objectMapper.readValue(new File(filename), Roles.class);
-            objectMapper.writeValue(new File(testFilename), roles);
-            expRoles = objectMapper.readValue(new File(filename), Roles.class);
+            duration = objectMapper.readValue(new File(filename), Duration.class);
+            objectMapper.writeValue(new File(testFilename), duration);
+            expDuration = objectMapper.readValue(new File(filename), Duration.class);
         } catch (IOException ex) {
             Logger.getLogger(RoleTest.class.getName()).log(Level.SEVERE, null, ex);
             fail(ex.getMessage());
         }
-        assertNotNull(roles);
-        assertNotNull(expRoles);
-        assertEquals(roles.toString(), expRoles.toString());
+        assertNotNull(duration);
+        assertNotNull(expDuration);
+        assertEquals(duration.toString(), expDuration.toString());
     }
 }

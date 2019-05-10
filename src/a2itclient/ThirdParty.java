@@ -4,7 +4,7 @@ package a2itclient;
  * Classe définissant un tier
  *
  * @author Thierry Baribaud
- * @version 1.04
+ * @version 1.05
  */
 public class ThirdParty {
 
@@ -12,6 +12,11 @@ public class ThirdParty {
      * Entité
      */
     private Owner entity;
+
+    /**
+     * Contacts du tier
+     */
+    private String contacts;
 
     /**
      * Référence
@@ -47,6 +52,20 @@ public class ThirdParty {
     }
 
     /**
+     * @return les contacts du tier
+     */
+    public String getContacts() {
+        return contacts;
+    }
+
+    /**
+     * @param contacts définit les contacts du tier
+     */
+    public void setContacts(String contacts) {
+        this.contacts = contacts;
+    }
+
+    /**
      * Retourne le contenu du tier
      *
      * @return retourne le contenu du tier
@@ -55,6 +74,7 @@ public class ThirdParty {
     public String toString() {
         return "thirdParty:{"
                 + "entity:" + entity
+                + ", contacts:" + contacts
                 + ", reference:" + reference
                 + "}";
     }

@@ -11,50 +11,50 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Programme permettant de tester la classe Roles
+ * Jeux de tests pour tester la classe SLA
  * @author Thierry Baribaud
- * @version 1.03
+ * @version 1.05
  */
-public class RolesTest {
-
+public class SLATest {
+    
     /**
      * Common Jackson object mapper
      */
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public RolesTest() {
+    public SLATest() {
     }
-
+    
     @BeforeClass
     public static void setUpClass() {
     }
-
+    
     @AfterClass
     public static void tearDownClass() {
     }
 
     /**
-     * Test of serialization from and to a file in Json format, of class Roles.
+     * Test of serialization from and to a file in Json format, of class SLA.
      */
     @Test
     public void testJsonSerialization() {
-        System.out.println("Roles.jsonSerialization");
+        System.out.println("SLA.jsonSerialization");
 
-        String filename = "Roles.json";
-        String testFilename = "testRoles.json";
-        Roles roles = null;
-        Roles expRoles = null;
+        String filename = "SLA.json";
+        String testFilename = "testSLA.json";
+        SLA sla = null;
+        SLA expSla = null;
 
         try {
-            roles = objectMapper.readValue(new File(filename), Roles.class);
-            objectMapper.writeValue(new File(testFilename), roles);
-            expRoles = objectMapper.readValue(new File(filename), Roles.class);
+            sla = objectMapper.readValue(new File(filename), SLA.class);
+            objectMapper.writeValue(new File(testFilename), sla);
+            expSla = objectMapper.readValue(new File(filename), SLA.class);
         } catch (IOException ex) {
             Logger.getLogger(RoleTest.class.getName()).log(Level.SEVERE, null, ex);
             fail(ex.getMessage());
         }
-        assertNotNull(roles);
-        assertNotNull(expRoles);
-        assertEquals(roles.toString(), expRoles.toString());
+        assertNotNull(sla);
+        assertNotNull(expSla);
+        assertEquals(sla.toString(), expSla.toString());
     }
 }

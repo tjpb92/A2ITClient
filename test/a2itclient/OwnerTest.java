@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
 /**
  * Programme pour tester la classe Owner
  * @author Thierry Baribaud
- * @version 1.04
+ * @version 1.05
  */
 public class OwnerTest {
     
@@ -126,6 +126,7 @@ public class OwnerTest {
             expOwner = objectMapper.readValue(new File(filename), Owner.class);
         } catch (IOException ex) {
             Logger.getLogger(RoleTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail(ex.getMessage());
         }
         assertNotNull(owner);
         assertNotNull(expOwner);
