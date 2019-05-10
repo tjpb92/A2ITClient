@@ -6,10 +6,12 @@
 package a2itclient;
 
 import bkgpi2a.Identifiants;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Before;
 import utils.ApplicationProperties;
 
 /**
@@ -27,6 +29,14 @@ public class A2ITClientTest {
     
     @AfterClass
     public static void tearDownClass() {
+    }
+
+    @Before
+    public void setUp() throws Exception {
+    }
+
+    @After
+    public void tearDown() throws Exception {
     }
 
     /**

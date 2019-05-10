@@ -5,7 +5,9 @@
  */
 package a2itclient;
 
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -17,7 +19,7 @@ import org.junit.runners.Suite;
  */
 @RunWith(Suite.class)
 //@Suite.SuiteClasses({A2ITClientTest.class, RoleTest.class, RolesTest.class, testGetTest.class, UserTest.class, TokenTest.class, UsersTest.class})
-@Suite.SuiteClasses({RoleTest.class, RolesTest.class, UserTest.class, UsersTest.class})
+@Suite.SuiteClasses({LinksTest.class, RolesTest.class, RoleTest.class, UserTest.class, LinkTest.class, TokenTest.class, UsersTest.class, OwnerTest.class})
 public class A2itclientSuite {
 
     @BeforeClass
@@ -26,6 +28,14 @@ public class A2itclientSuite {
 
     @AfterClass
     public static void tearDownClass() throws Exception {
+    }
+
+    @Before
+    public void setUp() throws Exception {
+    }
+
+    @After
+    public void tearDown() throws Exception {
     }
     
 }

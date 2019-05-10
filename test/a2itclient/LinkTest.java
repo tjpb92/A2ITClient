@@ -7,18 +7,18 @@ package a2itclient;
 
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.Before;
 
 /**
  *
  * @author Thierry Baribaud
  */
-public class testGetTest {
+public class LinkTest {
     
-    public testGetTest() {
+    public LinkTest() {
     }
     
     @BeforeClass
@@ -28,38 +28,52 @@ public class testGetTest {
     @AfterClass
     public static void tearDownClass() {
     }
-
+    
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
     }
-
+    
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
     }
 
     /**
-     * Test of run method, of class testGet.
+     * Test of getHref method, of class Link.
      */
     @Test
-    public void testRun() throws Exception {
-        System.out.println("run");
-        String url = "";
-        testGet instance = new testGet();
+    public void testGetHref() {
+        System.out.println("getHref");
+        Link instance = new Link();
         String expResult = "";
-        String result = instance.run(url);
+        String result = instance.getHref();
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
 
     /**
-     * Test of main method, of class testGet.
+     * Test of setHref method, of class Link.
      */
     @Test
-    public void testMain() throws Exception {
-        System.out.println("main");
-        String[] args = null;
-        testGet.main(args);
+    public void testSetHref() {
+        System.out.println("setHref");
+        String href = "";
+        Link instance = new Link();
+        instance.setHref(href);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of toString method, of class Link.
+     */
+    @Test
+    public void testToString() {
+        System.out.println("toString");
+        Link instance = new Link();
+        String expResult = "";
+        String result = instance.toString();
+        assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
