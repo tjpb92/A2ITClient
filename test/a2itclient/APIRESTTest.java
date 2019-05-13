@@ -14,7 +14,7 @@ import utils.ApplicationProperties;
 /**
  * Jeux de tests pour la classe APIREST
  * @author Thierry Baribaud
- * @version 1.07
+ * @version 1.08
  */
 public class APIRESTTest {
     
@@ -48,7 +48,8 @@ public class APIRESTTest {
         
         try {
             applicationProperties = new ApplicationProperties("A2ITClient.prop");
-            instance = new APIREST("preprod", applicationProperties);
+            instance = new APIREST("pre-prod", applicationProperties);
+            System.out.println(instance);
             
         } catch (IOException ex) {
             Logger.getLogger(APIRESTTest.class.getName()).log(Level.SEVERE, null, ex);

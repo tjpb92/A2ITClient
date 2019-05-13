@@ -6,7 +6,7 @@ import utils.ApplicationProperties;
  * Classe décrivant les paramètres d'accès à une API REST.
  *
  * @author Thierry Baribaud
- * @version 1.07
+ * @version 1.08
  */
 public class APIREST {
 
@@ -50,11 +50,11 @@ public class APIREST {
 		"Problem during instantiation of a APIServer object";
 
 	public APIServerException() {
-		System.out.println(ERRMSG);
+		super(ERRMSG);
 	}
 
 	public APIServerException(String errMsg) {
-		System.out.println(ERRMSG + " : " + errMsg);
+		super(ERRMSG + " : " + errMsg);
 	}
     }
     

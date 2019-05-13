@@ -1,32 +1,30 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package a2itclient;
 
-import bkgpi2a.Identifiants;
+import java.io.IOException;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.junit.Before;
-import utils.ApplicationProperties;
+import utils.DBServerException;
 
 /**
+ * Jeux de test pour tester la classe A2ITClient.
  *
  * @author Thierry Baribaud
+ * @version 1.08
  */
 public class A2ITClientTest {
-    
+
     public A2ITClientTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
@@ -39,175 +37,117 @@ public class A2ITClientTest {
     public void tearDown() throws Exception {
     }
 
+    @Test(expected = NullPointerException.class)
+    public void whenExceptionThrown_thenExpectationSatisfied() {
+        String test = null;
+        test.length();
+    }
+
     /**
-     * Test of setDebugMode method, of class A2ITClient.
+     * Test of bad API server type.
      */
     @Test
-    public void testSetDebugMode() {
-        System.out.println("setDebugMode");
-        boolean debugMode = false;
+    public void testBadAPIServerType() {
+        String[] args = {"-apiserver", "badapi"};
+
+        System.out.println("A2ITClient.badAPIServerType");
+
         A2ITClient instance = null;
-        instance.setDebugMode(debugMode);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        try {
+            instance = new A2ITClient(args);
+            fail("Expected GetArgsException");
+        } catch (IOException | DBServerException | A2ITClient.GetArgsException | APIREST.APIServerException ex) {
+            assertTrue(ex.getMessage().contains("Mauvais serveur API"));
+        }
     }
 
     /**
-     * Test of setTestMode method, of class A2ITClient.
+     * Test of undefined API server type.
      */
     @Test
-    public void testSetTestMode() {
-        System.out.println("setTestMode");
-        boolean testMode = false;
+    public void testUndefinedAPIServerType() {
+        String[] args = {"-apiserver"};
+
+        System.out.println("A2ITClient.undefinedAPIServerType");
+
         A2ITClient instance = null;
-        instance.setTestMode(testMode);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        try {
+            instance = new A2ITClient(args);
+            fail("Expected GetArgsException");
+        } catch (IOException | DBServerException | A2ITClient.GetArgsException | APIREST.APIServerException ex) {
+            assertTrue(ex.getMessage().contains("Serveur API non défini"));
+        }
     }
 
     /**
-     * Test of getDebugMode method, of class A2ITClient.
+     * Test of bad Informix server type.
      */
     @Test
-    public void testGetDebugMode() {
-        System.out.println("getDebugMode");
+    public void testBadIfxServerType() {
+        String[] args = {"-ifxserver", "badifx"};
+
+        System.out.println("A2ITClient.badIfxServerType");
+
         A2ITClient instance = null;
-        boolean expResult = false;
-        boolean result = instance.getDebugMode();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        try {
+            instance = new A2ITClient(args);
+            fail("Expected GetArgsException");
+        } catch (IOException | DBServerException | A2ITClient.GetArgsException | APIREST.APIServerException ex) {
+            assertTrue(ex.getMessage().contains("Mauvais serveur Informix"));
+        }
     }
 
     /**
-     * Test of getTestMode method, of class A2ITClient.
+     * Test of undefined Informix server type.
      */
     @Test
-    public void testGetTestMode() {
-        System.out.println("getTestMode");
+    public void testUndefinedIfxServerType() {
+        String[] args = {"-ifxserver"};
+
+        System.out.println("A2ITClient.undefinedIfxServerType");
+
         A2ITClient instance = null;
-        boolean expResult = false;
-        boolean result = instance.getTestMode();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        try {
+            instance = new A2ITClient(args);
+            fail("Expected GetArgsException");
+        } catch (IOException | DBServerException | A2ITClient.GetArgsException | APIREST.APIServerException ex) {
+            assertTrue(ex.getMessage().contains("Serveur Informix non défini"));
+        }
     }
-
+ 
     /**
-     * Test of getWebId method, of class A2ITClient.
+     * Test of bad Mongo server type.
      */
     @Test
-    public void testGetWebId() {
-        System.out.println("getWebId");
+    public void testBadMgoServerType() {
+        String[] args = {"-mgoserver", "badmgo"};
+
+        System.out.println("A2ITClient.badMgoServerType");
+
         A2ITClient instance = null;
-        Identifiants expResult = null;
-        Identifiants result = instance.getWebId();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        try {
+            instance = new A2ITClient(args);
+            fail("Expected GetArgsException");
+        } catch (IOException | DBServerException | A2ITClient.GetArgsException | APIREST.APIServerException ex) {
+            assertTrue(ex.getMessage().contains("Mauvais serveur Mongo"));
+        }
     }
 
     /**
-     * Test of setWebId method, of class A2ITClient.
+     * Test of undefined Mongo server type.
      */
     @Test
-    public void testSetWebId_Identifiants() {
-        System.out.println("setWebId");
-        Identifiants webId = null;
+    public void testUndefinedMgoServerType() {
+        String[] args = {"-mgoserver"};
+
+        System.out.println("A2ITClient.undefinedMgoerverType");
+
         A2ITClient instance = null;
-        instance.setWebId(webId);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        try {
+            instance = new A2ITClient(args);
+            fail("Expected GetArgsException");
+        } catch (IOException | DBServerException | A2ITClient.GetArgsException | APIREST.APIServerException ex) {
+            assertTrue(ex.getMessage().contains("Serveur Mongo non défini"));
+        }
     }
-
-    /**
-     * Test of setWebId method, of class A2ITClient.
-     */
-    @Test
-    public void testSetWebId_ApplicationProperties() throws Exception {
-        System.out.println("setWebId");
-        ApplicationProperties applicationProperties = null;
-        A2ITClient instance = null;
-        instance.setWebId(applicationProperties);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getDbId method, of class A2ITClient.
-     */
-    @Test
-    public void testGetDbId() {
-        System.out.println("getDbId");
-        A2ITClient instance = null;
-        Identifiants expResult = null;
-        Identifiants result = instance.getDbId();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of setDbId method, of class A2ITClient.
-     */
-    @Test
-    public void testSetDbId_Identifiants() {
-        System.out.println("setDbId");
-        Identifiants dbId = null;
-        A2ITClient instance = null;
-        instance.setDbId(dbId);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of setDbId method, of class A2ITClient.
-     */
-    @Test
-    public void testSetDbId_ApplicationProperties() throws Exception {
-        System.out.println("setDbId");
-        ApplicationProperties applicationProperties = null;
-        A2ITClient instance = null;
-        instance.setDbId(applicationProperties);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of main method, of class A2ITClient.
-     */
-    @Test
-    public void testMain() {
-        System.out.println("main");
-        String[] args = null;
-        A2ITClient.main(args);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of usage method, of class A2ITClient.
-     */
-    @Test
-    public void testUsage() {
-        System.out.println("usage");
-        A2ITClient.usage();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of toString method, of class A2ITClient.
-     */
-    @Test
-    public void testToString() {
-        System.out.println("toString");
-        A2ITClient instance = null;
-        String expResult = "";
-        String result = instance.toString();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-    
-}
+ }
