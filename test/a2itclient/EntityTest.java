@@ -13,18 +13,18 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Programme pour tester la classe Owner
+ * Programme pour tester la classe Entity
  * @author Thierry Baribaud
- * @version 1.05
+ * @version 1.06
  */
-public class OwnerTest {
+public class EntityTest {
     
     /**
      * Common Jackson object mapper
      */
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public OwnerTest() {
+    public EntityTest() {
     }
     
     @BeforeClass
@@ -44,60 +44,60 @@ public class OwnerTest {
     }
 
     /**
-     * Test of getLabel method, of class Owner.
+     * Test of getLabel method, of class Entity.
      */
     @Test
     public void testGetLabel() {
         System.out.println("Owner.getLabel");
-        Owner instance = new Owner();
+        Entity instance = new Entity();
         String result = instance.getLabel();
         assertNull(result);
     }
 
     /**
-     * Test of setLabel method, of class Owner.
+     * Test of setLabel method, of class Entity.
      */
     @Test
     public void testSetLabel() {
         System.out.println("Owner.setLabel");
         String label = "Anstel";
-        Owner instance = new Owner();
+        Entity instance = new Entity();
         instance.setLabel(label);
         assertEquals(label, instance.getLabel());
     }
 
     /**
-     * Test of getLogoUrl method, of class Owner.
+     * Test of getLogoUrl method, of class Entity.
      */
     @Test
     public void testGetLogoUrl() {
         System.out.println("Owner.getLogoUrl");
-        Owner instance = new Owner();
+        Entity instance = new Entity();
         String result = instance.getLogoUrl();
         assertNull(result);
     }
 
     /**
-     * Test of setLogoUrl method, of class Owner.
+     * Test of setLogoUrl method, of class Entity.
      */
     @Test
     public void testSetLogoUrl() {
         System.out.println("Owner.setLogoUrl");
         String logoUrl = "http://hubintent.com/intent/entities/logos/xxxx";
-        Owner instance = new Owner();
+        Entity instance = new Entity();
         instance.setLogoUrl(logoUrl);
         assertEquals(logoUrl, instance.getLogoUrl());
     }
 
     /**
-     * Test of toString method, of class Owner.
+     * Test of toString method, of class Entity.
      */
     @Test
     public void testToString() {
         System.out.println("Owner.toString");
         String label = "Anstel";
         String logoUrl = "http://hubintent.com/intent/entities/logos/xxxx";
-        Owner instance = new Owner(label, logoUrl);
+        Entity instance = new Entity(label, logoUrl);
         String expResult = "owner:{"
                 + "label:" + label
                 + ", logoUrl:" + logoUrl
@@ -109,7 +109,7 @@ public class OwnerTest {
     }
     
     /**
-     * Test of serialization from and to a file in Json format, of class Owner.
+     * Test of serialization from and to a file in Json format, of class Entity.
      */
     @Test
     public void testJsonSerialization() {
@@ -117,13 +117,13 @@ public class OwnerTest {
 
         String filename = "Owner.json";
         String testFilename = "testOwner.json";
-        Owner owner = null;
-        Owner expOwner = null;
+        Entity owner = null;
+        Entity expOwner = null;
 
         try {
-            owner = objectMapper.readValue(new File(filename), Owner.class);
+            owner = objectMapper.readValue(new File(filename), Entity.class);
             objectMapper.writeValue(new File(testFilename), owner);
-            expOwner = objectMapper.readValue(new File(filename), Owner.class);
+            expOwner = objectMapper.readValue(new File(filename), Entity.class);
         } catch (IOException ex) {
             Logger.getLogger(RoleTest.class.getName()).log(Level.SEVERE, null, ex);
             fail(ex.getMessage());

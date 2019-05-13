@@ -10,20 +10,20 @@ import java.util.Map;
  * Classe définissant une liste de liens Hypextest
  *
  * @author Thierry Baribaud
- * @version 1.04
+ * @version 1.06
  */
-public class Links {
+public class HALLinks {
 
     /**
      * Liste des liens
      */
     @JsonProperty("_links")
-    private Map<String, Link> links;
+    private Map<String, HALLink> links;
 
     /**
      * Constructeur principal de la classe Links
      */
-    public Links() {
+    public HALLinks() {
         links = new HashMap<>();
     }
 
@@ -33,7 +33,7 @@ public class Links {
      * @param name nom du lien
      * @param link lien
      */
-    public void put(String name, Link link) {
+    public void put(String name, HALLink link) {
         getLinks().put(name, link);
     }
 
@@ -41,7 +41,7 @@ public class Links {
      * @return retourne la liste des liens
      */
     @JsonSetter("_links")
-    public Map<String, Link> getLinks() {
+    public Map<String, HALLink> getLinks() {
         return links;
     }
 
@@ -49,7 +49,7 @@ public class Links {
      * @param links définit la liste des liens
      */
     @JsonGetter("_links")
-    public void setLinks(Map<String, Link> links) {
+    public void setLinks(Map<String, HALLink> links) {
         this.links = links;
     }
 }

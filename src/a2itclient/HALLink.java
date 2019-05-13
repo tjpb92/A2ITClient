@@ -3,9 +3,9 @@ package a2itclient;
 /**
  * Classe définissant un lien Hypertext
  * @author Thierry Baribaud
- * @version 1.04
+ * @version 1.06
  */
-public class Link {
+public class HALLink {
     
     /**
      * Référence du lien
@@ -15,13 +15,13 @@ public class Link {
     /**
      * Constructeur principal du lien
      */
-    public Link(){}
+    public HALLink(){}
     
     /**
      * Constructeur secondaire du lien
      * @param href référence du lien
      */
-    public Link(String href){
+    public HALLink(String href){
         this.href = href;
     }
 

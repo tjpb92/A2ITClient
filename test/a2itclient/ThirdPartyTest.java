@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
  * Jeux de test pour la classe ThierdParty
  *
  * @author Thierry Baribaud
- * @version 1.04
+ * @version 1.06
  */
 public class ThirdPartyTest {
 
@@ -51,7 +51,7 @@ public class ThirdPartyTest {
     public void testGetEntity() {
         System.out.println("ThirdParty.getEntity");
         ThirdParty instance = new ThirdParty();
-        Owner result = instance.getEntity();
+        Entity result = instance.getEntity();
         assertNull(result);
     }
 
@@ -61,10 +61,10 @@ public class ThirdPartyTest {
     @Test
     public void testSetEntity() {
         System.out.println("ThirdParty.setEntity");
-        Owner entity = new Owner("label", "logo");
+        Entity entity = new Entity("label", "logo");
         ThirdParty instance = new ThirdParty();
         instance.setEntity(entity);
-        Owner expEntity;
+        Entity expEntity;
         expEntity = instance.getEntity();
         assertEquals(entity.toString(), expEntity.toString());
     }
@@ -100,7 +100,7 @@ public class ThirdPartyTest {
     @Test
     public void testToString() {
         System.out.println("ThirdParty.toString");
-        Owner entity = new Owner("label", "logo");
+        Entity entity = new Entity("label", "logo");
         String reference = "Anstel";
         String contacts = "toto, titi";
 

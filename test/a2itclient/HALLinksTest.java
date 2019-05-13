@@ -13,18 +13,18 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Jeux de tests pour la classe Links
+ * Jeux de tests pour la classe HALLinks
  * @author Thierry Baribaud
- * @version 1.04
+ * @version 1.06
  */
-public class LinksTest {
+public class HALLinksTest {
     
     /**
      * Common Jackson object mapper
      */
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public LinksTest() {
+    public HALLinksTest() {
     }
     
     @BeforeClass
@@ -49,22 +49,22 @@ public class LinksTest {
     @Test
     public void testJsonSerialization() {
         System.out.println("Links.jsonSerialization");
-        Link anstel = new Link("http://www.anstel.com");
-        Link excelia = new Link("http://excelia.fr");
-        Links links = new Links();
+        HALLink anstel = new HALLink("http://www.anstel.com");
+        HALLink excelia = new HALLink("http://excelia.fr");
+        HALLinks links = new HALLinks();
         links.put("Excelia", excelia);
-        Links oneLinkList = new Links();
-        Links twoLinksList = new Links();
+        HALLinks oneLinkList = new HALLinks();
+        HALLinks twoLinksList = new HALLinks();
         
         try {
             objectMapper.writeValue(new File("LinksOfOneLink.json"), links);
-            oneLinkList = objectMapper.readValue(new File("LinksOfOneLink.json"), Links.class);
+            oneLinkList = objectMapper.readValue(new File("LinksOfOneLink.json"), HALLinks.class);
             
             links.put("Anstel", anstel);
             objectMapper.writeValue(new File("LinksOfTwoLinks.json"), links);
-            twoLinksList = objectMapper.readValue(new File("LinksOfTwoLinks.json"), Links.class);
+            twoLinksList = objectMapper.readValue(new File("LinksOfTwoLinks.json"), HALLinks.class);
         } catch (IOException ex) {
-            Logger.getLogger(LinksTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HALLinksTest.class.getName()).log(Level.SEVERE, null, ex);
         }
         assertNotNull(links);
         assertNotNull(oneLinkList);

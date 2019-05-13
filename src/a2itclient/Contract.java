@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * Classe décrivant un contrat
  * @author Thierry Baribaud
- * @version 1.04
+ * @version 1.06
  */
 public class Contract {
     
@@ -14,7 +14,7 @@ public class Contract {
      * Liens du contrat
      */
     @JsonProperty("_links")
-    private Map<String, Link> links;
+    private Map<String, HALLink> links;
     
     /**
      * L'identifiant unique du contrat
@@ -65,14 +65,14 @@ public class Contract {
     /**
      * @return Retourne les liens de l'asset
      */
-    public Map<String, Link> getLinks() {
+    public Map<String, HALLink> getLinks() {
         return links;
     }
 
     /**
      * @param links Définit les liens de l'asset
      */
-    public void setLinks(Map<String, Link> links) {
+    public void setLinks(Map<String, HALLink> links) {
         this.links = links;
     }
 

@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
 /**
  * Jeux de tests pour la classe Asset
  * @author Thierry Baribaud
- * @version 1.05
+ * @version 1.06
  */
 public class AssetTest {
     
@@ -53,8 +53,8 @@ public class AssetTest {
     @Test
     public void testJsonSerialization() {
         System.out.println("Asset.jsonSerialization");
-        Link self = new Link("https://apisandbox.hubintent.com/api/assets/v1/assets/14435");
-        Owner owner = new Owner("Nexity PM", "http://hubintent.com/intent/entities/logos/5fa25ed5-693d-402d-b266-84a0ffde1fc1");
+        HALLink self = new HALLink("https://apisandbox.hubintent.com/api/assets/v1/assets/14435");
+        Entity owner = new Entity("Nexity PM", "http://hubintent.com/intent/entities/logos/5fa25ed5-693d-402d-b266-84a0ffde1fc1");
         Asset asset = new Asset();
         asset.setCategory("Immeuble");
         asset.setCode("14435");
@@ -70,7 +70,7 @@ public class AssetTest {
         contracts.add("NMP_ANSTEL");
         asset.setContracts(contracts);
         
-        Map<String, Link> test = new HashMap<>();
+        Map<String, HALLink> test = new HashMap<>();
         test.put("self", self);
         asset.setLinks(test);
         
@@ -89,7 +89,7 @@ public class AssetTest {
             anotherAsset = objectMapper.readValue(new File("Asset.json"), Asset.class);
             
         } catch (IOException ex) {
-            Logger.getLogger(LinksTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HALLinksTest.class.getName()).log(Level.SEVERE, null, ex);
             fail(ex.getMessage());
         }
         assertNotNull(asset);

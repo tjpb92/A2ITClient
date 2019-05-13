@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * Classe définissant un Asset
  * @author Thierry Baribaud
- * @version 1.04
+ * @version 1.06
  */
 public class Asset {
     
@@ -52,7 +52,7 @@ public class Asset {
      * Liens de l'asset
      */
     @JsonProperty("_links")
-    private Map<String, Link> links;
+    private Map<String, HALLink> links;
 
     /**
      * Dernière date de mise à jour
@@ -70,9 +70,9 @@ public class Asset {
     private String parentPath;
     
     /**
-     * Owner
+     * Entité propriétaire
      */
-    private Owner owner;
+    private Entity owner;
 
     /**
      * Constructeur principal de la classe Asset
@@ -99,28 +99,28 @@ public class Asset {
     /**
      * @return Retourne les liens de l'asset
      */
-    public Map<String, Link> getLinks() {
+    public Map<String, HALLink> getLinks() {
         return links;
     }
 
     /**
      * @param links Définit les liens de l'asset
      */
-    public void setLinks(Map<String, Link> links) {
+    public void setLinks(Map<String, HALLink> links) {
         this.links = links;
     }
 
     /**
-     * @return the owner
+     * @return retourne l'entité propriétaire
      */
-    public Owner getOwner() {
+    public Entity getOwner() {
         return owner;
     }
 
     /**
-     * @param owner the owner to set
+     * @param owner définit l'entité propriétaire
      */
-    public void setOwner(Owner owner) {
+    public void setOwner(Entity owner) {
         this.owner = owner;
     }
 

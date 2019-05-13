@@ -13,18 +13,18 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Jeux de test pour la classe Link
+ * Jeux de test pour la classe HALLink
  * @author Thierry Baribaud
- * @version 1.05
+ * @version 1.06
  */
-public class LinkTest {
+public class HALLinkTest {
     
     /**
      * Common Jackson object mapper
      */
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public LinkTest() {
+    public HALLinkTest() {
     }
     
     @BeforeClass
@@ -45,7 +45,7 @@ public class LinkTest {
     
     /**
      * Test of serialization from and to a file in Json format, of class
-     * Link.
+ HALLink.
      */
     @Test
     public void testJsonSerialization() {
@@ -53,13 +53,13 @@ public class LinkTest {
         String filename = "Link.json";
         String testFilename = "testLink.json";
 
-        Link link = new Link();
-        Link expLink = new Link();
+        HALLink link = new HALLink();
+        HALLink expLink = new HALLink();
 
         try {
-            link = objectMapper.readValue(new File(filename), Link.class);
+            link = objectMapper.readValue(new File(filename), HALLink.class);
             objectMapper.writeValue(new File(testFilename), link);
-            expLink = objectMapper.readValue(new File(testFilename), Link.class);
+            expLink = objectMapper.readValue(new File(testFilename), HALLink.class);
         } catch (IOException ex) {
             Logger.getLogger(RoleTest.class.getName()).log(Level.SEVERE, null, ex);
             fail(ex.getMessage());

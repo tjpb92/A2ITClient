@@ -4,14 +4,14 @@ package a2itclient;
  * Classe définissant un tier
  *
  * @author Thierry Baribaud
- * @version 1.05
+ * @version 1.06
  */
 public class ThirdParty {
 
     /**
      * Entité
      */
-    private Owner entity;
+    private Entity entity;
 
     /**
      * Contacts du tier
@@ -26,14 +26,14 @@ public class ThirdParty {
     /**
      * @return Retourne l'entité
      */
-    public Owner getEntity() {
+    public Entity getEntity() {
         return entity;
     }
 
     /**
      * @param entity Définit l'entité
      */
-    public void setEntity(Owner entity) {
+    public void setEntity(Entity entity) {
         this.entity = entity;
     }
 

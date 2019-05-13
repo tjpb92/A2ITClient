@@ -4,9 +4,9 @@ package a2itclient;
  * Classe définissant un owner
  *
  * @author Thierry Baribaud
- * @version 1.04
+ * @version 1.06
  */
-public class Owner {
+public class Entity {
 
     /**
      * Label
@@ -21,7 +21,7 @@ public class Owner {
     /**
      * Constructeur principal de la classe
      */
-    public Owner() {
+    public Entity() {
     }
 
     /**
@@ -30,7 +30,7 @@ public class Owner {
      * @param label label du owner
      * @param logoUrl logoUrl du owner
      */
-    public Owner(String label, String logoUrl) {
+    public Entity(String label, String logoUrl) {
         this.label = label;
         this.logoUrl = logoUrl;
     }
