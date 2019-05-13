@@ -4,11 +4,12 @@ Connecteur Anstel / Intent Technologies (lien montant).
 
 ## Utilisation:
 ```
-java A2ITClient[-dbserver db] [-webserver web] [-d] [-t] 
+java A2ITClient[-ifxserver ifxdb] [-mgoserver mgodb] [-apiserver apiserver] [-d] [-t] 
 ```
 où :
-* ```-webserver web``` est la référence au serveur web distant, par défaut désigne le serveur de développement (paramètre optionnel).
-* ```-dbserver db``` est la référence à la base de données, par défaut désigne la base de données de développement. Voir fichier *A2ITClient.prop* (optionnel).
+* ```-apiserver apiserver``` est la référence au serveur d'API distant, par défaut désigne le serveur de développement Voir fichier *A2ITClient.prop* (paramètre optionnel).
+* ```-ifxserver ifxdb``` est la référence à la base de données Informix, par défaut désigne la base de données de développement. Voir fichier *A2ITClient.prop* (optionnel).
+* ```-mgoserver mgodb``` est la référence à la base de données Mongo, par défaut désigne la base de données de développement. Voir fichier *A2ITClient.prop* (optionnel).
 * ```-d``` le programme s'exécute en mode débug, il est beaucoup plus verbeux. Désactivé par défaut (paramètre optionnel).
 * ```-t``` le programme s'exécute en mode test, les transcations en base de données ne sont pas faites. Désactivé par défaut (paramètre optionnel).
 

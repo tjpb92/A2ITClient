@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * Connecteur Anstel / Intent Technologies (lien montant)
  *
  * @author Thierry Baribaud
- * @version 1.04
+ * @version 1.07
  */
 public class A2ITClient {
 
@@ -28,6 +28,11 @@ public class A2ITClient {
      * Common Jackson object mapper
      */
     private static final ObjectMapper objectMapper = new ObjectMapper();
+    
+    /**
+     * Serveur de l'API REST
+     */
+    private APIREST apiRest;
 
     /**
      * webServerType : prod pour le serveur de production, pre-prod pour le
