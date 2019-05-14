@@ -6,7 +6,7 @@ import utils.ApplicationProperties;
  * Classe décrivant les paramètres d'accès à une API REST.
  *
  * @author Thierry Baribaud
- * @version 1.08
+ * @version 1.09
  */
 public class APIREST {
 
@@ -35,11 +35,6 @@ public class APIREST {
      */
     private String password;
 
-    /**
-     * Token de connexion à l'API
-     */
-    private String token;
-    
     /**
      * Exception pouvant être lancée en cas de mauvais paramètres dans le fichier
      * des propriétés
@@ -101,8 +96,6 @@ public class APIREST {
         } else {
             throw new APIServerException("Le mot de passe de l'API n'est pas défini");
         }
-
-        token = null;
     }
     
     /**
@@ -178,21 +171,7 @@ public class APIREST {
     public void setPassword(String password) {
         this.password = password;
     }
-    
-    /**
-     * @return le token de l'API
-     */
-    public String getToken() {
-        return token;
-    }
 
-    /**
-     * @param token définit le token de l'API
-     */
-    public void setToken(String token) {
-        this.token = token;
-    }
-    
     /**
      * Retourne les valeurs sous forme textuelle
      *
@@ -206,7 +185,6 @@ public class APIREST {
                 + ", authUrl:" + authUrl
                 + ", login:" + login
                 + ", password:" + password
-                + ", token:" + token
                 + "}";
     }
 

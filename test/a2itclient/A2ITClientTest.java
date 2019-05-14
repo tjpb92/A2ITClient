@@ -14,7 +14,7 @@ import utils.DBServerException;
  * Jeux de test pour tester la classe A2ITClient.
  *
  * @author Thierry Baribaud
- * @version 1.08
+ * @version 1.09
  */
 public class A2ITClientTest {
 
@@ -56,7 +56,7 @@ public class A2ITClientTest {
         try {
             instance = new A2ITClient(args);
             fail("Expected GetArgsException");
-        } catch (IOException | DBServerException | A2ITClient.GetArgsException | APIREST.APIServerException ex) {
+        } catch (IOException | DBServerException | A2ITClient.GetArgsException | APIREST.APIServerException | HttpsClientException ex) {
             assertTrue(ex.getMessage().contains("Mauvais serveur API"));
         }
     }
@@ -74,7 +74,7 @@ public class A2ITClientTest {
         try {
             instance = new A2ITClient(args);
             fail("Expected GetArgsException");
-        } catch (IOException | DBServerException | A2ITClient.GetArgsException | APIREST.APIServerException ex) {
+        } catch (IOException | DBServerException | A2ITClient.GetArgsException | APIREST.APIServerException | HttpsClientException ex) {
             assertTrue(ex.getMessage().contains("Serveur API non défini"));
         }
     }
@@ -92,7 +92,7 @@ public class A2ITClientTest {
         try {
             instance = new A2ITClient(args);
             fail("Expected GetArgsException");
-        } catch (IOException | DBServerException | A2ITClient.GetArgsException | APIREST.APIServerException ex) {
+        } catch (IOException | DBServerException | A2ITClient.GetArgsException | APIREST.APIServerException | HttpsClientException ex) {
             assertTrue(ex.getMessage().contains("Mauvais serveur Informix"));
         }
     }
@@ -110,11 +110,11 @@ public class A2ITClientTest {
         try {
             instance = new A2ITClient(args);
             fail("Expected GetArgsException");
-        } catch (IOException | DBServerException | A2ITClient.GetArgsException | APIREST.APIServerException ex) {
+        } catch (IOException | DBServerException | A2ITClient.GetArgsException | APIREST.APIServerException | HttpsClientException ex) {
             assertTrue(ex.getMessage().contains("Serveur Informix non défini"));
         }
     }
- 
+
     /**
      * Test of bad Mongo server type.
      */
@@ -128,7 +128,7 @@ public class A2ITClientTest {
         try {
             instance = new A2ITClient(args);
             fail("Expected GetArgsException");
-        } catch (IOException | DBServerException | A2ITClient.GetArgsException | APIREST.APIServerException ex) {
+        } catch (IOException | DBServerException | A2ITClient.GetArgsException | APIREST.APIServerException | HttpsClientException ex) {
             assertTrue(ex.getMessage().contains("Mauvais serveur Mongo"));
         }
     }
@@ -146,8 +146,8 @@ public class A2ITClientTest {
         try {
             instance = new A2ITClient(args);
             fail("Expected GetArgsException");
-        } catch (IOException | DBServerException | A2ITClient.GetArgsException | APIREST.APIServerException ex) {
+        } catch (IOException | DBServerException | A2ITClient.GetArgsException | APIREST.APIServerException | HttpsClientException ex) {
             assertTrue(ex.getMessage().contains("Serveur Mongo non défini"));
         }
     }
- }
+}

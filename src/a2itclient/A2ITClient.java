@@ -3,10 +3,7 @@ package a2itclient;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 import utils.ApplicationProperties;
 import utils.DBServer;
@@ -17,7 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * Connecteur Anstel / Intent Technologies (lien montant)
  *
  * @author Thierry Baribaud
- * @version 1.08
+ * @version 1.09
  */
 public class A2ITClient {
 
@@ -98,11 +95,13 @@ public class A2ITClient {
      * paramètres en ligne de commande
      * @throws a2itclient.APIREST.APIServerException en cas de problème avec les
      * paramètres du serveur API
+     * @throws a2itclient.HttpsClientException en cas de problème avec la connexion Https.
      */
-    public A2ITClient(String[] args) throws IOException, DBServerException, GetArgsException, APIREST.APIServerException {
+    public A2ITClient(String[] args) throws IOException, DBServerException, GetArgsException, APIREST.APIServerException, HttpsClientException {
         ApplicationProperties applicationProperties;
         DBServer mgoServer;
         DBServer ifxServer;
+        HttpsClient httpsClient;
         String json;
         Token token;
         Users users;
@@ -142,45 +141,17 @@ public class A2ITClient {
             System.out.println(this.toString());
         }
 
-        OkHttpClient client;
-        StringBuffer mediaTypeParams;
+        System.out.println("Ouverture de la connexion avec le server API" + apiRest.getName() + " ...");
+        httpsClient = new HttpsClient(apiRest, debugMode);
+        System.out.println("Connexion avec le server API ouverte.");
 
-        MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
-        mediaTypeParams = new StringBuffer("grant_type=client_credentials&client_id=");
-        mediaTypeParams.append(this.apiRest.getLogin());
-        mediaTypeParams.append("&client_secret=");
-        mediaTypeParams.append(this.apiRest.getPassword());
-        if (debugMode) {
-            System.out.println("mediaTypeParams:" + mediaTypeParams.toString());
-        }
-        RequestBody body = RequestBody.create(mediaType, mediaTypeParams.toString());
-        Request request = new Request.Builder()
-                .url("https://accountsandbox.hubintent.com/oauth/token")
-                .post(body)
-                .addHeader("content-type", "application/x-www-form-urlencoded")
+        Request request2 = new Request.Builder()
+                .url("https://apisandbox.hubintent.com/api/users/v1/users")
+                .get()
+                .addHeader("content-type", "application/json; charset=utf-8")
                 .addHeader("cache-control", "no-cache")
+                .addHeader("Authorization", "Bearer " + httpsClient.getToken().getAccess_token())
                 .build();
-        client = new OkHttpClient();
-        Response response = client.newCall(request).execute();
-//            System.out.println("response:" + response);
-        System.out.println("response.code():" + response.code());
-        System.out.println("response.message():" + response.message());
-        json = response.body().string();
-        System.out.println("response.body():" + json);
-//            System.out.println("response.headers():" + response.headers());
-
-        if (json != null) {
-            try {
-                token = objectMapper.readValue(json, Token.class);
-                System.out.println(token);
-
-                Request request2 = new Request.Builder()
-                        .url("https://apisandbox.hubintent.com/api/users/v1/users")
-                        .get()
-                        .addHeader("content-type", "application/json; charset=utf-8")
-                        .addHeader("cache-control", "no-cache")
-                        .addHeader("Authorization", "Bearer " + token.getAccess_token())
-                        .build();
 //                    OkHttpClient client2 = new OkHttpClient();
 //                    Response response2 = client2.newCall(request2).execute();
 //                    System.out.println("response:" + response2);
@@ -188,66 +159,61 @@ public class A2ITClient {
 //                    System.out.println("response2.message():" + response2.message());
 //                    json = response2.body().string();
 
-                Response response2 = client.newCall(request2).execute();
-                System.out.println("response2:" + response2);
-                System.out.println("response2.code():" + response2.code());
-                System.out.println("response2.message():" + response2.message());
-                json = response2.body().string();
-                System.out.println("response2.body():" + json);
+        Response response2 = httpsClient.newCall(request2).execute();
+        System.out.println("response2:" + response2);
+        System.out.println("response2.code():" + response2.code());
+        System.out.println("response2.message():" + response2.message());
+        json = response2.body().string();
+        System.out.println("response2.body():" + json);
 
-                if (json != null) {
-                    users = objectMapper.readValue(json, Users.class);
-                    System.out.println(users.size() + " user(s) found");
+        if (json != null) {
+            users = objectMapper.readValue(json, Users.class);
+            System.out.println(users.size() + " user(s) found");
 //                        System.out.println(users);
-                    for (User user : users) {
-                        System.out.println(user);
-                    }
-                }
+            for (User user : users) {
+                System.out.println(user);
+            }
+        }
 
 //                            .url("https://apisandbox.hubintent.com/api/assets/v1/assets/14436")
-                Request request3 = new Request.Builder()
-                        .url("https://apisandbox.hubintent.com/api/assets/v1/assets/14435")
-                        .get()
-                        .addHeader("content-type", "application/json; charset=utf-8")
-                        .addHeader("cache-control", "no-cache")
-                        .addHeader("Authorization", "Bearer " + token.getAccess_token())
-                        .build();
-                Response response3 = client.newCall(request3).execute();
-                System.out.println("response3:" + response3);
-                System.out.println("response3.code():" + response3.code());
-                System.out.println("response3.message():" + response3.message());
-                json = response3.body().string();
-                System.out.println("response3.body():" + json);
+        Request request3 = new Request.Builder()
+                .url("https://apisandbox.hubintent.com/api/assets/v1/assets/14435")
+                .get()
+                .addHeader("content-type", "application/json; charset=utf-8")
+                .addHeader("cache-control", "no-cache")
+                .addHeader("Authorization", "Bearer " + httpsClient.getToken().getAccess_token())
+                .build();
+        Response response3 = httpsClient.newCall(request3).execute();
+        System.out.println("response3:" + response3);
+        System.out.println("response3.code():" + response3.code());
+        System.out.println("response3.message():" + response3.message());
+        json = response3.body().string();
+        System.out.println("response3.body():" + json);
 
-                if (json != null) {
-                    Asset asset;
-                    asset = objectMapper.readValue(json, Asset.class);
-                    System.out.println(asset);
-                }
+        if (json != null) {
+            Asset asset;
+            asset = objectMapper.readValue(json, Asset.class);
+            System.out.println(asset);
+        }
 
-                Request request4 = new Request.Builder()
-                        .url("https://apisandbox.hubintent.com/api/contracts/v1/contracts/NPM_ANSTEL")
-                        .get()
-                        .addHeader("content-type", "application/json; charset=utf-8")
-                        .addHeader("cache-control", "no-cache")
-                        .addHeader("Authorization", "Bearer " + token.getAccess_token())
-                        .build();
-                Response response4 = client.newCall(request4).execute();
-                System.out.println("response4:" + response4);
-                System.out.println("response4.code():" + response4.code());
-                System.out.println("response4.message():" + response4.message());
-                json = response4.body().string();
-                System.out.println("response4.body():" + json);
+        Request request4 = new Request.Builder()
+                .url("https://apisandbox.hubintent.com/api/contracts/v1/contracts/NPM_ANSTEL")
+                .get()
+                .addHeader("content-type", "application/json; charset=utf-8")
+                .addHeader("cache-control", "no-cache")
+                .addHeader("Authorization", "Bearer " + httpsClient.getToken().getAccess_token())
+                .build();
+        Response response4 = httpsClient.newCall(request4).execute();
+        System.out.println("response4:" + response4);
+        System.out.println("response4.code():" + response4.code());
+        System.out.println("response4.message():" + response4.message());
+        json = response4.body().string();
+        System.out.println("response4.body():" + json);
 
-                if (json != null) {
-                    Contract contract;
-                    contract = objectMapper.readValue(json, Contract.class);
-                    System.out.println(contract);
-                }
-
-            } catch (Exception exception) {
-                Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
-            }
+        if (json != null) {
+            Contract contract;
+            contract = objectMapper.readValue(json, Contract.class);
+            System.out.println(contract);
         }
     }
 
@@ -357,10 +323,10 @@ public class A2ITClient {
         System.out.println("Lancement de A2ITclient ...");
         try {
             a2ITClient = new A2ITClient(args);
-        } catch (IOException | DBServerException | GetArgsException | APIREST.APIServerException exception) {
+        } catch (IOException | DBServerException | GetArgsException | APIREST.APIServerException | HttpsClientException exception) {
             Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
-        }
         System.out.println("Fin de A2ITclient.");
+        }
     }
 
     /**
