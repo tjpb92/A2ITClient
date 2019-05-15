@@ -1,6 +1,7 @@
 package a2itclient;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertTrue;
@@ -14,7 +15,7 @@ import utils.DBServerException;
  * Jeux de test pour tester la classe A2ITClient.
  *
  * @author Thierry Baribaud
- * @version 1.09
+ * @version 1.10
  */
 public class A2ITClientTest {
 
@@ -56,7 +57,9 @@ public class A2ITClientTest {
         try {
             instance = new A2ITClient(args);
             fail("Expected GetArgsException");
-        } catch (IOException | DBServerException | A2ITClient.GetArgsException | APIREST.APIServerException | HttpsClientException ex) {
+        } catch (IOException | DBServerException | A2ITClient.GetArgsException | 
+                APIREST.APIServerException | HttpsClientException | ClassNotFoundException |
+                SQLException ex) {
             assertTrue(ex.getMessage().contains("Mauvais serveur API"));
         }
     }
@@ -74,7 +77,9 @@ public class A2ITClientTest {
         try {
             instance = new A2ITClient(args);
             fail("Expected GetArgsException");
-        } catch (IOException | DBServerException | A2ITClient.GetArgsException | APIREST.APIServerException | HttpsClientException ex) {
+        } catch (IOException | DBServerException | A2ITClient.GetArgsException | 
+                APIREST.APIServerException | HttpsClientException | ClassNotFoundException |
+                SQLException ex) {
             assertTrue(ex.getMessage().contains("Serveur API non défini"));
         }
     }
@@ -92,7 +97,9 @@ public class A2ITClientTest {
         try {
             instance = new A2ITClient(args);
             fail("Expected GetArgsException");
-        } catch (IOException | DBServerException | A2ITClient.GetArgsException | APIREST.APIServerException | HttpsClientException ex) {
+        } catch (IOException | DBServerException | A2ITClient.GetArgsException | 
+                APIREST.APIServerException | HttpsClientException | ClassNotFoundException |
+                SQLException ex) {
             assertTrue(ex.getMessage().contains("Mauvais serveur Informix"));
         }
     }
@@ -110,7 +117,9 @@ public class A2ITClientTest {
         try {
             instance = new A2ITClient(args);
             fail("Expected GetArgsException");
-        } catch (IOException | DBServerException | A2ITClient.GetArgsException | APIREST.APIServerException | HttpsClientException ex) {
+        } catch (IOException | DBServerException | A2ITClient.GetArgsException | 
+                APIREST.APIServerException | HttpsClientException | ClassNotFoundException |
+                SQLException ex) {
             assertTrue(ex.getMessage().contains("Serveur Informix non défini"));
         }
     }
@@ -128,7 +137,9 @@ public class A2ITClientTest {
         try {
             instance = new A2ITClient(args);
             fail("Expected GetArgsException");
-        } catch (IOException | DBServerException | A2ITClient.GetArgsException | APIREST.APIServerException | HttpsClientException ex) {
+        } catch (IOException | DBServerException | A2ITClient.GetArgsException | 
+                APIREST.APIServerException | HttpsClientException | ClassNotFoundException |
+                SQLException ex) {
             assertTrue(ex.getMessage().contains("Mauvais serveur Mongo"));
         }
     }
@@ -146,7 +157,9 @@ public class A2ITClientTest {
         try {
             instance = new A2ITClient(args);
             fail("Expected GetArgsException");
-        } catch (IOException | DBServerException | A2ITClient.GetArgsException | APIREST.APIServerException | HttpsClientException ex) {
+        } catch (IOException | DBServerException | A2ITClient.GetArgsException | 
+                APIREST.APIServerException | HttpsClientException | ClassNotFoundException |
+                SQLException ex) {
             assertTrue(ex.getMessage().contains("Serveur Mongo non défini"));
         }
     }

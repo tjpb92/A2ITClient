@@ -1,5 +1,7 @@
 package a2itclient;
 
+import bdd.Fa2it;
+import bdd.Fa2itDAO;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -9,12 +11,16 @@ import utils.ApplicationProperties;
 import utils.DBServer;
 import utils.DBServerException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoDatabase;
+import java.sql.*;
+import utils.DBManager;
 
 /**
  * Connecteur Anstel / Intent Technologies (lien montant)
  *
  * @author Thierry Baribaud
- * @version 1.09
+ * @version 1.10
  */
 public class A2ITClient {
 
@@ -96,8 +102,11 @@ public class A2ITClient {
      * @throws a2itclient.APIREST.APIServerException en cas de problème avec les
      * paramètres du serveur API
      * @throws a2itclient.HttpsClientException en cas de problème avec la connexion Https.
+     * @throws java.lang.ClassNotFoundException en cas de problème avec une classe inconnue
+     * @throws java.sql.SQLException en cas d'erreur d'entrée/sortie. 
      */
-    public A2ITClient(String[] args) throws IOException, DBServerException, GetArgsException, APIREST.APIServerException, HttpsClientException {
+    public A2ITClient(String[] args) throws IOException, DBServerException, GetArgsException, 
+            APIREST.APIServerException, HttpsClientException, ClassNotFoundException, SQLException {
         ApplicationProperties applicationProperties;
         DBServer mgoServer;
         DBServer ifxServer;
@@ -105,6 +114,10 @@ public class A2ITClient {
         String json;
         Token token;
         Users users;
+        DBManager informixDbManager;
+        Connection informixConnection;
+        MongoClient mongoClient;
+        MongoDatabase mongoDatabase;
 
         System.out.println("Création d'une instance de A2ITClient ...");
 
@@ -144,6 +157,18 @@ public class A2ITClient {
         System.out.println("Ouverture de la connexion avec le server API" + apiRest.getName() + " ...");
         httpsClient = new HttpsClient(apiRest, debugMode);
         System.out.println("Connexion avec le server API ouverte.");
+
+        System.out.println("Ouverture de la connexion au serveur Informix : " + ifxServer.getName());
+        informixDbManager = new DBManager(ifxServer);
+
+        System.out.println("Connexion à la base de données : " + ifxServer.getDbName());
+        informixConnection = informixDbManager.getConnection();
+
+        System.out.println("Ouverture de la connexion au serveur MongoDb : " + mgoServer.getName());
+        mongoClient = new MongoClient(mgoServer.getIpAddress(), (int) mgoServer.getPortNumber());
+
+        System.out.println("Connexion à la base de données : " + mgoServer.getDbName());
+        mongoDatabase = mongoClient.getDatabase(mgoServer.getDbName());
 
         Request request2 = new Request.Builder()
                 .url("https://apisandbox.hubintent.com/api/users/v1/users")
@@ -215,8 +240,47 @@ public class A2ITClient {
             contract = objectMapper.readValue(json, Contract.class);
             System.out.println(contract);
         }
+
+        System.out.println("Traitement des événements ...");
+        processEvents(informixConnection, mongoDatabase);
     }
 
+    /**
+     * Traitement des événements
+     */
+    private void processEvents(Connection informixConnection, MongoDatabase mongoDatabase) {
+        
+        Fa2it fa2it;
+        Fa2itDAO fa2itDAO;
+        int i;
+        
+        try {
+            fa2itDAO = new Fa2itDAO(informixConnection);
+            fa2itDAO.setUpdatePreparedStatement();
+            
+            fa2itDAO.filterByStatus(0);
+            System.out.println("  SelectStatement=" + fa2itDAO.getSelectStatement());
+            fa2itDAO.setSelectPreparedStatement();
+            i = 0;
+            while ((fa2it = fa2itDAO.select()) != null) {
+                i++;
+                System.out.println("Fa2it(" + i + ")=" + fa2it);
+                
+                fa2it.setA11status(-1);
+                fa2it.setA11nberr(1);
+                fa2it.setA11update(new Timestamp(new java.util.Date().getTime()));
+                fa2itDAO.update(fa2it);
+                System.out.println("Rangée(s) affectée(s)=" + fa2itDAO.getNbAffectedRow());
+            }
+            fa2itDAO.closeUpdatePreparedStatement();
+            fa2itDAO.closeSelectPreparedStatement();
+
+        } catch (ClassNotFoundException | SQLException ex) {
+            Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+    
     /**
      * Récupère les paramètres en ligne de commande
      *
@@ -323,7 +387,8 @@ public class A2ITClient {
         System.out.println("Lancement de A2ITclient ...");
         try {
             a2ITClient = new A2ITClient(args);
-        } catch (IOException | DBServerException | GetArgsException | APIREST.APIServerException | HttpsClientException exception) {
+        } catch (IOException | DBServerException | GetArgsException | APIREST.APIServerException | 
+                HttpsClientException | ClassNotFoundException | SQLException exception) {
             Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
         System.out.println("Fin de A2ITclient.");
         }
