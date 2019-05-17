@@ -11,12 +11,17 @@ import utils.ApplicationProperties;
 import utils.DBServer;
 import utils.DBServerException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.result.UpdateResult;
 import java.sql.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
+import org.bson.Document;
 import utils.DBManager;
 import utils.Md5;
 
@@ -265,7 +270,23 @@ public class A2ITClient {
         dateFormat.setTimeZone(timeZone);
         Event event;
         OpenTicket openTicket;
-        
+        int retcode;
+        MongoCollection<Document> collection;
+        MongoCursor<Document> cursor;
+        int nbClient;
+        BasicDBObject filter;
+        UpdateResult updateResult;
+        TicketOpened ticketOpened;
+        Client client;
+        TicketInfos ticketInfos;
+        String clientUuid;
+        String reference;
+        Patrimony patrimony;
+        CallPurpose callPurpose;
+        String callPurposeUuid;
+
+//        collection = mongoDatabase.getCollection("clients");
+//        System.out.println(collection.count() + " client(s) dans la base MongoDb");
         try {
             fa2itDAO = new Fa2itDAO(informixConnection);
             fa2itDAO.setUpdatePreparedStatement();
@@ -287,19 +308,66 @@ public class A2ITClient {
                 json.append("}");
                 System.out.println("  json:" + json);
                 try {
+                    retcode = -1;
                     event = objectMapper.readValue(json.toString(), Event.class);
-                    System.out.println("  "+ event.getClass().getName()+", "+event);
-                    
+                    System.out.println("  " + event.getClass().getName() + ", " + event);
+
                     if (event instanceof TicketOpened) {
-                        openTicket = new OpenTicket((TicketOpened) event);
+                        ticketOpened = (TicketOpened) event;
+                        openTicket = new OpenTicket(ticketOpened);
+                        ticketInfos = ticketOpened.getTicketInfos();
+                        clientUuid = ticketInfos.getCompanyUid();
+
                         System.out.println("  " + openTicket);
+
+                        filter = new BasicDBObject("uuid", clientUuid);
+                        collection = mongoDatabase.getCollection("clients");
+                        cursor = collection.find(filter).iterator();
+                        if (cursor.hasNext()) {
+                            client = objectMapper.readValue(cursor.next().toJson(), Client.class);
+                            System.out.println("  client trouvé : " + client.getName() + ", useApi:" + client.getUseApi());
+                            if ("yes".equals(client.getUseApi())) {
+                                reference = ticketInfos.getAssetReference();
+                                collection = mongoDatabase.getCollection("patrimonies");
+                                filter = new BasicDBObject("clientUuid", clientUuid).append("reference", reference);
+                                cursor = collection.find(filter).iterator();
+                                if (cursor.hasNext()) {
+                                    patrimony = objectMapper.readValue(cursor.next().toJson(), Patrimony.class);
+                                    System.out.println("  patrimoine trouvé : " + patrimony.getName() + ", reference:" + reference + ", useApi:" + patrimony.getUseApi());
+                                    if ("yes".equals(patrimony.getUseApi())) {
+                                        callPurposeUuid = ticketInfos.getCallPurposeUid();
+                                        collection = mongoDatabase.getCollection("callPurposes");
+                                        filter = new BasicDBObject("clientUuid", clientUuid).append("uuid", callPurposeUuid);
+                                        cursor = collection.find(filter).iterator();
+                                        if (cursor.hasNext()) {
+                                            callPurpose = objectMapper.readValue(cursor.next().toJson(), CallPurpose.class);
+                                            System.out.println("  raison d'appel trouvée : " + callPurpose.getName() + ", useApi:" + callPurpose.getUseApi());
+                                            if ("yes".equals(callPurpose.getUseApi())) {
+                                                System.out.println("  Ticket can be sent to Intent Technologies");
+                                                retcode = 1;
+                                            }
+                                        } else {
+                                            System.out.println("  raison d'appel non trouvée, clientUuid:" + clientUuid + ", uuid:" + callPurposeUuid);
+                                        }
+                                    }
+                                } else {
+                                    System.out.println("  patrimoine non trouvé, clientUuid:" + clientUuid + ", reference:" + reference);
+                                }
+                            }
+                        } else {
+                            System.out.println("  client non trouvé, clientUuid:" + clientUuid);
+                        }
                     }
                 } catch (IOException ex) {
+                    retcode = -1;
                     Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
-                fa2it.setA11status(-1);
-                fa2it.setA11nberr(1);
+                fa2it.setA11status(retcode);
+                if (retcode != 1) {
+                    fa2it.setA11nberr(1);
+                }
+
                 fa2it.setA11update(new Timestamp(new java.util.Date().getTime()));
 //                fa2itDAO.update(fa2it);
 //                System.out.println("Rangée(s) affectée(s)=" + fa2itDAO.getNbAffectedRow());
