@@ -14,7 +14,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 import utils.DBManager;
+import utils.Md5;
 
 /**
  * Connecteur Anstel / Intent Technologies (lien montant)
@@ -101,11 +105,13 @@ public class A2ITClient {
      * paramètres en ligne de commande
      * @throws a2itclient.APIREST.APIServerException en cas de problème avec les
      * paramètres du serveur API
-     * @throws a2itclient.HttpsClientException en cas de problème avec la connexion Https.
-     * @throws java.lang.ClassNotFoundException en cas de problème avec une classe inconnue
-     * @throws java.sql.SQLException en cas d'erreur d'entrée/sortie. 
+     * @throws a2itclient.HttpsClientException en cas de problème avec la
+     * connexion Https.
+     * @throws java.lang.ClassNotFoundException en cas de problème avec une
+     * classe inconnue
+     * @throws java.sql.SQLException en cas d'erreur d'entrée/sortie.
      */
-    public A2ITClient(String[] args) throws IOException, DBServerException, GetArgsException, 
+    public A2ITClient(String[] args) throws IOException, DBServerException, GetArgsException,
             APIREST.APIServerException, HttpsClientException, ClassNotFoundException, SQLException {
         ApplicationProperties applicationProperties;
         DBServer mgoServer;
@@ -249,15 +255,21 @@ public class A2ITClient {
      * Traitement des événements
      */
     private void processEvents(Connection informixConnection, MongoDatabase mongoDatabase) {
-        
+
         Fa2it fa2it;
         Fa2itDAO fa2itDAO;
         int i;
+        StringBuffer json;
+        TimeZone timeZone = TimeZone.getTimeZone("Europe/Paris");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+        dateFormat.setTimeZone(timeZone);
+        Event event;
+        OpenTicket openTicket;
         
         try {
             fa2itDAO = new Fa2itDAO(informixConnection);
             fa2itDAO.setUpdatePreparedStatement();
-            
+
             fa2itDAO.filterByStatus(0);
             System.out.println("  SelectStatement=" + fa2itDAO.getSelectStatement());
             fa2itDAO.setSelectPreparedStatement();
@@ -265,12 +277,32 @@ public class A2ITClient {
             while ((fa2it = fa2itDAO.select()) != null) {
                 i++;
                 System.out.println("Fa2it(" + i + ")=" + fa2it);
-                
+                json = new StringBuffer("{");
+                json.append("\"processUid\":\"").append(Md5.encode("a11:" + String.valueOf(fa2it.getA11num()))).append("\",");
+                json.append("\"aggregateUid\":\"").append(Md5.encode(fa2it.getA11laguid())).append("\",");
+//                json.append("\"eventTypeUid\":\"").append(fa2it.getA11evttype()).append("\",");
+                json.append("\"eventType\":\"").append("TicketOpened").append("\",");
+                json.append("\"sentDate\":\"").append(dateFormat.format(fa2it.getA11credate())).append("\",");
+                json.append(fa2it.getA11data());
+                json.append("}");
+                System.out.println("  json:" + json);
+                try {
+                    event = objectMapper.readValue(json.toString(), Event.class);
+                    System.out.println("  "+ event.getClass().getName()+", "+event);
+                    
+                    if (event instanceof TicketOpened) {
+                        openTicket = new OpenTicket((TicketOpened) event);
+                        System.out.println("  " + openTicket);
+                    }
+                } catch (IOException ex) {
+                    Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
                 fa2it.setA11status(-1);
                 fa2it.setA11nberr(1);
                 fa2it.setA11update(new Timestamp(new java.util.Date().getTime()));
-                fa2itDAO.update(fa2it);
-                System.out.println("Rangée(s) affectée(s)=" + fa2itDAO.getNbAffectedRow());
+//                fa2itDAO.update(fa2it);
+//                System.out.println("Rangée(s) affectée(s)=" + fa2itDAO.getNbAffectedRow());
             }
             fa2itDAO.closeUpdatePreparedStatement();
             fa2itDAO.closeSelectPreparedStatement();
@@ -278,9 +310,9 @@ public class A2ITClient {
         } catch (ClassNotFoundException | SQLException ex) {
             Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }
-    
+
     /**
      * Récupère les paramètres en ligne de commande
      *
@@ -387,10 +419,10 @@ public class A2ITClient {
         System.out.println("Lancement de A2ITclient ...");
         try {
             a2ITClient = new A2ITClient(args);
-        } catch (IOException | DBServerException | GetArgsException | APIREST.APIServerException | 
+        } catch (IOException | DBServerException | GetArgsException | APIREST.APIServerException |
                 HttpsClientException | ClassNotFoundException | SQLException exception) {
             Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
-        System.out.println("Fin de A2ITclient.");
+            System.out.println("Fin de A2ITclient.");
         }
     }
 

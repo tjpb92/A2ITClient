@@ -36,4 +36,5 @@ Le fichier *A2ITCLient_Example.prop* est fourni à titre d'exemple.
 
 - [GitHub OKHttp] (https://square.github.io/okhttp/)
 - [GitHub OKIO] (https://github.com/square/okio)
-- [Tuto A Guide to OkHttp) (https://www.baeldung.com/guide-to-okhttp)
+- [Tuto A Guide to OkHttp] (https://www.baeldung.com/guide-to-okhttp)
+- [Pour valider un Json] (https://jsonformatter.curiousconcept.com/)
