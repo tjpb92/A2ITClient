@@ -1,19 +1,24 @@
 package a2itclient;
 
 import bkgpi2a.BasicAddress;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * Classe décrivant une adresse
  *
  * @author Thierry Baribaud
- * @version 1.11
+ * @version 1.13
  */
 public class Address {
 
     private String way;
     private String city;
     private String zip;
+    
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String country;
+    
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String complement;
 
     /**

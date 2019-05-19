@@ -2,6 +2,7 @@ package a2itclient;
 
 import bdd.Fa2it;
 import bdd.Fa2itDAO;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,6 +18,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.UpdateResult;
+import java.io.File;
 import java.sql.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -29,7 +31,7 @@ import utils.Md5;
  * Connecteur Anstel / Intent Technologies (lien montant)
  *
  * @author Thierry Baribaud
- * @version 1.10
+ * @version 1.13
  */
 public class A2ITClient {
 
@@ -253,13 +255,13 @@ public class A2ITClient {
         }
 
         System.out.println("Traitement des événements ...");
-        processEvents(informixConnection, mongoDatabase);
+        processEvents(httpsClient, informixConnection, mongoDatabase);
     }
 
     /**
      * Traitement des événements
      */
-    private void processEvents(Connection informixConnection, MongoDatabase mongoDatabase) {
+    private void processEvents(HttpsClient httpsClient, Connection informixConnection, MongoDatabase mongoDatabase) {
 
         Fa2it fa2it;
         Fa2itDAO fa2itDAO;
@@ -319,6 +321,7 @@ public class A2ITClient {
                         clientUuid = ticketInfos.getCompanyUid();
 
                         System.out.println("  " + openTicket);
+                        objectMapper.writeValue(new File("testOpenTicket_1.json"), openTicket);
 
                         filter = new BasicDBObject("uuid", clientUuid);
                         collection = mongoDatabase.getCollection("clients");
@@ -344,7 +347,13 @@ public class A2ITClient {
                                             System.out.println("  raison d'appel trouvée : " + callPurpose.getName() + ", useApi:" + callPurpose.getUseApi());
                                             if ("yes".equals(callPurpose.getUseApi())) {
                                                 System.out.println("  Ticket can be sent to Intent Technologies");
-                                                retcode = 1;
+                                                try {
+                                                    httpsClient.openTicket(openTicket, debugMode);
+                                                    retcode = 1;
+                                                } catch (JsonProcessingException | HttpsClientException exception) {
+//                                                    Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                                                    System.out.println("  ERROR : fail to sent ticket to Intent Technologies");
+                                                }
                                             }
                                         } else {
                                             System.out.println("  raison d'appel non trouvée, clientUuid:" + clientUuid + ", uuid:" + callPurposeUuid);
