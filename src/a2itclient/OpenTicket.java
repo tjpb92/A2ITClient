@@ -18,11 +18,13 @@ import ezvcard.VCardVersion;
 import ezvcard.parameter.EmailType;
 import ezvcard.parameter.TelephoneType;
 import ezvcard.property.StructuredName;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Classe décrivant la commande d'ouverture de ticket
  * @author Thierry Baribaud
- * @version 1.13
+ * @version 1.14
  */
 public class OpenTicket {
     
@@ -41,7 +43,12 @@ public class OpenTicket {
      * Personnes à contacter sur le ticket
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String contacts;
+    private List<String> contacts;
+    
+    /**
+     * Entité à l'origine de la demande
+     */
+    private String origin;
     
     /**
      * Contructeur principal de la classe OpenTicket
@@ -71,27 +78,15 @@ public class OpenTicket {
         thisLocation.setAddress(new Address(ticketInfos.getAddress()));
         this.location = thisLocation;
         this.workType = "corrective";
-//        setContacts(ticketInfos.getCaller());
+        this.contacts = new ArrayList();
+        this.addContact(ticketInfos.getCaller());
+        this.origin = "other";
     }
 
     /**
-     * @return les personnes à contacter sur le ticket
+     * @param caller ajoute un contact sur le ticket
      */
-    public String getContacts() {
-        return contacts;
-    }
-
-    /**
-     * @param contacts définit les personnes à contacter sur le ticket
-     */
-    public void setContacts(String contacts) {
-        this.contacts = contacts;
-    }
-
-    /**
-     * @param caller définit les personnes à contacter sur le ticket
-     */
-    public void setContacts(Caller caller) {
+    public void addContact(Caller caller) {
         VCard vcard = new VCard();
         StructuredName structuredName = new StructuredName();
         HumanCaller humanCaller;
@@ -118,21 +113,20 @@ public class OpenTicket {
                 structuredName.setFamily(civilName.getLastName());
                 structuredName.setGiven(civilName.getFirstName());
                 vcard.setStructuredName(structuredName);
-                this.contacts = Ezvcard.write(vcard).version(VCardVersion.V4_0).go();
+                this.getContacts().add(Ezvcard.write(vcard).version(VCardVersion.V4_0).go());
             } else if (name instanceof PoorName) {
                 poorName = (PoorName) name;
                 structuredName.setFamily(poorName.getValue());
                 vcard.setStructuredName(structuredName);
-                this.contacts = Ezvcard.write(vcard).version(VCardVersion.V4_0).go();
+                this.getContacts().add(Ezvcard.write(vcard).version(VCardVersion.V4_0).go());
             } else {
-                this.contacts = null;
+                this.setContacts(null);
             }
         } else if (caller instanceof AutomatonCaller) {
-            this.contacts = "automate";
+            this.getContacts().add("automate");
         } else {
-            this.contacts = null;
+            this.setContacts(null);
         }
-        
     }
 
     /**
@@ -276,6 +270,34 @@ public class OpenTicket {
     }
 
     /**
+     * @return the contacts
+     */
+    public List<String> getContacts() {
+        return contacts;
+    }
+
+    /**
+     * @param contacts the contacts to set
+     */
+    public void setContacts(List<String> contacts) {
+        this.contacts = contacts;
+    }
+
+    /**
+     * @return retourne l'entité à l'origine de la demande
+     */
+    public String getOrigin() {
+        return origin;
+    }
+
+    /**
+     * @param origin définit l'entité à l'origine de la demande
+     */
+    public void setOrigin(String origin) {
+        this.origin = origin;
+
+    }
+    /**
      * @return Retourne la commande OpenTicket sous forme textuelle
      */
     @Override
@@ -292,7 +314,7 @@ public class OpenTicket {
                 + ", location:" + getLocation()
                 + ", workType:" + getWorkType()
 //                + ", contacts:" + contacts.replace("\r", " ").replace("\n", "")
+                + ", origin:" + getOrigin()
                 + "}";
     }
-
 }
