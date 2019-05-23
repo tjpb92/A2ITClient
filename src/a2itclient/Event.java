@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  * Classe générique décrivant un événement.
  *
  * @author Thierry Baribaud
- * @version 1.11
+ * @version 1.15
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         property = "eventType")
 @JsonSubTypes({
     @JsonSubTypes.Type(value = TicketOpened.class, name = "TicketOpened"),
+    @JsonSubTypes.Type(value = TicketClosed.class, name = "TicketClosed")
 //    @JsonSubTypes.Type(value = InterventionRequested.class, name = "InterventionRequested"),
 //    @JsonSubTypes.Type(value = TicketInformationsCorrected.class, name = "TicketInformationsCorrected"),
 //    @JsonSubTypes.Type(value = ProviderAssigned.class, name = "ProviderAssigned"),
@@ -53,7 +54,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 //    @JsonSubTypes.Type(value = CallReceived.class, name = "CallReceived"),
 //    @JsonSubTypes.Type(value = TicketArchived.class, name = "TicketArchived"),
 //    @JsonSubTypes.Type(value = TicketReopened.class, name = "TicketReopened"),    
-//    @JsonSubTypes.Type(value = TicketClosed.class, name = "TicketClosed"),
 //    @JsonSubTypes.Type(value = TicketCancelled.class, name = "TicketCancelled"),
 //    @JsonSubTypes.Type(value = TicketUpdated.class, name = "TicketUpdated")
     })

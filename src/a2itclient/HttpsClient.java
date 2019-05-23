@@ -14,7 +14,7 @@ import okhttp3.Response;
  * Classe décrivant un client se connectant en HTTPS à un serveur
  *
  * @author Thierry Baribaud
- * @version 1.13
+ * @version 1.15
  */
 public class HttpsClient extends OkHttpClient {
 
@@ -116,7 +116,7 @@ public class HttpsClient extends OkHttpClient {
      * @throws a2itclient.HttpsClientException en cas d'erreur avec la connexion
      * Https
      */
-    public void openTicket(OpenTicket openTicket, boolean debugMode) throws JsonProcessingException, IOException, HttpsClientException {
+    public void closeTicket(OpenTicket openTicket, boolean debugMode) throws JsonProcessingException, IOException, HttpsClientException {
         String url;
         String json;
         int code;
@@ -134,11 +134,82 @@ public class HttpsClient extends OkHttpClient {
 //        mediaTypeParams = new StringBuffer("authorization=Bearer ");
 //        mediaTypeParams.append(this.token.getAccess_token());
         objectMapper.writeValue(new File("testOpenTicket_2.json"), openTicket);
-//        json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(openTicket);
+//        json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(closeTicket);
         json = objectMapper.writeValueAsString(openTicket);
         if (debugMode) {
             System.out.println("  openTicket:" + openTicket);
             System.out.println("  openTicket(json):" + json);
+        }
+//        mediaTypeParams.append(json);
+//        if (debugMode) {
+//            System.out.println("  mediaTypeParams:" + mediaTypeParams.toString());
+//        }
+
+//        RequestBody body = RequestBody.create(mediaType, mediaTypeParams.toString());
+        RequestBody body = RequestBody.create(mediaType, json);
+        System.out.println("  body.contentType():" + body.contentType()+ ", body.contentLength():"+body.contentLength());
+        
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("accept","application/json+hal")
+                .addHeader("Authorization", "Bearer "+this.token.getAccess_token())
+                .addHeader("content-type", "application/json; charset=utf-8")
+//                .addHeader("cache-control", "no-cache")
+                .post(body)
+                .build();
+        System.out.println("  request.headers():" + request.headers());
+        
+        Response response = this.newCall(request).execute();
+        code = response.code();
+        message = response.message();
+
+        if (debugMode) {
+            System.out.println("  response.code():" + code);
+            System.out.println("  response.message():" + message);
+        }
+
+        if (code == 204) {
+            json = response.body().string();
+            System.out.println("    response.body():" + json);
+        } else {
+            throw new HttpsClientException(code + " " + message);
+        }
+
+    }
+
+    /**
+     * Créer une clôture d'intervention sur la plate-forme
+     *
+     * @param closeTicket commande de clôture de ticket
+     * @param debugMode indique si l'on est en mode debug ou non
+     * @throws com.fasterxml.jackson.core.JsonProcessingException en cas
+     * d'erreur de convertion au format Json
+     * @throws a2itclient.HttpsClientException en cas d'erreur avec la connexion
+     * Https
+     */
+    public void closeTicket(CloseTicket closeTicket, boolean debugMode) throws JsonProcessingException, IOException, HttpsClientException {
+        String url;
+        String json;
+        int code;
+        String message;
+        StringBuffer mediaTypeParams;
+
+        url = this.apiRest.getBaseUrl() + "/operations/v2/interventions/logs";
+        if (debugMode) {
+            System.out.println("  url:" + url);
+        }
+
+//        MediaType mediaType = MediaType.get("application/json+hal; charset=utf-8");
+        MediaType mediaType = MediaType.get("application/json; charset=utf-8");
+        
+//        mediaTypeParams = new StringBuffer("authorization=Bearer ");
+//        mediaTypeParams.append(this.token.getAccess_token());
+        objectMapper.writeValue(new File("testCloseTicket_2.json"), closeTicket);
+//        json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(closeTicket);
+        json = objectMapper.writeValueAsString(closeTicket);
+        if (debugMode) {
+            System.out.println("  closeTicket:" + closeTicket);
+            System.out.println("  closeTicket(json):" + json);
         }
 //        mediaTypeParams.append(json);
 //        if (debugMode) {

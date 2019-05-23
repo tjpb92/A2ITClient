@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * Classe décrivant une adresse
  *
  * @author Thierry Baribaud
- * @version 1.13
+ * @version 1.15
  */
 public class Address {
 
@@ -126,7 +126,7 @@ public class Address {
         return "address:{"
                 + "way:" + way
                 + ", city:" + city
-                + ", zip" + zip
+                + ", zip:" + zip
                 + ", country:" + country
                 + ", complement:" + complement
                 + "}";

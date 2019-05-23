@@ -2,6 +2,8 @@ package a2itclient;
 
 import bdd.Fa2it;
 import bdd.Fa2itDAO;
+import static bkgpi2a.EventType.TICKET_CLOSED;
+import static bkgpi2a.EventType.TICKET_OPENED;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -286,6 +288,9 @@ public class A2ITClient {
         Patrimony patrimony;
         CallPurpose callPurpose;
         String callPurposeUuid;
+        TicketClosed ticketClosed;
+        CloseTicket closeTicket;
+        int evtType;
 
 //        collection = mongoDatabase.getCollection("clients");
 //        System.out.println(collection.count() + " client(s) dans la base MongoDb");
@@ -304,7 +309,15 @@ public class A2ITClient {
                 json.append("\"processUid\":\"").append(Md5.encode("a11:" + String.valueOf(fa2it.getA11num()))).append("\",");
                 json.append("\"aggregateUid\":\"").append(Md5.encode(fa2it.getA11laguid())).append("\",");
 //                json.append("\"eventTypeUid\":\"").append(fa2it.getA11evttype()).append("\",");
-                json.append("\"eventType\":\"").append("TicketOpened").append("\",");
+                
+// TODO : partie à améliorer, TB, le 23/05/2019 ...                
+                evtType = fa2it.getA11evttype();
+                if (evtType == TICKET_OPENED.getUid()) {
+                    json.append("\"eventType\":\"").append(TICKET_OPENED.getName()).append("\",");
+                } else if (evtType == TICKET_CLOSED.getUid()) {
+                    json.append("\"eventType\":\"").append(TICKET_CLOSED.getName()).append("\",");
+                }
+                
                 json.append("\"sentDate\":\"").append(dateFormat.format(fa2it.getA11credate())).append("\",");
                 json.append(fa2it.getA11data());
                 json.append("}");
@@ -348,7 +361,59 @@ public class A2ITClient {
                                             if ("yes".equals(callPurpose.getUseApi())) {
                                                 System.out.println("  Ticket can be sent to Intent Technologies");
                                                 try {
-                                                    httpsClient.openTicket(openTicket, debugMode);
+                                                    httpsClient.closeTicket(openTicket, debugMode);
+                                                    retcode = 1;
+                                                } catch (JsonProcessingException | HttpsClientException exception) {
+//                                                    Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                                                    System.out.println("  ERROR : fail to sent ticket to Intent Technologies");
+                                                }
+                                            }
+                                        } else {
+                                            System.out.println("  raison d'appel non trouvée, clientUuid:" + clientUuid + ", uuid:" + callPurposeUuid);
+                                        }
+                                    }
+                                } else {
+                                    System.out.println("  patrimoine non trouvé, clientUuid:" + clientUuid + ", reference:" + reference);
+                                }
+                            }
+                        } else {
+                            System.out.println("  client non trouvé, clientUuid:" + clientUuid);
+                        }
+                    } else if (event instanceof TicketClosed) {
+                        ticketClosed = (TicketClosed) event;
+                        closeTicket = new CloseTicket(ticketClosed);
+                        ticketInfos = ticketClosed.getTicketInfos();
+                        clientUuid = ticketInfos.getCompanyUid();
+
+                        System.out.println("  " + closeTicket);
+                        objectMapper.writeValue(new File("testCloseTicket_1.json"), closeTicket);
+
+                        filter = new BasicDBObject("uuid", clientUuid);
+                        collection = mongoDatabase.getCollection("clients");
+                        cursor = collection.find(filter).iterator();
+                        if (cursor.hasNext()) {
+                            client = objectMapper.readValue(cursor.next().toJson(), Client.class);
+                            System.out.println("  client trouvé : " + client.getName() + ", useApi:" + client.getUseApi());
+                            if ("yes".equals(client.getUseApi())) {
+                                reference = ticketInfos.getAssetReference();
+                                collection = mongoDatabase.getCollection("patrimonies");
+                                filter = new BasicDBObject("clientUuid", clientUuid).append("reference", reference);
+                                cursor = collection.find(filter).iterator();
+                                if (cursor.hasNext()) {
+                                    patrimony = objectMapper.readValue(cursor.next().toJson(), Patrimony.class);
+                                    System.out.println("  patrimoine trouvé : " + patrimony.getName() + ", reference:" + reference + ", useApi:" + patrimony.getUseApi());
+                                    if ("yes".equals(patrimony.getUseApi())) {
+                                        callPurposeUuid = ticketInfos.getCallPurposeUid();
+                                        collection = mongoDatabase.getCollection("callPurposes");
+                                        filter = new BasicDBObject("clientUuid", clientUuid).append("uuid", callPurposeUuid);
+                                        cursor = collection.find(filter).iterator();
+                                        if (cursor.hasNext()) {
+                                            callPurpose = objectMapper.readValue(cursor.next().toJson(), CallPurpose.class);
+                                            System.out.println("  raison d'appel trouvée : " + callPurpose.getName() + ", useApi:" + callPurpose.getUseApi());
+                                            if ("yes".equals(callPurpose.getUseApi())) {
+                                                System.out.println("  Ticket can be sent to Intent Technologies");
+                                                try {
+                                                    httpsClient.closeTicket(closeTicket, debugMode);
                                                     retcode = 1;
                                                 } catch (JsonProcessingException | HttpsClientException exception) {
 //                                                    Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
