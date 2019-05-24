@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  * Classe générique décrivant un événement.
  *
  * @author Thierry Baribaud
- * @version 1.15
+ * @version 1.16
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
@@ -16,17 +16,21 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         property = "eventType")
 @JsonSubTypes({
     @JsonSubTypes.Type(value = TicketOpened.class, name = "TicketOpened"),
-    @JsonSubTypes.Type(value = TicketClosed.class, name = "TicketClosed")
+    @JsonSubTypes.Type(value = TicketClosed.class, name = "TicketClosed"),
+    @JsonSubTypes.Type(value = InterventionStarted.class, name = "InterventionStarted"),
+    @JsonSubTypes.Type(value = InterventionFinished.class, name = "InterventionFinished"),
+    @JsonSubTypes.Type(value = PermanentlyFixed.class, name = "PermanentlyFixed"),
+    @JsonSubTypes.Type(value = ClosedQuoteRequested.class, name = "ClosedQuoteRequested"),
+    @JsonSubTypes.Type(value = ClosedBeyondCallCenterScope.class, name = "ClosedBeyondCallCenterScope"),
+    @JsonSubTypes.Type(value = ClosedAfterSeveralUnsuccessfulRecalls.class, name = "ClosedAfterSeveralUnsuccessfulRecalls")
+        
 //    @JsonSubTypes.Type(value = InterventionRequested.class, name = "InterventionRequested"),
 //    @JsonSubTypes.Type(value = TicketInformationsCorrected.class, name = "TicketInformationsCorrected"),
 //    @JsonSubTypes.Type(value = ProviderAssigned.class, name = "ProviderAssigned"),
 //    @JsonSubTypes.Type(value = AssigneeIdentified.class, name = "AssigneeIdentified"),
 //    @JsonSubTypes.Type(value = LogTrialAdded.class, name = "LogTrialAdded"),
-//    @JsonSubTypes.Type(value = PermanentlyFixed.class, name = "PermanentlyFixed"),
 //    @JsonSubTypes.Type(value = PartiallyFixed.class, name = "PartiallyFixed"),
 //    @JsonSubTypes.Type(value = TicketClosedImpossibleRepair.class, name = "TicketClosedImpossibleRepair"),
-//    @JsonSubTypes.Type(value = ClosedAfterSeveralUnsuccessfulRecalls.class, name = "ClosedAfterSeveralUnsuccessfulRecalls"),
-//    @JsonSubTypes.Type(value = ClosedBeyondCallCenterScope.class, name = "ClosedBeyondCallCenterScope"),
 //    @JsonSubTypes.Type(value = PostponedFix.class, name = "PostponedFix"),
 //    
 //    @JsonSubTypes.Type(value = MissionAccepted.class, name = "MissionAccepted"),    // Deprecated on 2018, September 8th.
@@ -43,8 +47,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 //    @JsonSubTypes.Type(value = MissionScheduled.class, name = "MissionScheduled"),  // Deprecated on 2018, September 8th.
 //    @JsonSubTypes.Type(value = InterventionScheduled.class, name = "InterventionScheduled"),
 //    
-//    @JsonSubTypes.Type(value = InterventionStarted.class, name = "InterventionStarted"),
-//    @JsonSubTypes.Type(value = InterventionFinished.class, name = "InterventionFinished"),
 //    @JsonSubTypes.Type(value = ServiceOrderSent.class, name = "ServiceOrderSent"), // deprecated
 //    @JsonSubTypes.Type(value = SendingServiceOrderReported.class, name = "SendingServiceOrderReported"),
 //    @JsonSubTypes.Type(value = FormalNoticeForProviderReported.class, name = "FormalNoticeForProviderReported"),

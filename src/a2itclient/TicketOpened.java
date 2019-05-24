@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Classe décrivant l'événement ouverture de ticket : TicketOpened, #500
  *
  * @author Thierry Baribaud
- * @version 1.11
+ * @version 1.16
  */
 @JsonIgnoreProperties({"_id", "date", "eventTypeUid"})
 @JsonTypeName("TicketOpened")
@@ -33,7 +33,7 @@ public class TicketOpened extends Event {
     private TicketInfos ticketInfos;
 
     /**
-     * Constructeur de la classe MessageAdded
+     * Constructeur de la classe TicketOpened
      */
     public TicketOpened() {
         setEventTypeUid(TICKET_OPENED.getUid());
