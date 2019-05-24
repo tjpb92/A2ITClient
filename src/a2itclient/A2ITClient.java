@@ -3,8 +3,6 @@ package a2itclient;
 import bdd.Fa2it;
 import bdd.Fa2itDAO;
 import bkgpi2a.EventType;
-import static bkgpi2a.EventType.TICKET_CLOSED;
-import static bkgpi2a.EventType.TICKET_OPENED;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -36,7 +34,7 @@ import utils.Md5;
  * Connecteur Anstel / Intent Technologies (lien montant)
  *
  * @author Thierry Baribaud
- * @version 1.13
+ * @version 1.17
  */
 public class A2ITClient {
 
@@ -332,9 +330,9 @@ public class A2ITClient {
                     if (event instanceof TicketOpened) {
                         retcode = processTicketOpened(mongoDatabase, (TicketOpened) event, httpsClient);
                     } else if (event instanceof InterventionStarted) {
-                        retcode = processInterventionStarted(mongoDatabase, (InterventionStarted) event);
+                        retcode = processInterventionStarted(mongoDatabase, (InterventionStarted) event, httpsClient);
                     } else if (event instanceof InterventionFinished) {
-                        retcode = processInterventionFinished(mongoDatabase, (InterventionFinished) event);
+                        retcode = processInterventionFinished(mongoDatabase, (InterventionFinished) event, httpsClient);
                     } else if (event instanceof PermanentlyFixed) {
                         retcode = processPermanentlyFixed(mongoDatabase, (PermanentlyFixed) event);
                     } else if (event instanceof ClosedQuoteRequested) {
@@ -371,126 +369,6 @@ public class A2ITClient {
         } catch (ClassNotFoundException | SQLException exception) {
             Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
         }
-
-//                    if (event instanceof TicketOpened) {
-//                        ticketOpened = (TicketOpened) event;
-//                        openTicket = new OpenTicket(ticketOpened);
-//                        ticketInfos = ticketOpened.getTicketInfos();
-//                        clientUuid = ticketInfos.getCompanyUid();
-//
-//                        System.out.println("  " + openTicket);
-//                        objectMapper.writeValue(new File("testOpenTicket_1.json"), openTicket);
-//
-//                        filter = new BasicDBObject("uuid", clientUuid);
-//                        collection = mongoDatabase.getCollection("clients");
-//                        cursor = collection.find(filter).iterator();
-//                        if (cursor.hasNext()) {
-//                            client = objectMapper.readValue(cursor.next().toJson(), Client.class);
-//                            System.out.println("  client trouvé : " + client.getName() + ", useApi:" + client.getUseApi());
-//                            if ("yes".equals(client.getUseApi())) {
-//                                reference = ticketInfos.getAssetReference();
-//                                collection = mongoDatabase.getCollection("patrimonies");
-//                                filter = new BasicDBObject("clientUuid", clientUuid).append("reference", reference);
-//                                cursor = collection.find(filter).iterator();
-//                                if (cursor.hasNext()) {
-//                                    patrimony = objectMapper.readValue(cursor.next().toJson(), Patrimony.class);
-//                                    System.out.println("  patrimoine trouvé : " + patrimony.getName() + ", reference:" + reference + ", useApi:" + patrimony.getUseApi());
-//                                    if ("yes".equals(patrimony.getUseApi())) {
-//                                        callPurposeUuid = ticketInfos.getCallPurposeUid();
-//                                        collection = mongoDatabase.getCollection("callPurposes");
-//                                        filter = new BasicDBObject("clientUuid", clientUuid).append("uuid", callPurposeUuid);
-//                                        cursor = collection.find(filter).iterator();
-//                                        if (cursor.hasNext()) {
-//                                            callPurpose = objectMapper.readValue(cursor.next().toJson(), CallPurpose.class);
-//                                            System.out.println("  raison d'appel trouvée : " + callPurpose.getName() + ", useApi:" + callPurpose.getUseApi());
-//                                            if ("yes".equals(callPurpose.getUseApi())) {
-//                                                System.out.println("  Ticket can be sent to Intent Technologies");
-//                                                try {
-//                                                    httpsClient.closeTicket(openTicket, debugMode);
-//                                                    retcode = 1;
-//                                                } catch (JsonProcessingException | HttpsClientException exception) {
-////                                                    Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
-//                                                    System.out.println("  ERROR : fail to sent ticket to Intent Technologies");
-//                                                }
-//                                            }
-//                                        } else {
-//                                            System.out.println("  raison d'appel non trouvée, clientUuid:" + clientUuid + ", uuid:" + callPurposeUuid);
-//                                        }
-//                                    }
-//                                } else {
-//                                    System.out.println("  patrimoine non trouvé, clientUuid:" + clientUuid + ", reference:" + reference);
-//                                }
-//                            }
-//                        } else {
-//                            System.out.println("  client non trouvé, clientUuid:" + clientUuid);
-//                        }
-//                    } else if (event instanceof TicketClosed) {
-//                        ticketClosed = (TicketClosed) event;
-//                        closeTicket = new CloseTicket(ticketClosed);
-//                        ticketInfos = ticketClosed.getTicketInfos();
-//                        clientUuid = ticketInfos.getCompanyUid();
-//
-//                        System.out.println("  " + closeTicket);
-//                        objectMapper.writeValue(new File("testCloseTicket_1.json"), closeTicket);
-//
-//                        filter = new BasicDBObject("uuid", clientUuid);
-//                        collection = mongoDatabase.getCollection("clients");
-//                        cursor = collection.find(filter).iterator();
-//                        if (cursor.hasNext()) {
-//                            client = objectMapper.readValue(cursor.next().toJson(), Client.class);
-//                            System.out.println("  client trouvé : " + client.getName() + ", useApi:" + client.getUseApi());
-//                            if ("yes".equals(client.getUseApi())) {
-//                                reference = ticketInfos.getAssetReference();
-//                                collection = mongoDatabase.getCollection("patrimonies");
-//                                filter = new BasicDBObject("clientUuid", clientUuid).append("reference", reference);
-//                                cursor = collection.find(filter).iterator();
-//                                if (cursor.hasNext()) {
-//                                    patrimony = objectMapper.readValue(cursor.next().toJson(), Patrimony.class);
-//                                    System.out.println("  patrimoine trouvé : " + patrimony.getName() + ", reference:" + reference + ", useApi:" + patrimony.getUseApi());
-//                                    if ("yes".equals(patrimony.getUseApi())) {
-//                                        callPurposeUuid = ticketInfos.getCallPurposeUid();
-//                                        collection = mongoDatabase.getCollection("callPurposes");
-//                                        filter = new BasicDBObject("clientUuid", clientUuid).append("uuid", callPurposeUuid);
-//                                        cursor = collection.find(filter).iterator();
-//                                        if (cursor.hasNext()) {
-//                                            callPurpose = objectMapper.readValue(cursor.next().toJson(), CallPurpose.class);
-//                                            System.out.println("  raison d'appel trouvée : " + callPurpose.getName() + ", useApi:" + callPurpose.getUseApi());
-//                                            if ("yes".equals(callPurpose.getUseApi())) {
-//                                                System.out.println("  Ticket can be sent to Intent Technologies");
-//                                                try {
-//                                                    httpsClient.closeTicket(closeTicket, debugMode);
-//                                                    retcode = 1;
-//                                                } catch (JsonProcessingException | HttpsClientException exception) {
-////                                                    Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
-//                                                    System.out.println("  ERROR : fail to sent ticket to Intent Technologies");
-//                                                }
-//                                            }
-//                                        } else {
-//                                            System.out.println("  raison d'appel non trouvée, clientUuid:" + clientUuid + ", uuid:" + callPurposeUuid);
-//                                        }
-//                                    }
-//                                } else {
-//                                    System.out.println("  patrimoine non trouvé, clientUuid:" + clientUuid + ", reference:" + reference);
-//                                }
-//                            }
-//                        } else {
-//                            System.out.println("  client non trouvé, clientUuid:" + clientUuid);
-//                        }
-//                    }
-//                } catch (IOException ex) {
-//                    retcode = -1;
-//                    Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, ex);
-//                }
-//
-//                fa2it.setA11status(retcode);
-//                if (retcode != 1) {
-//                    fa2it.setA11nberr(1);
-//                }
-//
-//                fa2it.setA11update(new Timestamp(new java.util.Date().getTime()));
-////                fa2itDAO.update(fa2it);
-////                System.out.println("Rangée(s) affectée(s)=" + fa2itDAO.getNbAffectedRow());
-//            }
     }
 
     /**
@@ -810,7 +688,7 @@ public class A2ITClient {
                     System.out.println("  " + openTicket);
                     try {
                         objectMapper.writeValue(new File("testOpenTicket_1.json"), openTicket);
-                        httpsClient.closeTicket(openTicket, debugMode);
+                        httpsClient.openTicket(openTicket, debugMode);
                         retcode = 1;
                     } catch (JsonProcessingException | HttpsClientException exception) {
 //                      Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
@@ -826,12 +704,86 @@ public class A2ITClient {
         return retcode;
     }
 
-    private int processInterventionStarted(MongoDatabase mongoDatabase, InterventionStarted interventionStarted) {
-        return -1;
+    /**
+     * Traitement de la date de début de l'intervention
+     * @param mongoDatabase connexion à la base de données Mongodb
+     * @param ticketOpened événement d'ouverture d'un ticket
+     * @return résultat de l'opération 1=succès, 0=abandon, -1=erreur
+     */
+    private int processInterventionStarted(MongoDatabase mongoDatabase, InterventionStarted interventionStarted, HttpsClient httpsClient) {
+        TicketInfos ticketInfos;
+        String clientUuid;
+        StartIntervention startIntervention;
+        
+        int retcode;
+        
+        retcode = -1;
+        ticketInfos = interventionStarted.getTicketInfos();
+        clientUuid = ticketInfos.getCompanyUid();
+        if (isClientAuthorizedToUseAPI(mongoDatabase, clientUuid)) {
+            if (isAssetAuthorizedToUseAPI(mongoDatabase, clientUuid, ticketInfos.getAssetReference())) {
+                if (isCallPurposeAuthorizedToUseAPI(mongoDatabase, clientUuid, ticketInfos.getCallPurposeUid())) {
+                    System.out.println("  Ticket can be sent to Intent Technologies");
+                    startIntervention = new StartIntervention(interventionStarted);
+                    System.out.println("  " + startIntervention);
+                    try {
+                        objectMapper.writeValue(new File("testStartIntervention_1.json"), startIntervention);
+                        httpsClient.startIntervention(startIntervention, debugMode);
+                        retcode = 1;
+                    } catch (JsonProcessingException | HttpsClientException exception) {
+//                    } catch (JsonProcessingException  exception) {
+//                      Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                        System.out.println("  ERROR : fail to sent ticket to Intent Technologies");
+                    } catch (IOException exception) {
+                        System.out.println("  ERROR : Fail to write Json to file");
+//                        Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                    }
+                }
+            }
+        }
+        
+        return retcode;
     }
 
-    private int processInterventionFinished(MongoDatabase mongoDatabase, InterventionFinished interventionFinished) {
-        return -1;
+    /**
+     * Traitement de la date de fin de l'intervention
+     * @param mongoDatabase connexion à la base de données Mongodb
+     * @param ticketOpened événement d'ouverture d'un ticket
+     * @return résultat de l'opération 1=succès, 0=abandon, -1=erreur
+     */
+    private int processInterventionFinished(MongoDatabase mongoDatabase, InterventionFinished interventionFinished, HttpsClient httpsClient) {
+        TicketInfos ticketInfos;
+        String clientUuid;
+        FinishIntervention finishIntervention;
+        
+        int retcode;
+        
+        retcode = -1;
+        ticketInfos = interventionFinished.getTicketInfos();
+        clientUuid = ticketInfos.getCompanyUid();
+        if (isClientAuthorizedToUseAPI(mongoDatabase, clientUuid)) {
+            if (isAssetAuthorizedToUseAPI(mongoDatabase, clientUuid, ticketInfos.getAssetReference())) {
+                if (isCallPurposeAuthorizedToUseAPI(mongoDatabase, clientUuid, ticketInfos.getCallPurposeUid())) {
+                    System.out.println("  Ticket can be sent to Intent Technologies");
+                    finishIntervention = new FinishIntervention(interventionFinished);
+                    System.out.println("  " + finishIntervention);
+                    try {
+                        objectMapper.writeValue(new File("testFinishIntervention_1.json"), finishIntervention);
+                        httpsClient.finishIntervention(finishIntervention, debugMode);
+                        retcode = 1;
+                    } catch (JsonProcessingException | HttpsClientException exception) {
+//                    } catch (JsonProcessingException  exception) {
+//                      Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                        System.out.println("  ERROR : fail to sent ticket to Intent Technologies");
+                    } catch (IOException exception) {
+                        System.out.println("  ERROR : Fail to write Json to file");
+//                        Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                    }
+                }
+            }
+        }
+        
+        return retcode;
     }
 
     private int processPermanentlyFixed(MongoDatabase mongoDatabase, PermanentlyFixed permanentlyFixed) {

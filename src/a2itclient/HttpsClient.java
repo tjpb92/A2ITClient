@@ -14,7 +14,7 @@ import okhttp3.Response;
  * Classe décrivant un client se connectant en HTTPS à un serveur
  *
  * @author Thierry Baribaud
- * @version 1.15
+ * @version 1.17
  */
 public class HttpsClient extends OkHttpClient {
 
@@ -116,7 +116,7 @@ public class HttpsClient extends OkHttpClient {
      * @throws a2itclient.HttpsClientException en cas d'erreur avec la connexion
      * Https
      */
-    public void closeTicket(OpenTicket openTicket, boolean debugMode) throws JsonProcessingException, IOException, HttpsClientException {
+    public void openTicket(OpenTicket openTicket, boolean debugMode) throws JsonProcessingException, IOException, HttpsClientException {
         String url;
         String json;
         int code;
@@ -130,7 +130,7 @@ public class HttpsClient extends OkHttpClient {
 
 //        MediaType mediaType = MediaType.get("application/json+hal; charset=utf-8");
         MediaType mediaType = MediaType.get("application/json; charset=utf-8");
-        
+
 //        mediaTypeParams = new StringBuffer("authorization=Bearer ");
 //        mediaTypeParams.append(this.token.getAccess_token());
         objectMapper.writeValue(new File("testOpenTicket_2.json"), openTicket);
@@ -147,18 +147,18 @@ public class HttpsClient extends OkHttpClient {
 
 //        RequestBody body = RequestBody.create(mediaType, mediaTypeParams.toString());
         RequestBody body = RequestBody.create(mediaType, json);
-        System.out.println("  body.contentType():" + body.contentType()+ ", body.contentLength():"+body.contentLength());
-        
+        System.out.println("  body.contentType():" + body.contentType() + ", body.contentLength():" + body.contentLength());
+
         Request request = new Request.Builder()
                 .url(url)
-                .addHeader("accept","application/json+hal")
-                .addHeader("Authorization", "Bearer "+this.token.getAccess_token())
+                .addHeader("accept", "application/json+hal")
+                .addHeader("Authorization", "Bearer " + this.token.getAccess_token())
                 .addHeader("content-type", "application/json; charset=utf-8")
-//                .addHeader("cache-control", "no-cache")
+                //                .addHeader("cache-control", "no-cache")
                 .post(body)
                 .build();
         System.out.println("  request.headers():" + request.headers());
-        
+
         Response response = this.newCall(request).execute();
         code = response.code();
         message = response.message();
@@ -201,7 +201,7 @@ public class HttpsClient extends OkHttpClient {
 
 //        MediaType mediaType = MediaType.get("application/json+hal; charset=utf-8");
         MediaType mediaType = MediaType.get("application/json; charset=utf-8");
-        
+
 //        mediaTypeParams = new StringBuffer("authorization=Bearer ");
 //        mediaTypeParams.append(this.token.getAccess_token());
         objectMapper.writeValue(new File("testCloseTicket_2.json"), closeTicket);
@@ -218,18 +218,140 @@ public class HttpsClient extends OkHttpClient {
 
 //        RequestBody body = RequestBody.create(mediaType, mediaTypeParams.toString());
         RequestBody body = RequestBody.create(mediaType, json);
-        System.out.println("  body.contentType():" + body.contentType()+ ", body.contentLength():"+body.contentLength());
-        
+        System.out.println("  body.contentType():" + body.contentType() + ", body.contentLength():" + body.contentLength());
+
         Request request = new Request.Builder()
                 .url(url)
-                .addHeader("accept","application/json+hal")
-                .addHeader("Authorization", "Bearer "+this.token.getAccess_token())
+                .addHeader("accept", "application/json+hal")
+                .addHeader("Authorization", "Bearer " + this.token.getAccess_token())
                 .addHeader("content-type", "application/json; charset=utf-8")
-//                .addHeader("cache-control", "no-cache")
+                //                .addHeader("cache-control", "no-cache")
                 .post(body)
                 .build();
         System.out.println("  request.headers():" + request.headers());
-        
+
+        Response response = this.newCall(request).execute();
+        code = response.code();
+        message = response.message();
+
+        if (debugMode) {
+            System.out.println("  response.code():" + code);
+            System.out.println("  response.message():" + message);
+        }
+
+        if (code == 204) {
+            json = response.body().string();
+            System.out.println("    response.body():" + json);
+        } else {
+            throw new HttpsClientException(code + " " + message);
+        }
+
+    }
+
+    /**
+     * Envoyer un début d'intervention à la plate-forme
+     *
+     * @param startIntervention commande de début d'intervention
+     * @param debugMode indique si l'on est en mode debug ou non
+     * @throws com.fasterxml.jackson.core.JsonProcessingException en cas
+     * d'erreur de convertion au format Json
+     * @throws a2itclient.HttpsClientException en cas d'erreur avec la connexion
+     * Https
+     */
+    public void startIntervention(StartIntervention startIntervention, boolean debugMode) throws JsonProcessingException, IOException, HttpsClientException {
+        String url;
+        String json;
+        int code;
+        String message;
+        StringBuffer mediaTypeParams;
+
+        url = this.apiRest.getBaseUrl() + "/operations/v2/interventions/logs";
+        if (debugMode) {
+            System.out.println("  url:" + url);
+        }
+
+        MediaType mediaType = MediaType.get("application/json; charset=utf-8");
+
+        objectMapper.writeValue(new File("testStartIntervention_2.json"), startIntervention);
+        json = objectMapper.writeValueAsString(startIntervention);
+        if (debugMode) {
+            System.out.println("  startIntervention:" + startIntervention);
+            System.out.println("  startIntervention(json):" + json);
+        }
+
+        RequestBody body = RequestBody.create(mediaType, json);
+        System.out.println("  body.contentType():" + body.contentType() + ", body.contentLength():" + body.contentLength());
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("accept", "application/json+hal")
+                .addHeader("Authorization", "Bearer " + this.token.getAccess_token())
+                .addHeader("content-type", "application/json; charset=utf-8")
+                .post(body)
+                .build();
+        System.out.println("  request.headers():" + request.headers());
+
+        Response response = this.newCall(request).execute();
+        code = response.code();
+        message = response.message();
+
+        if (debugMode) {
+            System.out.println("  response.code():" + code);
+            System.out.println("  response.message():" + message);
+        }
+
+        if (code == 204) {
+            json = response.body().string();
+            System.out.println("    response.body():" + json);
+        } else {
+            throw new HttpsClientException(code + " " + message);
+        }
+
+    }
+
+    /**
+     * Envoyer une fin d'intervention à la plate-forme
+     *
+     * @param finishIntervention commande de fin d'intervention
+     * @param debugMode indique si l'on est en mode debug ou non
+     * @throws com.fasterxml.jackson.core.JsonProcessingException en cas
+     * d'erreur de convertion au format Json
+     * @throws a2itclient.HttpsClientException en cas d'erreur avec la connexion
+     * Https
+     */
+    public void finishIntervention(FinishIntervention finishIntervention, boolean debugMode) throws JsonProcessingException, IOException, HttpsClientException {
+        String url;
+        String json;
+        int code;
+        String message;
+        StringBuffer mediaTypeParams;
+
+        url = this.apiRest.getBaseUrl() + "/operations/v2/interventions/logs";
+        if (debugMode) {
+            System.out.println("  url:" + url);
+        }
+
+        MediaType mediaType = MediaType.get("application/json; charset=utf-8");
+
+        objectMapper.writeValue(new File("testFinishIntervention_2.json"), finishIntervention);
+        json = objectMapper.writeValueAsString(finishIntervention);
+        if (debugMode) {
+            System.out.println("  finishIntervention:" + finishIntervention);
+            System.out.println("  finishIntervention(json):" + json);
+        }
+
+        RequestBody body = RequestBody.create(mediaType, json);
+        System.out.println("  body.contentType():" + body.contentType() + ", body.contentLength():" + body.contentLength());
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("accept", "application/json+hal")
+                .addHeader("Authorization", "Bearer " + this.token.getAccess_token())
+                .addHeader("content-type", "application/json; charset=utf-8")
+                .post(body)
+                .build();
+        System.out.println("  request.headers():" + request.headers());
+
         Response response = this.newCall(request).execute();
         code = response.code();
         message = response.message();
