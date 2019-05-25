@@ -1,33 +1,15 @@
 package a2itclient;
 
-import bkgpi2a.AutomatonCaller;
-import bkgpi2a.Caller;
-import bkgpi2a.CivilName;
-import bkgpi2a.ContactMedium;
-import bkgpi2a.Sms;
-import bkgpi2a.Fax;
-import bkgpi2a.HumanCaller;
-import bkgpi2a.Mail;
-import bkgpi2a.Name;
-import bkgpi2a.Phone;
-import bkgpi2a.PoorName;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import ezvcard.Ezvcard;
-import ezvcard.VCard;
-import ezvcard.VCardVersion;
-import ezvcard.parameter.EmailType;
-import ezvcard.parameter.TelephoneType;
-import ezvcard.property.StructuredName;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Classe décrivant la commande de clôture de ticket
+ *
  * @author Thierry Baribaud
- * @version 1.15
+ * @version 1.18
  */
 public class CloseTicket {
-    
+
     private String reference;
 //    private String description;
     private String contractReference;
@@ -38,32 +20,38 @@ public class CloseTicket {
     private String serviceCode;
     private Location location;
     private String workType;
-    
+
+    /**
+     * Nature de la panne
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String technicalReason;
+
     /**
      * Personnes à contacter sur le ticket
      */
 //    @JsonInclude(JsonInclude.Include.NON_NULL)
 //    private List<String> contacts;
-    
     /**
      * Entité à l'origine de la demande
      */
     private String origin;
-    
+
     /**
      * Contructeur principal de la classe CloseTicket
      */
     public CloseTicket() {
     }
-    
+
     /**
      * Constructeur secondaire de la classe CloseTicket
+     *
      * @param ticketClosed événement d'ouvert de ticket
      */
     public CloseTicket(TicketClosed ticketClosed) {
         TicketInfos ticketInfos;
         Location thisLocation;
-        
+
         ticketInfos = ticketClosed.getTicketInfos();
         this.reference = ticketInfos.getClaimNumber().getCallCenterClaimNumber();
 //        this.description = ticketInfos.getRequest();
@@ -81,6 +69,7 @@ public class CloseTicket {
 //        this.contacts = new ArrayList();
 //        this.addContact(ticketInfos.getCaller());
         this.origin = "other";
+        this.technicalReason = ticketInfos.getTechnicalReason();
     }
 
     /**
@@ -128,7 +117,6 @@ public class CloseTicket {
 //            this.setContacts(null);
 //        }
 //    }
-
     /**
      * @return the reference
      */
@@ -149,14 +137,12 @@ public class CloseTicket {
 //    public String getDescription() {
 //        return description;
 //    }
-
     /**
      * @param description the description to set
      */
 //    public void setDescription(String description) {
 //        this.description = description;
 //    }
-
     /**
      * @return the contractReference
      */
@@ -275,14 +261,12 @@ public class CloseTicket {
 //    public List<String> getContacts() {
 //        return contacts;
 //    }
-
     /**
      * @param contacts the contacts to set
      */
 //    public void setContacts(List<String> contacts) {
 //        this.contacts = contacts;
 //    }
-
     /**
      * @return retourne l'entité à l'origine de la demande
      */
@@ -297,6 +281,21 @@ public class CloseTicket {
         this.origin = origin;
 
     }
+
+    /**
+     * @return retourne la nature de la panne
+     */
+    public String getTechnicalReason() {
+        return technicalReason;
+    }
+
+    /**
+     * @param technicalReason définit la nature de la panne
+     */
+    public void setTechnicalReason(String technicalReason) {
+        this.technicalReason = technicalReason;
+    }
+
     /**
      * @return Retourne la commande CloseTicket sous forme textuelle
      */
@@ -304,7 +303,7 @@ public class CloseTicket {
     public String toString() {
         return "closeTicket:{"
                 + "reference:" + getReference()
-//                + ", description:" + getDescription()
+                //                + ", description:" + getDescription()
                 + ", contractReference:" + getContractReference()
                 + ", status:" + getStatus()
                 + ", event:" + getEvent()
@@ -313,8 +312,9 @@ public class CloseTicket {
                 + ", serviceCode:" + getServiceCode()
                 + ", location:" + getLocation()
                 + ", workType:" + getWorkType()
-//                + ", contacts:" + contacts.replace("\r", " ").replace("\n", "")
+                //                + ", contacts:" + contacts.replace("\r", " ").replace("\n", "")
                 + ", origin:" + getOrigin()
+                + ", technicalReason:" + getTechnicalReason()
                 + "}";
     }
 }

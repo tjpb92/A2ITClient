@@ -11,7 +11,7 @@ import java.util.Map;
  * Classe définissant les informations d'un ticket
  *
  * @author Thierry Baribaud
- * @version 1.11
+ * @version 1.18
  */
 public class TicketInfos {
 
@@ -78,8 +78,14 @@ public class TicketInfos {
      */
     private Map<String, String[]> altCallPurpose;
 
+    /**
+     * Nature de la panne
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String technicalReason;
+    
 //    /**
-//     * Donn�es additionnelles
+//     * Données additionnelles
 //     */
 //    private Map<String, String> additionalData;
 
@@ -259,6 +265,20 @@ public class TicketInfos {
         this.altCallPurpose = altCallPurpose;
     }
 
+    /**
+     * @return retourne la nature de la panne
+     */
+    public String getTechnicalReason() {
+        return technicalReason;
+    }
+
+    /**
+     * @param technicalReason définit la nature de la panne
+     */
+    public void setTechnicalReason(String technicalReason) {
+        this.technicalReason = technicalReason;
+    }
+
 //    /**
 //     * @return les données additionnelles
 //     */
@@ -311,6 +331,7 @@ public class TicketInfos {
                 + ", callPurposeExtId :" + getCallPurposeExtId()
                 + ", callPurposeLabel:" + getCallPurposeLabel()
                 + ", altCallPurpose:" + getAltCallPurpose()
+                + ", technicalReason:" + getTechnicalReason()
 //                + ", additionalData:" + getAdditionalData()
                 + "}";
     }
