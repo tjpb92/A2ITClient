@@ -34,7 +34,7 @@ import utils.Md5;
  * Connecteur Anstel / Intent Technologies (lien montant)
  *
  * @author Thierry Baribaud
- * @version 1.17
+ * @version 1.19
  */
 public class A2ITClient {
 
@@ -171,7 +171,7 @@ public class A2ITClient {
         }
 
         System.out.println("Lecture des paramètres du serveur Mongo ...");
-        mgoServer = new DBServer(ifxDbServerType, "mgoserver", applicationProperties);
+        mgoServer = new DBServer(mgoDbServerType, "mgoserver", applicationProperties);
         System.out.println("Paramètres du serveur Mongo lus.");
         if (debugMode) {
             System.out.println(mgoServer);
@@ -197,76 +197,76 @@ public class A2ITClient {
         System.out.println("Connexion à la base de données : " + mgoServer.getDbName());
         mongoDatabase = mongoClient.getDatabase(mgoServer.getDbName());
 
-        Request request2 = new Request.Builder()
-                .url("https://apisandbox.hubintent.com/api/users/v1/users")
-                .get()
-                .addHeader("content-type", "application/json; charset=utf-8")
-                .addHeader("cache-control", "no-cache")
-                .addHeader("Authorization", "Bearer " + httpsClient.getToken().getAccess_token())
-                .build();
-//                    OkHttpClient client2 = new OkHttpClient();
-//                    Response response2 = client2.newCall(request2).execute();
-//                    System.out.println("response:" + response2);
-//                    System.out.println("response2.code():" + response2.code());
-//                    System.out.println("response2.message():" + response2.message());
-//                    json = response2.body().string();
-
-        Response response2 = httpsClient.newCall(request2).execute();
-        System.out.println("response2:" + response2);
-        System.out.println("response2.code():" + response2.code());
-        System.out.println("response2.message():" + response2.message());
-        json = response2.body().string();
-        System.out.println("response2.body():" + json);
-
-        if (json != null) {
-            users = objectMapper.readValue(json, Users.class);
-            System.out.println(users.size() + " user(s) found");
-//                        System.out.println(users);
-            for (User user : users) {
-                System.out.println(user);
-            }
-        }
-
-//                            .url("https://apisandbox.hubintent.com/api/assets/v1/assets/14436")
-        Request request3 = new Request.Builder()
-                .url("https://apisandbox.hubintent.com/api/assets/v1/assets/14435")
-                .get()
-                .addHeader("content-type", "application/json; charset=utf-8")
-                .addHeader("cache-control", "no-cache")
-                .addHeader("Authorization", "Bearer " + httpsClient.getToken().getAccess_token())
-                .build();
-        Response response3 = httpsClient.newCall(request3).execute();
-        System.out.println("response3:" + response3);
-        System.out.println("response3.code():" + response3.code());
-        System.out.println("response3.message():" + response3.message());
-        json = response3.body().string();
-        System.out.println("response3.body():" + json);
-
-        if (json != null) {
-            Asset asset;
-            asset = objectMapper.readValue(json, Asset.class);
-            System.out.println(asset);
-        }
-
-        Request request4 = new Request.Builder()
-                .url("https://apisandbox.hubintent.com/api/contracts/v1/contracts/NPM_ANSTEL")
-                .get()
-                .addHeader("content-type", "application/json; charset=utf-8")
-                .addHeader("cache-control", "no-cache")
-                .addHeader("Authorization", "Bearer " + httpsClient.getToken().getAccess_token())
-                .build();
-        Response response4 = httpsClient.newCall(request4).execute();
-        System.out.println("response4:" + response4);
-        System.out.println("response4.code():" + response4.code());
-        System.out.println("response4.message():" + response4.message());
-        json = response4.body().string();
-        System.out.println("response4.body():" + json);
-
-        if (json != null) {
-            Contract contract;
-            contract = objectMapper.readValue(json, Contract.class);
-            System.out.println(contract);
-        }
+//        Request request2 = new Request.Builder()
+//                .url("https://apisandbox.hubintent.com/api/users/v1/users")
+//                .get()
+//                .addHeader("content-type", "application/json; charset=utf-8")
+//                .addHeader("cache-control", "no-cache")
+//                .addHeader("Authorization", "Bearer " + httpsClient.getToken().getAccess_token())
+//                .build();
+////                    OkHttpClient client2 = new OkHttpClient();
+////                    Response response2 = client2.newCall(request2).execute();
+////                    System.out.println("response:" + response2);
+////                    System.out.println("response2.code():" + response2.code());
+////                    System.out.println("response2.message():" + response2.message());
+////                    json = response2.body().string();
+//
+//        Response response2 = httpsClient.newCall(request2).execute();
+//        System.out.println("response2:" + response2);
+//        System.out.println("response2.code():" + response2.code());
+//        System.out.println("response2.message():" + response2.message());
+//        json = response2.body().string();
+//        System.out.println("response2.body():" + json);
+//
+//        if (json != null) {
+//            users = objectMapper.readValue(json, Users.class);
+//            System.out.println(users.size() + " user(s) found");
+////                        System.out.println(users);
+//            for (User user : users) {
+//                System.out.println(user);
+//            }
+//        }
+//
+////                            .url("https://apisandbox.hubintent.com/api/assets/v1/assets/14436")
+//        Request request3 = new Request.Builder()
+//                .url("https://apisandbox.hubintent.com/api/assets/v1/assets/14435")
+//                .get()
+//                .addHeader("content-type", "application/json; charset=utf-8")
+//                .addHeader("cache-control", "no-cache")
+//                .addHeader("Authorization", "Bearer " + httpsClient.getToken().getAccess_token())
+//                .build();
+//        Response response3 = httpsClient.newCall(request3).execute();
+//        System.out.println("response3:" + response3);
+//        System.out.println("response3.code():" + response3.code());
+//        System.out.println("response3.message():" + response3.message());
+//        json = response3.body().string();
+//        System.out.println("response3.body():" + json);
+//
+//        if (json != null) {
+//            Asset asset;
+//            asset = objectMapper.readValue(json, Asset.class);
+//            System.out.println(asset);
+//        }
+//
+//        Request request4 = new Request.Builder()
+//                .url("https://apisandbox.hubintent.com/api/contracts/v1/contracts/NPM_ANSTEL")
+//                .get()
+//                .addHeader("content-type", "application/json; charset=utf-8")
+//                .addHeader("cache-control", "no-cache")
+//                .addHeader("Authorization", "Bearer " + httpsClient.getToken().getAccess_token())
+//                .build();
+//        Response response4 = httpsClient.newCall(request4).execute();
+//        System.out.println("response4:" + response4);
+//        System.out.println("response4.code():" + response4.code());
+//        System.out.println("response4.message():" + response4.message());
+//        json = response4.body().string();
+//        System.out.println("response4.body():" + json);
+//
+//        if (json != null) {
+//            Contract contract;
+//            contract = objectMapper.readValue(json, Contract.class);
+//            System.out.println(contract);
+//        }
 
         System.out.println("Traitement des événements ...");
         processEvents(httpsClient, informixConnection, mongoDatabase);
