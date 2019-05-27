@@ -1,5 +1,6 @@
 package a2itclient;
 
+import a2itclient.MailServer.MailServerException;
 import bdd.Fa2it;
 import bdd.Fa2itDAO;
 import bkgpi2a.EventType;
@@ -7,6 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Date;
 import okhttp3.Request;
 import okhttp3.Response;
 import utils.ApplicationProperties;
@@ -25,7 +27,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.TimeZone;
+import javax.mail.internet.*;
+import javax.mail.*;
 import org.bson.Document;
 import utils.DBManager;
 import utils.Md5;
@@ -65,6 +70,11 @@ public class A2ITClient {
      * serveur de pré-production. Valeur par défaut : pre-prod.
      */
     private String ifxDbServerType = "pre-prod";
+
+    /**
+     * Serveur de mail pour les notifications
+     */
+    private MailServer mailServer;
 
     /**
      * debugMode : fonctionnement du programme en mode debug (true/false).
@@ -127,7 +137,7 @@ public class A2ITClient {
      * @throws java.sql.SQLException en cas d'erreur d'entrée/sortie.
      */
     public A2ITClient(String[] args) throws IOException, DBServerException, GetArgsException,
-            APIREST.APIServerException, HttpsClientException, ClassNotFoundException, SQLException {
+            APIREST.APIServerException, HttpsClientException, ClassNotFoundException, SQLException, MailServer.MailServerException {
         ApplicationProperties applicationProperties;
         DBServer mgoServer;
         DBServer ifxServer;
@@ -175,6 +185,13 @@ public class A2ITClient {
         System.out.println("Paramètres du serveur Mongo lus.");
         if (debugMode) {
             System.out.println(mgoServer);
+        }
+
+        System.out.println("Lecture des paramètres du serveur de mail ...");
+        mailServer = new MailServer(applicationProperties);
+        System.out.println("Paramètres du serveur Mongo lus.");
+        if (debugMode) {
+            System.out.println(mailServer);
         }
 
         if (debugMode) {
@@ -267,7 +284,6 @@ public class A2ITClient {
 //            contract = objectMapper.readValue(json, Contract.class);
 //            System.out.println(contract);
 //        }
-
         System.out.println("Traitement des événements ...");
         processEvents(httpsClient, informixConnection, mongoDatabase);
     }
@@ -440,6 +456,20 @@ public class A2ITClient {
     }
 
     /**
+     * @return retourne le serveur de mail
+     */
+    public MailServer getMailServer() {
+        return mailServer;
+    }
+
+    /**
+     * @param mailServer définit le serveur de mail
+     */
+    public void setMailServer(MailServer mailServer) {
+        this.mailServer = mailServer;
+    }
+
+    /**
      * @param debugMode : fonctionnement du programme en mode debug
      * (true/false).
      */
@@ -478,6 +508,7 @@ public class A2ITClient {
         try {
             a2ITClient = new A2ITClient(args);
         } catch (IOException | DBServerException | GetArgsException | APIREST.APIServerException |
+                MailServerException |
                 HttpsClientException | ClassNotFoundException | SQLException exception) {
             Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
             System.out.println("Fin de A2ITclient.");
@@ -533,6 +564,7 @@ public class A2ITClient {
                 + "apiServerType:" + apiServerType
                 + ", ifxDbServerType:" + ifxDbServerType
                 + ", mgoDbServerType:" + mgoDbServerType
+                + ", mailServer:" + mailServer
                 + ", debugMode:" + debugMode
                 + ", testMode:" + testMode
                 + "}";
@@ -574,7 +606,35 @@ public class A2ITClient {
     }
 
     /**
+     * Envoie une alerte par mail
+     */
+    private void sendAlert(String alertMessage) {
+        try {
+            Properties properties = System.getProperties();
+            properties.put("mail.smtp.host", mailServer.getIpAddress());
+            Session session = Session.getDefaultInstance(properties, null);
+            javax.mail.Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(mailServer.getFromAddress()));
+            InternetAddress[] internetAddresses = new InternetAddress[1];
+            internetAddresses[0] = new InternetAddress(mailServer.getToAddress());
+            message.setRecipients(javax.mail.Message.RecipientType.TO, internetAddresses);
+            message.setSubject(alertMessage);
+            message.setText(alertMessage);
+            message.setHeader("X-Mailer", "Java");
+            message.setSentDate(new Date());
+            session.setDebug(debugMode);
+            Transport.send(message);
+        } catch (AddressException exception) {
+            System.out.println("Problème avec une adresse mail " + exception);
+        } catch (MessagingException exception) {
+            System.out.println("Problème avec les mails " + exception);
+        }
+
+    }
+
+    /**
      * Vérifie si le client est authorisé à utiliser l'API REST
+     *
      * @param mongoDatabase connexion à la base de données Mongodb
      * @param clientUuid identifiant unique du client
      * @return retourne vrai/faux
@@ -605,6 +665,7 @@ public class A2ITClient {
 
     /**
      * Vérifie si l'immeuble est authorisé à utiliser l'API REST
+     *
      * @param mongoDatabase connexion à la base de données Mongodb
      * @param reference identifiant unique de l'immeuble
      * @return retourne vrai/faux
@@ -633,9 +694,9 @@ public class A2ITClient {
         return okToUseAPI;
     }
 
-
     /**
      * Vérifie si la raison d'appel est authorisée à utiliser l'API REST
+     *
      * @param mongoDatabase connexion à la base de données Mongodb
      * @param callPurposeUuid identifiant unique de la raison d'appel
      * @return retourne vrai/faux
@@ -666,6 +727,7 @@ public class A2ITClient {
 
     /**
      * Traitement de l'ouverture d'un ticket
+     *
      * @param mongoDatabase connexion à la base de données Mongodb
      * @param ticketOpened événement d'ouverture d'un ticket
      * @return résultat de l'opération 1=succès, 0=abandon, -1=erreur
@@ -674,9 +736,9 @@ public class A2ITClient {
         TicketInfos ticketInfos;
         String clientUuid;
         OpenTicket openTicket;
-        
+
         int retcode;
-        
+
         retcode = -1;
         ticketInfos = ticketOpened.getTicketInfos();
         clientUuid = ticketInfos.getCompanyUid();
@@ -689,6 +751,7 @@ public class A2ITClient {
                     try {
                         objectMapper.writeValue(new File("testOpenTicket_1.json"), openTicket);
                         httpsClient.openTicket(openTicket, debugMode);
+                        sendAlert("Ticket " + ticketInfos.getClaimNumber().getCallCenterClaimNumber()+ " opened");
                         retcode = 1;
                     } catch (JsonProcessingException | HttpsClientException exception) {
 //                      Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
@@ -700,12 +763,13 @@ public class A2ITClient {
                 }
             }
         }
-        
+
         return retcode;
     }
 
     /**
      * Traitement de la date de début de l'intervention
+     *
      * @param mongoDatabase connexion à la base de données Mongodb
      * @param ticketOpened événement d'ouverture d'un ticket
      * @return résultat de l'opération 1=succès, 0=abandon, -1=erreur
@@ -714,9 +778,9 @@ public class A2ITClient {
         TicketInfos ticketInfos;
         String clientUuid;
         StartIntervention startIntervention;
-        
+
         int retcode;
-        
+
         retcode = -1;
         ticketInfos = interventionStarted.getTicketInfos();
         clientUuid = ticketInfos.getCompanyUid();
@@ -741,12 +805,13 @@ public class A2ITClient {
                 }
             }
         }
-        
+
         return retcode;
     }
 
     /**
      * Traitement de la date de fin de l'intervention
+     *
      * @param mongoDatabase connexion à la base de données Mongodb
      * @param ticketOpened événement d'ouverture d'un ticket
      * @return résultat de l'opération 1=succès, 0=abandon, -1=erreur
@@ -755,9 +820,9 @@ public class A2ITClient {
         TicketInfos ticketInfos;
         String clientUuid;
         FinishIntervention finishIntervention;
-        
+
         int retcode;
-        
+
         retcode = -1;
         ticketInfos = interventionFinished.getTicketInfos();
         clientUuid = ticketInfos.getCompanyUid();
@@ -782,7 +847,7 @@ public class A2ITClient {
                 }
             }
         }
-        
+
         return retcode;
     }
 
@@ -804,6 +869,7 @@ public class A2ITClient {
 
     /**
      * Traitement de la clôture d'un ticket
+     *
      * @param mongoDatabase connexion à la base de données Mongodb
      * @param ticketClosed événement de clôture d'un ticket
      * @return résultat de l'opération 1=succès, 0=abandon, -1=erreur
@@ -812,9 +878,9 @@ public class A2ITClient {
         TicketInfos ticketInfos;
         String clientUuid;
         CloseTicket closeTicket;
-        
+
         int retcode;
-        
+
         retcode = -1;
         ticketInfos = ticketClosed.getTicketInfos();
         clientUuid = ticketInfos.getCompanyUid();
@@ -827,9 +893,10 @@ public class A2ITClient {
                     try {
                         objectMapper.writeValue(new File("testCloseTicket_1.json"), closeTicket);
                         httpsClient.closeTicket(closeTicket, debugMode);
+                        sendAlert("Ticket " + ticketInfos.getClaimNumber().getCallCenterClaimNumber()+ " closed");
                         retcode = 1;
                     } catch (JsonProcessingException | HttpsClientException exception) {
-                    Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                        Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
                         System.out.println("  ERROR : fail to close ticket in Intent Technologies");
                     } catch (IOException exception) {
                         System.out.println("  ERROR : Fail to write Json to file");
@@ -838,7 +905,7 @@ public class A2ITClient {
                 }
             }
         }
-        
+
         return retcode;
     }
 

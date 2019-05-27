@@ -4,13 +4,13 @@ import bkgpi2a.AutomatonCaller;
 import bkgpi2a.Caller;
 import bkgpi2a.CivilName;
 import bkgpi2a.ContactMedium;
-import bkgpi2a.Sms;
 import bkgpi2a.Fax;
 import bkgpi2a.HumanCaller;
 import bkgpi2a.Mail;
 import bkgpi2a.Name;
 import bkgpi2a.Phone;
 import bkgpi2a.PoorName;
+import bkgpi2a.Sms;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import ezvcard.Ezvcard;
 import ezvcard.VCard;
@@ -23,11 +23,12 @@ import java.util.List;
 
 /**
  * Classe décrivant la commande d'ouverture de ticket
+ *
  * @author Thierry Baribaud
- * @version 1.14
+ * @version 1.20
  */
 public class OpenTicket {
-    
+
     private String reference;
     private String description;
     private String contractReference;
@@ -38,32 +39,33 @@ public class OpenTicket {
     private String serviceCode;
     private Location location;
     private String workType;
-    
+
     /**
      * Personnes à contacter sur le ticket
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<String> contacts;
-    
+
     /**
      * Entité à l'origine de la demande
      */
     private String origin;
-    
+
     /**
      * Contructeur principal de la classe OpenTicket
      */
     public OpenTicket() {
     }
-    
+
     /**
      * Constructeur secondaire de la classe OpenTicket
-     * @param ticketOpened événement d'ouvert de ticket
+     *
+     * @param ticketOpened événement d'ouverture de ticket
      */
     public OpenTicket(TicketOpened ticketOpened) {
         TicketInfos ticketInfos;
         Location thisLocation;
-        
+
         ticketInfos = ticketOpened.getTicketInfos();
         this.reference = ticketInfos.getClaimNumber().getCallCenterClaimNumber();
         this.description = ticketInfos.getRequest();
@@ -94,18 +96,18 @@ public class OpenTicket {
         CivilName civilName;
         PoorName poorName;
         ContactMedium medium;
-        
+
         if (caller instanceof HumanCaller) {
             humanCaller = (HumanCaller) caller;
             medium = humanCaller.getMedium();
             if (medium instanceof Phone) {
-                vcard.addTelephoneNumber(((Phone)medium).getPhone(), TelephoneType.VOICE);
+                vcard.addTelephoneNumber(((Phone) medium).getPhone(), TelephoneType.VOICE);
             } else if (medium instanceof Fax) {
-                vcard.addTelephoneNumber(((Fax)medium).getFax(), TelephoneType.FAX);
+                vcard.addTelephoneNumber(((Fax) medium).getFax(), TelephoneType.FAX);
             } else if (medium instanceof Sms) {
-                vcard.addTelephoneNumber(((Sms)medium).getPhone(), TelephoneType.TEXT);
+                vcard.addTelephoneNumber(((Sms) medium).getPhone(), TelephoneType.TEXT);
             } else if (medium instanceof Mail) {
-                vcard.addEmail(((Mail)medium).getMail(), EmailType.INTERNET);
+                vcard.addEmail(((Mail) medium).getMail(), EmailType.INTERNET);
             }
             name = humanCaller.getName();
             if (name instanceof CivilName) {
@@ -130,154 +132,154 @@ public class OpenTicket {
     }
 
     /**
-     * @return the reference
+     * @return retourne la référence de l'asset
      */
     public String getReference() {
         return reference;
     }
 
     /**
-     * @param reference the reference to set
+     * @param reference définit la référence de l'asset
      */
     public void setReference(String reference) {
         this.reference = reference;
     }
 
     /**
-     * @return the description
+     * @return retourne la description
      */
     public String getDescription() {
         return description;
     }
 
     /**
-     * @param description the description to set
+     * @param description définit la description
      */
     public void setDescription(String description) {
         this.description = description;
     }
 
     /**
-     * @return the contractReference
+     * @return retourne la référence du contrat
      */
     public String getContractReference() {
         return contractReference;
     }
 
     /**
-     * @param contractReference the contractReference to set
+     * @param contractReference définit la référence du contrat
      */
     public void setContractReference(String contractReference) {
         this.contractReference = contractReference;
     }
 
     /**
-     * @return the status
+     * @return retourne le status
      */
     public String getStatus() {
         return status;
     }
 
     /**
-     * @param status the status to set
+     * @param status définit le status
      */
     public void setStatus(String status) {
         this.status = status;
     }
 
     /**
-     * @return the event
+     * @return retourne l'événement
      */
     public String getEvent() {
         return event;
     }
 
     /**
-     * @param event the event to set
+     * @param event définit l'événement
      */
     public void setEvent(String event) {
         this.event = event;
     }
 
     /**
-     * @return the eventDate
+     * @return retourne la date de l'événement
      */
     public String getEventDate() {
         return eventDate;
     }
 
     /**
-     * @param eventDate the eventDate to set
+     * @param eventDate définit la date de l'événement
      */
     public void setEventDate(String eventDate) {
         this.eventDate = eventDate;
     }
 
     /**
-     * @return the logDate
+     * @return retourne la date de traitement de l'événement
      */
     public String getLogDate() {
         return logDate;
     }
 
     /**
-     * @param logDate the logDate to set
+     * @param logDate définit la date de traitement de l'événement
      */
     public void setLogDate(String logDate) {
         this.logDate = logDate;
     }
 
     /**
-     * @return the serviceCode
+     * @return retourne le serviceCode
      */
     public String getServiceCode() {
         return serviceCode;
     }
 
     /**
-     * @param serviceCode the serviceCode to set
+     * @param serviceCode définit le serviceCode
      */
     public void setServiceCode(String serviceCode) {
         this.serviceCode = serviceCode;
     }
 
     /**
-     * @return the location
+     * @return retourne la localisation
      */
     public Location getLocation() {
         return location;
     }
 
     /**
-     * @param location the location to set
+     * @param location définit la localisation
      */
     public void setLocation(Location location) {
         this.location = location;
     }
 
     /**
-     * @return the workType
+     * @return retourne le workType
      */
     public String getWorkType() {
         return workType;
     }
 
     /**
-     * @param workType the workType to set
+     * @param workType définit le workType
      */
     public void setWorkType(String workType) {
         this.workType = workType;
     }
 
     /**
-     * @return the contacts
+     * @return retourne les contacts
      */
     public List<String> getContacts() {
         return contacts;
     }
 
     /**
-     * @param contacts the contacts to set
+     * @param contacts définit les contacts
      */
     public void setContacts(List<String> contacts) {
         this.contacts = contacts;
@@ -297,6 +299,7 @@ public class OpenTicket {
         this.origin = origin;
 
     }
+
     /**
      * @return Retourne la commande OpenTicket sous forme textuelle
      */
@@ -313,7 +316,7 @@ public class OpenTicket {
                 + ", serviceCode:" + getServiceCode()
                 + ", location:" + getLocation()
                 + ", workType:" + getWorkType()
-//                + ", contacts:" + contacts.replace("\r", " ").replace("\n", "")
+                //                + ", contacts:" + contacts.replace("\r", " ").replace("\n", "")
                 + ", origin:" + getOrigin()
                 + "}";
     }
