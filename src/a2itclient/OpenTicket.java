@@ -1,16 +1,5 @@
 package a2itclient;
 
-import bkgpi2a.AutomatonCaller;
-import bkgpi2a.Caller;
-import bkgpi2a.CivilName;
-import bkgpi2a.ContactMedium;
-import bkgpi2a.Fax;
-import bkgpi2a.HumanCaller;
-import bkgpi2a.Mail;
-import bkgpi2a.Name;
-import bkgpi2a.Phone;
-import bkgpi2a.PoorName;
-import bkgpi2a.Sms;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import ezvcard.Ezvcard;
 import ezvcard.VCard;
@@ -25,7 +14,7 @@ import java.util.List;
  * Classe décrivant la commande d'ouverture de ticket
  *
  * @author Thierry Baribaud
- * @version 1.20
+ * @version 1.21
  */
 public class OpenTicket {
 
@@ -69,7 +58,7 @@ public class OpenTicket {
         ticketInfos = ticketOpened.getTicketInfos();
         this.reference = ticketInfos.getClaimNumber().getCallCenterClaimNumber();
         this.description = ticketInfos.getRequest();
-        this.contractReference = "NPM_ANSTEL";
+        this.contractReference = ticketInfos.getContractReference();
         this.status = "open";
         this.event = "requested";
         this.eventDate = ticketOpened.getOpenedDate();
@@ -81,55 +70,30 @@ public class OpenTicket {
         this.location = thisLocation;
         this.workType = "corrective";
         this.contacts = new ArrayList();
-        this.addContact(ticketInfos.getCaller());
+        this.setContacts(ticketInfos.getContacts());
         this.origin = "other";
     }
 
     /**
-     * @param caller ajoute un contact sur le ticket
+     * @param contacts définit les contacts sur le ticket
      */
-    public void addContact(Caller caller) {
-        VCard vcard = new VCard();
-        StructuredName structuredName = new StructuredName();
-        HumanCaller humanCaller;
-        Name name;
-        CivilName civilName;
-        PoorName poorName;
-        ContactMedium medium;
-
-        if (caller instanceof HumanCaller) {
-            humanCaller = (HumanCaller) caller;
-            medium = humanCaller.getMedium();
-            if (medium instanceof Phone) {
-                vcard.addTelephoneNumber(((Phone) medium).getPhone(), TelephoneType.VOICE);
-            } else if (medium instanceof Fax) {
-                vcard.addTelephoneNumber(((Fax) medium).getFax(), TelephoneType.FAX);
-            } else if (medium instanceof Sms) {
-                vcard.addTelephoneNumber(((Sms) medium).getPhone(), TelephoneType.TEXT);
-            } else if (medium instanceof Mail) {
-                vcard.addEmail(((Mail) medium).getMail(), EmailType.INTERNET);
-            }
-            name = humanCaller.getName();
-            if (name instanceof CivilName) {
-                civilName = (CivilName) name;
-                structuredName.setFamily(civilName.getLastName());
-                structuredName.setGiven(civilName.getFirstName());
-                vcard.setStructuredName(structuredName);
-                this.getContacts().add(Ezvcard.write(vcard).version(VCardVersion.V4_0).go());
-            } else if (name instanceof PoorName) {
-                poorName = (PoorName) name;
-                structuredName.setFamily(poorName.getValue());
-                vcard.setStructuredName(structuredName);
-                this.getContacts().add(Ezvcard.write(vcard).version(VCardVersion.V4_0).go());
-            } else {
-                this.setContacts(null);
-            }
-        } else if (caller instanceof AutomatonCaller) {
-            this.getContacts().add("automate");
-        } else {
-            this.setContacts(null);
+    public void setContacts(ContactList contacts) {
+        VCard vcard;
+        StructuredName structuredName;
+        String value;
+        
+        for (Contact contact:contacts) {
+            vcard = new VCard();
+            structuredName = new StructuredName();
+            structuredName.setFamily(contact.getName());
+            vcard.setStructuredName(structuredName);
+            if ((value=contact.getPhone()) != null) vcard.addTelephoneNumber(value, TelephoneType.VOICE);
+            if ((value=contact.getMail()) != null) vcard.addEmail(value, EmailType.INTERNET);
+            if ((value=contact.getQuality()) != null) vcard.addTitle(value);
+            if ((value=contact.getRole()) != null) vcard.addRole(value);
+            this.contacts.add(Ezvcard.write(vcard).version(VCardVersion.V4_0).go());
         }
-    }
+     }
 
     /**
      * @return retourne la référence de l'asset

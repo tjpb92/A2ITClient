@@ -11,11 +11,12 @@ import org.junit.runners.Suite;
  * Jeux de tests pour tester toute les classes du projet
  *
  * @author Thierry Baribaud
- * @version 1.20
+ * @version 1.21
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({AssetTest.class, ContractTest.class, DurationTest.class, MessageTest.class, ThirdPartyTest.class,
     TokenTest.class, SLATest.class, A2ITClient.class, HttpsClientTest.class, MailServerTest.class,
+    ContactTest.class, ContactListTest.class,
     HALLinksTest.class, RolesTest.class, RoleTest.class, UserTest.class, HALLinkTest.class, TokenTest.class, UsersTest.class, EntityTest.class})
 public class A2itclientSuite {
 

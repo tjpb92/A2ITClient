@@ -1,17 +1,17 @@
 package a2itclient;
 
 import bkgpi2a.BasicAddress;
-import bkgpi2a.Caller;
 import bkgpi2a.ClaimNumber;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Classe définissant les informations d'un ticket
  *
  * @author Thierry Baribaud
- * @version 1.18
+ * @version 1.21
  */
 public class TicketInfos {
 
@@ -19,23 +19,27 @@ public class TicketInfos {
      * Référence au client
      */
     private String companyUid;
-    
+
     /**
      * Référence à l'immeuble (Asset)
      */
     private String assetReference;
-    
+
     /**
-     * Appelant
+     * Référence au contrat (Contract)
      */
-    private Caller caller;
+    private String contractReference;
+
+    /**
+     * Contacts
+     */
+    private ContactList contacts;
 
 //    /**
 //     * Personne à rappeler
 //     */
 //    @JsonInclude(JsonInclude.Include.NON_NULL)
 //    private ContactToCallback contactToCallback;
-
     /**
      * Numéro de ticket
      */
@@ -83,12 +87,11 @@ public class TicketInfos {
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String technicalReason;
-    
+
 //    /**
 //     * Données additionnelles
 //     */
 //    private Map<String, String> additionalData;
-
     /**
      * Constructeur de la classe TicketInfos
      */
@@ -126,17 +129,31 @@ public class TicketInfos {
     }
 
     /**
-     * @return le nom de l'appelant
+     * @return retourne la référence au contrat
      */
-    public Caller getCaller() {
-        return caller;
+    public String getContractReference() {
+        return contractReference;
     }
 
     /**
-     * @param caller définit le nom de l'appelant
+     * @param contractReference définit la référence au contrat
      */
-    public void setCaller(Caller caller) {
-        this.caller = caller;
+    public void setContratReference(String contractReference) {
+        this.contractReference = contractReference;
+    }
+
+    /**
+     * @return retourne les contacts
+     */
+    public ContactList getContacts() {
+        return contacts;
+    }
+
+    /**
+     * @param contacts définit ls contacts
+     */
+    public void setContacts(ContactList contacts) {
+        this.contacts = contacts;
     }
 
 //    /**
@@ -152,7 +169,6 @@ public class TicketInfos {
 //    public void setContactToCallback(ContactToCallback contactToCallback) {
 //        this.contactToCallback = contactToCallback;
 //    }
-
     /**
      * @return le numéro de ticket
      */
@@ -231,7 +247,8 @@ public class TicketInfos {
     }
 
     /**
-     * @param callPurposeExtId définit l'identifiant externe de la raison de l'appel
+     * @param callPurposeExtId définit l'identifiant externe de la raison de
+     * l'appel
      */
     public void setCallPurposeExtId(String callPurposeExtId) {
         this.callPurposeExtId = callPurposeExtId;
@@ -302,7 +319,6 @@ public class TicketInfos {
 //    public void put(String key, String value) {
 //        this.additionalData.put(key, value);
 //    }
-
     /**
      * Ajoute une raisons d'appel alternative à la liste
      *
@@ -320,9 +336,10 @@ public class TicketInfos {
     public String toString() {
         return "TicketInfo:{"
                 + "companyUid:" + getCompanyUid()
-                + ", caller:" + getCaller()
+                + ", contacts:" + getContacts()
                 + ", assetReference:" + getAssetReference()
-//                + ", contactToCallback:" + getContactToCallback()
+                + ", contractReference:" + getContractReference()
+                //                + ", contactToCallback:" + getContactToCallback()
                 + ", claimNumber:" + getClaimNumber()
                 + ", address:" + getAddress()
                 + ", request:" + getRequest()
@@ -332,7 +349,7 @@ public class TicketInfos {
                 + ", callPurposeLabel:" + getCallPurposeLabel()
                 + ", altCallPurpose:" + getAltCallPurpose()
                 + ", technicalReason:" + getTechnicalReason()
-//                + ", additionalData:" + getAdditionalData()
+                //                + ", additionalData:" + getAdditionalData()
                 + "}";
     }
 
