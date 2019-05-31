@@ -14,7 +14,7 @@ import java.util.List;
  * Classe décrivant la commande d'ouverture de ticket
  *
  * @author Thierry Baribaud
- * @version 1.21
+ * @version 1.22
  */
 public class OpenTicket {
 
@@ -63,7 +63,8 @@ public class OpenTicket {
         this.event = "requested";
         this.eventDate = ticketOpened.getOpenedDate();
         this.logDate = ticketOpened.getDate();
-        this.serviceCode = ticketInfos.getCallPurposeExtId() + " " + ticketInfos.getCallPurposeLabel();
+//        this.serviceCode = ticketInfos.getCallPurposeExtId() + " " + ticketInfos.getCallPurposeLabel();
+        this.serviceCode = ticketInfos.getCallPurposeLabel();
         thisLocation = new Location();
         thisLocation.setAssetReference(ticketInfos.getAssetReference());
         thisLocation.setAddress(new Address(ticketInfos.getAddress()));
@@ -78,22 +79,10 @@ public class OpenTicket {
      * @param contacts définit les contacts sur le ticket
      */
     public void setContacts(ContactList contacts) {
-        VCard vcard;
-        StructuredName structuredName;
-        String value;
-        
-        for (Contact contact:contacts) {
-            vcard = new VCard();
-            structuredName = new StructuredName();
-            structuredName.setFamily(contact.getName());
-            vcard.setStructuredName(structuredName);
-            if ((value=contact.getPhone()) != null) vcard.addTelephoneNumber(value, TelephoneType.VOICE);
-            if ((value=contact.getMail()) != null) vcard.addEmail(value, EmailType.INTERNET);
-            if ((value=contact.getQuality()) != null) vcard.addTitle(value);
-            if ((value=contact.getRole()) != null) vcard.addRole(value);
-            this.contacts.add(Ezvcard.write(vcard).version(VCardVersion.V4_0).go());
+        for (Contact contact : contacts) {
+            this.contacts.add(contact.toVCard());
         }
-     }
+    }
 
     /**
      * @return retourne la référence de l'asset

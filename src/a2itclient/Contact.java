@@ -1,10 +1,17 @@
 package a2itclient;
 
+import ezvcard.Ezvcard;
+import ezvcard.VCard;
+import ezvcard.VCardVersion;
+import ezvcard.parameter.EmailType;
+import ezvcard.parameter.TelephoneType;
+import ezvcard.property.StructuredName;
+
 /**
  * Classe décrivant un contact
  *
  * @author Thierry Baribaud
- * @version 1.21
+ * @version 1.22
  */
 public class Contact {
 
@@ -101,6 +108,51 @@ public class Contact {
      */
     public void setMail(String mail) {
         this.mail = mail;
+    }
+
+    /**
+     * Retourne le contact au format vCard Intent Technologies reconnait la
+     * version 3 et certains champs
+     *
+     * @see
+     * https://developers.intent-technologies.eu/docs/actifs-immobiliers#section-contacts-vcard
+     */
+    public String toVCard() {
+        VCard vcard;
+//        StructuredName structuredName;
+        String value;
+        String aQuality;
+        StringBuffer aRole;
+
+        vcard = new VCard();
+
+//        structuredName = new StructuredName();
+//        structuredName.setFamily(name);
+//        vcard.setStructuredName(structuredName);
+        vcard.setFormattedName(name);
+        if ((value = phone) != null) {
+            vcard.addTelephoneNumber(value, TelephoneType.VOICE);
+        }
+        if ((value = mail) != null) {
+            vcard.addEmail(value, EmailType.INTERNET);
+        }
+        aRole = new StringBuffer();
+        aQuality = null;
+        if ((aQuality = quality) != null) {
+            aRole.append(aQuality);
+        }
+        if ((value = role) != null) {
+            if (aQuality != null) {
+//                aRole.append(", ");
+                aRole.append(" - ");
+            }
+            aRole.append(value);
+        }
+        if (aRole.length()>0) {
+            vcard.addRole(aRole.toString());
+        }
+        return (Ezvcard.write(vcard).version(VCardVersion.V3_0).prodId(false).go());
+
     }
 
     /**

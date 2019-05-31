@@ -12,18 +12,19 @@ import static org.junit.Assert.*;
 
 /**
  * Jeux de tests pour la classe Contact
+ *
  * @author Thierry Baribaud
- * @version 1.21
+ * @version 1.22
  */
 public class ContactTest {
-    
+
     /**
      * Common Jackson object mapper
      */
     private static final ObjectMapper objectMapper = new ObjectMapper();
-    
+
     private Contact contact;
-    
+
     public ContactTest() {
         contact = new Contact();
         contact.setName("Toto Lito");
@@ -32,11 +33,11 @@ public class ContactTest {
         contact.setPhone("01.02.03.04.05");
         contact.setMail("toto.lito@gmail.com");
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
@@ -157,6 +158,18 @@ public class ContactTest {
     }
 
     /**
+     * Test of toVCard method, of class Contact.
+     */
+    @Test
+    public void testToVCard() {
+        System.out.println("toVCard");
+        System.out.println(contact);
+        String expResult = contact.toVCard();
+        System.out.println("vCard:" + expResult);
+        assertNotNull(expResult);
+    }
+
+    /**
      * Test of toString method, of class Contact.
      */
     @Test
@@ -167,14 +180,15 @@ public class ContactTest {
         String result = contact.toString();
         assertEquals(expResult, result);
     }
-    
+
     /**
-     * Test of serialization from and to a file in Json format, of class Contact.
+     * Test of serialization from and to a file in Json format, of class
+     * Contact.
      */
     @Test
     public void testJsonSerialization() {
         Object expContact;
-        
+
         System.out.println("Contact.jsonSerialization");
         expContact = null;
         try {

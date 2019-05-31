@@ -22,7 +22,7 @@ import static org.junit.Assert.*;
  * Jeux de tests pour les listes de contacts
  *
  * @author Thierry Baribaud
- * @version 1.21
+ * @version 1.22
  */
 public class ContactListTest {
 
@@ -97,15 +97,15 @@ public class ContactListTest {
     }
 
     /**
-     * Test of serialization from and to a file in Json format, of class
+     * Test of serialization from and to an object in Json format, of class
      * Contact.
      */
     @Test
-    public void testJsonSerialization() {
-        Object expContactList;
+    public void testJsonSerializationFromObjec() {
+        ContactList expContactList;
         Contact anotherContact;
 
-        System.out.println("ContactList.jsonSerialization");
+        System.out.println("ContactList.jsonSerialization(from Object)");
         expContactList = null;
         contactList.add(contact);
         anotherContact = new Contact();
@@ -123,5 +123,29 @@ public class ContactListTest {
             fail(ex.getMessage());
         }
         assertNotNull(expContactList);
+    }
+
+    /**
+     * Test of serialization from and to a file in Json format, of class
+     * Contact.
+     */
+    @Test
+    public void testJsonSerialization() {
+        ContactList anotherContactList;
+
+        System.out.println("ContactList.jsonSerialization(from File)");
+        anotherContactList = null;
+        try {
+            anotherContactList = objectMapper.readValue(new File("ContactList.json"), ContactList.class);
+            System.out.println(anotherContactList.size() + " contact(s) in list");
+            for (Contact contact : anotherContactList) {
+                System.out.println(contact);
+                System.out.println(contact.toVCard());
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(ContactListTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail(ex.getMessage());
+        }
+        assertNotNull(anotherContactList);
     }
 }
