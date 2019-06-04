@@ -6,12 +6,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * Classe décrivant la commande de clôture de ticket
  *
  * @author Thierry Baribaud
- * @version 1.18
+ * @version 1.23
  */
 public class CloseTicket {
 
     private String reference;
-//    private String description;
+    private String description;
     private String contractReference;
     private String status;
     private String event;
@@ -27,11 +27,6 @@ public class CloseTicket {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String technicalReason;
 
-    /**
-     * Personnes à contacter sur le ticket
-     */
-//    @JsonInclude(JsonInclude.Include.NON_NULL)
-//    private List<String> contacts;
     /**
      * Entité à l'origine de la demande
      */
@@ -54,69 +49,23 @@ public class CloseTicket {
 
         ticketInfos = ticketClosed.getTicketInfos();
         this.reference = ticketInfos.getClaimNumber().getCallCenterClaimNumber();
-//        this.description = ticketInfos.getRequest();
+        this.description = ticketInfos.getRequest();
         this.contractReference = "NPM_ANSTEL";
         this.status = "closed";
         this.event = "done";
         this.eventDate = ticketClosed.getClosedDate();
         this.logDate = ticketClosed.getDate();
-        this.serviceCode = ticketInfos.getCallPurposeExtId() + " " + ticketInfos.getCallPurposeLabel();
+//        this.serviceCode = ticketInfos.getCallPurposeExtId() + " " + ticketInfos.getCallPurposeLabel();
+        this.serviceCode = ticketInfos.getCallPurposeLabel();
         thisLocation = new Location();
         thisLocation.setAssetReference(ticketInfos.getAssetReference());
         thisLocation.setAddress(new Address(ticketInfos.getAddress()));
         this.location = thisLocation;
         this.workType = "corrective";
-//        this.contacts = new ArrayList();
-//        this.addContact(ticketInfos.getCaller());
         this.origin = "other";
         this.technicalReason = ticketInfos.getTechnicalReason();
     }
 
-    /**
-     * @param caller ajoute un contact sur le ticket
-     */
-//    public void addContact(Caller caller) {
-//        VCard vcard = new VCard();
-//        StructuredName structuredName = new StructuredName();
-//        HumanCaller humanCaller;
-//        Name name;
-//        CivilName civilName;
-//        PoorName poorName;
-//        ContactMedium medium;
-//        
-//        if (caller instanceof HumanCaller) {
-//            humanCaller = (HumanCaller) caller;
-//            medium = humanCaller.getMedium();
-//            if (medium instanceof Phone) {
-//                vcard.addTelephoneNumber(((Phone)medium).getPhone(), TelephoneType.VOICE);
-//            } else if (medium instanceof Fax) {
-//                vcard.addTelephoneNumber(((Fax)medium).getFax(), TelephoneType.FAX);
-//            } else if (medium instanceof Sms) {
-//                vcard.addTelephoneNumber(((Sms)medium).getPhone(), TelephoneType.TEXT);
-//            } else if (medium instanceof Mail) {
-//                vcard.addEmail(((Mail)medium).getMail(), EmailType.INTERNET);
-//            }
-//            name = humanCaller.getName();
-//            if (name instanceof CivilName) {
-//                civilName = (CivilName) name;
-//                structuredName.setFamily(civilName.getLastName());
-//                structuredName.setGiven(civilName.getFirstName());
-//                vcard.setStructuredName(structuredName);
-//                this.getContacts().add(Ezvcard.write(vcard).version(VCardVersion.V4_0).go());
-//            } else if (name instanceof PoorName) {
-//                poorName = (PoorName) name;
-//                structuredName.setFamily(poorName.getValue());
-//                vcard.setStructuredName(structuredName);
-//                this.getContacts().add(Ezvcard.write(vcard).version(VCardVersion.V4_0).go());
-//            } else {
-//                this.setContacts(null);
-//            }
-//        } else if (caller instanceof AutomatonCaller) {
-//            this.getContacts().add("automate");
-//        } else {
-//            this.setContacts(null);
-//        }
-//    }
     /**
      * @return the reference
      */
@@ -134,15 +83,17 @@ public class CloseTicket {
     /**
      * @return the description
      */
-//    public String getDescription() {
-//        return description;
-//    }
+    public String getDescription() {
+        return description;
+    }
+
     /**
      * @param description the description to set
      */
-//    public void setDescription(String description) {
-//        this.description = description;
-//    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     /**
      * @return the contractReference
      */
@@ -256,18 +207,6 @@ public class CloseTicket {
     }
 
     /**
-     * @return the contacts
-     */
-//    public List<String> getContacts() {
-//        return contacts;
-//    }
-    /**
-     * @param contacts the contacts to set
-     */
-//    public void setContacts(List<String> contacts) {
-//        this.contacts = contacts;
-//    }
-    /**
      * @return retourne l'entité à l'origine de la demande
      */
     public String getOrigin() {
@@ -303,7 +242,7 @@ public class CloseTicket {
     public String toString() {
         return "closeTicket:{"
                 + "reference:" + getReference()
-                //                + ", description:" + getDescription()
+                + ", description:" + getDescription()
                 + ", contractReference:" + getContractReference()
                 + ", status:" + getStatus()
                 + ", event:" + getEvent()
@@ -312,7 +251,6 @@ public class CloseTicket {
                 + ", serviceCode:" + getServiceCode()
                 + ", location:" + getLocation()
                 + ", workType:" + getWorkType()
-                //                + ", contacts:" + contacts.replace("\r", " ").replace("\n", "")
                 + ", origin:" + getOrigin()
                 + ", technicalReason:" + getTechnicalReason()
                 + "}";
