@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Date;
-import okhttp3.Request;
-import okhttp3.Response;
 import utils.ApplicationProperties;
 import utils.DBServer;
 import utils.DBServerException;
@@ -39,7 +37,7 @@ import utils.Md5;
  * Connecteur Anstel / Intent Technologies (lien montant)
  *
  * @author Thierry Baribaud
- * @version 1.19
+ * @version 1.24
  */
 public class A2ITClient {
 
@@ -350,9 +348,9 @@ public class A2ITClient {
                     } else if (event instanceof InterventionFinished) {
                         retcode = processInterventionFinished(mongoDatabase, (InterventionFinished) event, httpsClient);
                     } else if (event instanceof PermanentlyFixed) {
-                        retcode = processPermanentlyFixed(mongoDatabase, (PermanentlyFixed) event);
+                        retcode = processPermanentlyFixed(mongoDatabase, (PermanentlyFixed) event, httpsClient);
                     } else if (event instanceof ClosedQuoteRequested) {
-                        retcode = processClosedQuoteRequested(mongoDatabase, (ClosedQuoteRequested) event);
+                        retcode = processClosedQuoteRequested(mongoDatabase, (ClosedQuoteRequested) event, httpsClient);
                     } else if (event instanceof ClosedBeyondCallCenterScope) {
                         retcode = processClosedBeyondCallCenterScope(mongoDatabase, (ClosedBeyondCallCenterScope) event);
                     } else if (event instanceof ClosedAfterSeveralUnsuccessfulRecalls) {
@@ -751,7 +749,7 @@ public class A2ITClient {
                     try {
                         objectMapper.writeValue(new File("testOpenTicket_1.json"), openTicket);
                         httpsClient.openTicket(openTicket, debugMode);
-                        sendAlert("Ticket " + ticketInfos.getClaimNumber().getCallCenterClaimNumber()+ " opened");
+                        sendAlert("Ticket " + ticketInfos.getClaimNumber().getCallCenterClaimNumber() + " opened");
                         retcode = 1;
                     } catch (JsonProcessingException | HttpsClientException exception) {
 //                      Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
@@ -851,12 +849,88 @@ public class A2ITClient {
         return retcode;
     }
 
-    private int processPermanentlyFixed(MongoDatabase mongoDatabase, PermanentlyFixed permanentlyFixed) {
-        return -1;
+    /**
+     * Traitement de la clôture d'un ticket suite à une réparation définitive
+     *
+     * @param mongoDatabase connexion à la base de données Mongodb
+     * @param permanentlyFixed événement de clôture d'un ticket
+     * @return résultat de l'opération 1=succès, 0=abandon, -1=erreur
+     */
+    private int processPermanentlyFixed(MongoDatabase mongoDatabase, PermanentlyFixed permanentlyFixed, HttpsClient httpsClient) {
+        TicketInfos ticketInfos;
+        String clientUuid;
+        CloseTicketOnPermanentlyFixed closeTicketOnPermanentlyFixed;
+
+        int retcode;
+
+        retcode = -1;
+        ticketInfos = permanentlyFixed.getTicketInfos();
+        clientUuid = ticketInfos.getCompanyUid();
+        if (isClientAuthorizedToUseAPI(mongoDatabase, clientUuid)) {
+            if (isAssetAuthorizedToUseAPI(mongoDatabase, clientUuid, ticketInfos.getAssetReference())) {
+                if (isCallPurposeAuthorizedToUseAPI(mongoDatabase, clientUuid, ticketInfos.getCallPurposeUid())) {
+                    System.out.println("  PermanentlyFixed event can be sent to Intent Technologies");
+                    closeTicketOnPermanentlyFixed = new CloseTicketOnPermanentlyFixed(permanentlyFixed);
+                    System.out.println("  " + closeTicketOnPermanentlyFixed);
+                    try {
+                        objectMapper.writeValue(new File("testCloseTicketOnPermanentlyFixed_1.json"), closeTicketOnPermanentlyFixed);
+                        httpsClient.fixPermanently(closeTicketOnPermanentlyFixed, debugMode);
+                        sendAlert("Ticket " + ticketInfos.getClaimNumber().getCallCenterClaimNumber() + " closed because permanently fixed");
+                        retcode = 1;
+                    } catch (JsonProcessingException | HttpsClientException exception) {
+                        Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                        System.out.println("  ERROR : fail to close ticket in Intent Technologies");
+                    } catch (IOException exception) {
+                        System.out.println("  ERROR : Fail to write Json to file");
+//                        Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                    }
+                }
+            }
+        }
+
+        return retcode;
     }
 
-    private int processClosedQuoteRequested(MongoDatabase mongoDatabase, ClosedQuoteRequested closedQuoteRequested) {
-        return -1;
+    /**
+     * Traitement de la clôture d'un ticket suite à une demande de devis
+     *
+     * @param mongoDatabase connexion à la base de données Mongodb
+     * @param closedQuoteRequested événement de clôture d'un ticket
+     * @return résultat de l'opération 1=succès, 0=abandon, -1=erreur
+     */
+    private int processClosedQuoteRequested(MongoDatabase mongoDatabase, ClosedQuoteRequested closedQuoteRequested, HttpsClient httpsClient) {
+        TicketInfos ticketInfos;
+        String clientUuid;
+        CloseTicketOnQuoteRequested closeTicketOnQuoteRequested;
+
+        int retcode;
+
+        retcode = -1;
+        ticketInfos = closedQuoteRequested.getTicketInfos();
+        clientUuid = ticketInfos.getCompanyUid();
+        if (isClientAuthorizedToUseAPI(mongoDatabase, clientUuid)) {
+            if (isAssetAuthorizedToUseAPI(mongoDatabase, clientUuid, ticketInfos.getAssetReference())) {
+                if (isCallPurposeAuthorizedToUseAPI(mongoDatabase, clientUuid, ticketInfos.getCallPurposeUid())) {
+                    System.out.println("  ClosedQuoteRequested event can be sent to Intent Technologies");
+                    closeTicketOnQuoteRequested = new CloseTicketOnQuoteRequested(closedQuoteRequested);
+                    System.out.println("  " + closeTicketOnQuoteRequested);
+                    try {
+                        objectMapper.writeValue(new File("testCloseTicketOnQuoteRequested_1.json"), closeTicketOnQuoteRequested);
+                        httpsClient.requestQuote(closeTicketOnQuoteRequested, debugMode);
+                        sendAlert("Ticket " + ticketInfos.getClaimNumber().getCallCenterClaimNumber() + " closed because a quote is requested");
+                        retcode = 1;
+                    } catch (JsonProcessingException | HttpsClientException exception) {
+                        Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                        System.out.println("  ERROR : fail to close ticket in Intent Technologies");
+                    } catch (IOException exception) {
+                        System.out.println("  ERROR : Fail to write Json to file");
+//                        Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                    }
+                }
+            }
+        }
+
+        return retcode;
     }
 
     private int processClosedBeyondCallCenterScope(MongoDatabase mongoDatabase, ClosedBeyondCallCenterScope closedBeyondCallCenterScope) {
@@ -893,7 +967,7 @@ public class A2ITClient {
                     try {
                         objectMapper.writeValue(new File("testCloseTicket_1.json"), closeTicket);
                         httpsClient.closeTicket(closeTicket, debugMode);
-                        sendAlert("Ticket " + ticketInfos.getClaimNumber().getCallCenterClaimNumber()+ " closed");
+                        sendAlert("Ticket " + ticketInfos.getClaimNumber().getCallCenterClaimNumber() + " closed");
                         retcode = 1;
                     } catch (JsonProcessingException | HttpsClientException exception) {
                         Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
