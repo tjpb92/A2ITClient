@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  * Classe générique décrivant un événement.
  *
  * @author Thierry Baribaud
- * @version 1.16
+ * @version 1.26
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
@@ -20,10 +20,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @JsonSubTypes.Type(value = InterventionStarted.class, name = "InterventionStarted"),
     @JsonSubTypes.Type(value = InterventionFinished.class, name = "InterventionFinished"),
     @JsonSubTypes.Type(value = PermanentlyFixed.class, name = "PermanentlyFixed"),
-    @JsonSubTypes.Type(value = ClosedQuoteRequested.class, name = "ClosedQuoteRequested"),
-    @JsonSubTypes.Type(value = ClosedBeyondCallCenterScope.class, name = "ClosedBeyondCallCenterScope"),
-    @JsonSubTypes.Type(value = ClosedAfterSeveralUnsuccessfulRecalls.class, name = "ClosedAfterSeveralUnsuccessfulRecalls")
+    @JsonSubTypes.Type(value = ClosedQuoteRequested.class, name = "ClosedQuoteRequested")
         
+//    @JsonSubTypes.Type(value = ClosedBeyondCallCenterScope.class, name = "ClosedBeyondCallCenterScope")
+//    @JsonSubTypes.Type(value = ClosedAfterSeveralUnsuccessfulRecalls.class, name = "ClosedAfterSeveralUnsuccessfulRecalls")
 //    @JsonSubTypes.Type(value = InterventionRequested.class, name = "InterventionRequested"),
 //    @JsonSubTypes.Type(value = TicketInformationsCorrected.class, name = "TicketInformationsCorrected"),
 //    @JsonSubTypes.Type(value = ProviderAssigned.class, name = "ProviderAssigned"),

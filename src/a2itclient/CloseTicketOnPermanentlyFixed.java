@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * Classe décrivant la commande de clôture de ticket sur réparation définitive
  *
  * @author Thierry Baribaud
- * @version 1.24
+ * @version 1.26
  */
 public class CloseTicketOnPermanentlyFixed {
 
@@ -42,21 +42,24 @@ public class CloseTicketOnPermanentlyFixed {
      * Constructeur secondaire de la classe FixPermanently
      *
      * @param permanentlyFixed événement de clôture du ticket
+     * @param callPurpose raison d'appel
+     * @param contractReference référence du contrant
      */
-    public CloseTicketOnPermanentlyFixed(PermanentlyFixed permanentlyFixed) {
+    public CloseTicketOnPermanentlyFixed(PermanentlyFixed permanentlyFixed, CallPurpose callPurpose, String contractReference) {
         TicketInfos ticketInfos;
         Location thisLocation;
 
         ticketInfos = permanentlyFixed.getTicketInfos();
         this.reference = ticketInfos.getClaimNumber().getCallCenterClaimNumber();
         this.description = ticketInfos.getRequest();
-        this.contractReference = "NPM_ANSTEL";
+        this.contractReference = contractReference;
         this.status = "closed";
         this.event = "solved";
         this.eventDate = permanentlyFixed.getClosedDate();
         this.logDate = permanentlyFixed.getDate();
 //        this.serviceCode = ticketInfos.getCallPurposeExtId() + " " + ticketInfos.getCallPurposeLabel();
-        this.serviceCode = ticketInfos.getCallPurposeLabel();
+//        this.serviceCode = ticketInfos.getCallPurposeLabel();
+        this.serviceCode = callPurpose.getReference();
         thisLocation = new Location();
         thisLocation.setAssetReference(ticketInfos.getAssetReference());
         thisLocation.setAddress(new Address(ticketInfos.getAddress()));

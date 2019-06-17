@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * Classe décrivant la commande de clôture de ticket
  *
  * @author Thierry Baribaud
- * @version 1.23
+ * @version 1.26
  */
 public class CloseTicket {
 
@@ -42,21 +42,24 @@ public class CloseTicket {
      * Constructeur secondaire de la classe CloseTicket
      *
      * @param ticketClosed événement d'ouvert de ticket
+     * @param callPurpose raison d'appel
+     * @param contractReference référence du contrant
      */
-    public CloseTicket(TicketClosed ticketClosed) {
+    public CloseTicket(TicketClosed ticketClosed, CallPurpose callPurpose, String contractReference) {
         TicketInfos ticketInfos;
         Location thisLocation;
 
         ticketInfos = ticketClosed.getTicketInfos();
         this.reference = ticketInfos.getClaimNumber().getCallCenterClaimNumber();
         this.description = ticketInfos.getRequest();
-        this.contractReference = "NPM_ANSTEL";
+        this.contractReference = contractReference;
         this.status = "closed";
         this.event = "done";
         this.eventDate = ticketClosed.getClosedDate();
         this.logDate = ticketClosed.getDate();
 //        this.serviceCode = ticketInfos.getCallPurposeExtId() + " " + ticketInfos.getCallPurposeLabel();
-        this.serviceCode = ticketInfos.getCallPurposeLabel();
+//        this.serviceCode = ticketInfos.getCallPurposeLabel();
+        this.serviceCode = callPurpose.getReference();
         thisLocation = new Location();
         thisLocation.setAssetReference(ticketInfos.getAssetReference());
         thisLocation.setAddress(new Address(ticketInfos.getAddress()));

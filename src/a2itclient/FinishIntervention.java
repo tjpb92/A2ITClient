@@ -3,7 +3,7 @@ package a2itclient;
 /**
  * Classe décrivant la commande de fin d'intervention
  * @author Thierry Baribaud
- * @version 1.17
+ * @version 1.26
  */
 public class FinishIntervention {
     
@@ -31,19 +31,22 @@ public class FinishIntervention {
     /**
      * Constructeur secondaire de la classe FinishtIntervention
      * @param interventionFinished événement de début d'intervention
+     * @param callPurpose raison d'appel
+     * @param contractReference référence du contrant
      */
-    public FinishIntervention(InterventionFinished interventionFinished) {
+    public FinishIntervention(InterventionFinished interventionFinished, CallPurpose callPurpose, String contractReference) {
         TicketInfos ticketInfos;
         Location thisLocation;
         
         ticketInfos = interventionFinished.getTicketInfos();
         this.reference = ticketInfos.getClaimNumber().getCallCenterClaimNumber();
-        this.contractReference = "NPM_ANSTEL";
+        this.contractReference = contractReference;
         this.status = "pending";
         this.event = "end";
         this.eventDate = interventionFinished.getFinishedDate();
         this.logDate = interventionFinished.getDate();
-        this.serviceCode = ticketInfos.getCallPurposeExtId() + " " + ticketInfos.getCallPurposeLabel();
+//        this.serviceCode = ticketInfos.getCallPurposeExtId() + " " + ticketInfos.getCallPurposeLabel();
+        this.serviceCode = callPurpose.getReference();
         thisLocation = new Location();
         thisLocation.setAssetReference(ticketInfos.getAssetReference());
         thisLocation.setAddress(new Address(ticketInfos.getAddress()));

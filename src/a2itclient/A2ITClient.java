@@ -37,7 +37,7 @@ import utils.Md5;
  * Connecteur Anstel / Intent Technologies (lien montant)
  *
  * @author Thierry Baribaud
- * @version 1.25
+ * @version 1.26
  */
 public class A2ITClient {
 
@@ -351,10 +351,6 @@ public class A2ITClient {
                         retcode = processPermanentlyFixed(mongoDatabase, (PermanentlyFixed) event, httpsClient);
                     } else if (event instanceof ClosedQuoteRequested) {
                         retcode = processClosedQuoteRequested(mongoDatabase, (ClosedQuoteRequested) event, httpsClient);
-                    } else if (event instanceof ClosedBeyondCallCenterScope) {
-                        retcode = processClosedBeyondCallCenterScope(mongoDatabase, (ClosedBeyondCallCenterScope) event);
-                    } else if (event instanceof ClosedAfterSeveralUnsuccessfulRecalls) {
-                        retcode = processClosedAfterSeveralUnsuccessfulRecalls(mongoDatabase, (ClosedAfterSeveralUnsuccessfulRecalls) event);
                     } else if (event instanceof TicketClosed) {
                         retcode = processTicketClosed(mongoDatabase, (TicketClosed) event, httpsClient);
                     }
@@ -693,37 +689,6 @@ public class A2ITClient {
     }
 
     /**
-     * Vérifie si la raison d'appel est authorisée à utiliser l'API REST
-     *
-     * @param mongoDatabase connexion à la base de données Mongodb
-     * @param callPurposeUuid identifiant unique de la raison d'appel
-     * @return retourne vrai/faux
-     */
-    private boolean isCallPurposeAuthorizedToUseAPI(MongoDatabase mongoDatabase, String clientUuid, String callPurposeUuid) {
-        boolean okToUseAPI = false;
-        MongoCollection<Document> collection;
-        MongoCursor<Document> cursor;
-        int nbClient;
-        BasicDBObject filter;
-        CallPurpose callPurpose;
-
-        filter = new BasicDBObject("clientUuid", clientUuid).append("uuid", callPurposeUuid);
-        collection = mongoDatabase.getCollection("callPurposes");
-        cursor = collection.find(filter).iterator();
-        if (cursor.hasNext()) {
-            try {
-                callPurpose = objectMapper.readValue(cursor.next().toJson(), CallPurpose.class);
-                System.out.println("  raison d'appel trouvée : " + callPurpose.getName() + ", useApi:" + callPurpose.getUseApi());
-                okToUseAPI = "yes".equals(callPurpose.getUseApi());
-            } catch (IOException exception) {
-                System.out.println("  raison d'appel non trouvée, clientUuid:" + clientUuid + ", uuid:" + callPurposeUuid);
-//                Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
-            }
-        }
-        return okToUseAPI;
-    }
-
-    /**
      * Convertie la raison d'appel Anstel en raison d'appel Intent Technologie
      * (serviceCode)
      *
@@ -793,7 +758,7 @@ public class A2ITClient {
                             //                        Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
                         }
                     } else {
-                        System.out.println("  ERROR : call purpose :" + callPurpose.getName()+ " not authorized to use API");
+                        System.out.println("  ERROR : call purpose :" + callPurpose.getName() + " not authorized to use API");
                     }
                 } else {
                     System.out.println("  ERROR : cannot find call purpose Uid:" + ticketInfos.getCallPurposeUid());
@@ -815,6 +780,8 @@ public class A2ITClient {
         TicketInfos ticketInfos;
         String clientUuid;
         StartIntervention startIntervention;
+        CallPurpose callPurpose;
+        String contractReference;
 
         int retcode;
 
@@ -823,22 +790,30 @@ public class A2ITClient {
         clientUuid = ticketInfos.getCompanyUid();
         if (isClientAuthorizedToUseAPI(mongoDatabase, clientUuid)) {
             if (isAssetAuthorizedToUseAPI(mongoDatabase, clientUuid, ticketInfos.getAssetReference())) {
-                if (isCallPurposeAuthorizedToUseAPI(mongoDatabase, clientUuid, ticketInfos.getCallPurposeUid())) {
-                    System.out.println("  Ticket can be sent to Intent Technologies");
-                    startIntervention = new StartIntervention(interventionStarted);
-                    System.out.println("  " + startIntervention);
-                    try {
-                        objectMapper.writeValue(new File("testStartIntervention_1.json"), startIntervention);
-                        httpsClient.startIntervention(startIntervention, debugMode);
-                        retcode = 1;
-                    } catch (JsonProcessingException | HttpsClientException exception) {
-//                    } catch (JsonProcessingException  exception) {
-//                      Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
-                        System.out.println("  ERROR : fail to sent ticket to Intent Technologies");
-                    } catch (IOException exception) {
-                        System.out.println("  ERROR : Fail to write Json to file");
-//                        Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                callPurpose = convertCallPurpose(mongoDatabase, clientUuid, ticketInfos.getCallPurposeUid());
+                if (callPurpose != null) {
+                    if (callPurpose.isAuthorizedToUseAPI()) {
+                        System.out.println("  Ticket can be sent to Intent Technologies");
+                        contractReference = getContractReference(mongoDatabase, clientUuid, ticketInfos.getAssetReference(), ticketInfos.getCallPurposeUid());
+                        startIntervention = new StartIntervention(interventionStarted, callPurpose, contractReference);
+                        System.out.println("  " + startIntervention);
+                        try {
+                            objectMapper.writeValue(new File("testStartIntervention_1.json"), startIntervention);
+                            httpsClient.startIntervention(startIntervention, debugMode);
+                            retcode = 1;
+                        } catch (JsonProcessingException | HttpsClientException exception) {
+    //                    } catch (JsonProcessingException  exception) {
+                            //                      Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                            System.out.println("  ERROR : fail to sent ticket to Intent Technologies");
+                        } catch (IOException exception) {
+                            System.out.println("  ERROR : Fail to write Json to file");
+                            //                        Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                        }
+                    } else {
+                        System.out.println("  ERROR : call purpose :" + callPurpose.getName() + " not authorized to use API");
                     }
+                } else {
+                    System.out.println("  ERROR : cannot find call purpose Uid:" + ticketInfos.getCallPurposeUid());
                 }
             }
         }
@@ -857,7 +832,8 @@ public class A2ITClient {
         TicketInfos ticketInfos;
         String clientUuid;
         FinishIntervention finishIntervention;
-
+        CallPurpose callPurpose;
+        String contractReference;
         int retcode;
 
         retcode = -1;
@@ -865,22 +841,30 @@ public class A2ITClient {
         clientUuid = ticketInfos.getCompanyUid();
         if (isClientAuthorizedToUseAPI(mongoDatabase, clientUuid)) {
             if (isAssetAuthorizedToUseAPI(mongoDatabase, clientUuid, ticketInfos.getAssetReference())) {
-                if (isCallPurposeAuthorizedToUseAPI(mongoDatabase, clientUuid, ticketInfos.getCallPurposeUid())) {
-                    System.out.println("  Ticket can be sent to Intent Technologies");
-                    finishIntervention = new FinishIntervention(interventionFinished);
-                    System.out.println("  " + finishIntervention);
-                    try {
-                        objectMapper.writeValue(new File("testFinishIntervention_1.json"), finishIntervention);
-                        httpsClient.finishIntervention(finishIntervention, debugMode);
-                        retcode = 1;
-                    } catch (JsonProcessingException | HttpsClientException exception) {
-//                    } catch (JsonProcessingException  exception) {
-//                      Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
-                        System.out.println("  ERROR : fail to sent ticket to Intent Technologies");
-                    } catch (IOException exception) {
-                        System.out.println("  ERROR : Fail to write Json to file");
-//                        Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                callPurpose = convertCallPurpose(mongoDatabase, clientUuid, ticketInfos.getCallPurposeUid());
+                if (callPurpose != null) {
+                    if (callPurpose.isAuthorizedToUseAPI()) {
+                        System.out.println("  Ticket can be sent to Intent Technologies");
+                        contractReference = getContractReference(mongoDatabase, clientUuid, ticketInfos.getAssetReference(), ticketInfos.getCallPurposeUid());
+                        finishIntervention = new FinishIntervention(interventionFinished, callPurpose, contractReference);
+                        System.out.println("  " + finishIntervention);
+                        try {
+                            objectMapper.writeValue(new File("testFinishIntervention_1.json"), finishIntervention);
+                            httpsClient.finishIntervention(finishIntervention, debugMode);
+                            retcode = 1;
+                        } catch (JsonProcessingException | HttpsClientException exception) {
+    //                    } catch (JsonProcessingException  exception) {
+                            //                      Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                            System.out.println("  ERROR : fail to sent ticket to Intent Technologies");
+                        } catch (IOException exception) {
+                            System.out.println("  ERROR : Fail to write Json to file");
+                            //                        Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                        }
+                    } else {
+                        System.out.println("  ERROR : call purpose :" + callPurpose.getName() + " not authorized to use API");
                     }
+                } else {
+                    System.out.println("  ERROR : cannot find call purpose Uid:" + ticketInfos.getCallPurposeUid());
                 }
             }
         }
@@ -899,7 +883,8 @@ public class A2ITClient {
         TicketInfos ticketInfos;
         String clientUuid;
         CloseTicketOnPermanentlyFixed closeTicketOnPermanentlyFixed;
-
+        CallPurpose callPurpose;
+        String contractReference;
         int retcode;
 
         retcode = -1;
@@ -907,22 +892,30 @@ public class A2ITClient {
         clientUuid = ticketInfos.getCompanyUid();
         if (isClientAuthorizedToUseAPI(mongoDatabase, clientUuid)) {
             if (isAssetAuthorizedToUseAPI(mongoDatabase, clientUuid, ticketInfos.getAssetReference())) {
-                if (isCallPurposeAuthorizedToUseAPI(mongoDatabase, clientUuid, ticketInfos.getCallPurposeUid())) {
-                    System.out.println("  PermanentlyFixed event can be sent to Intent Technologies");
-                    closeTicketOnPermanentlyFixed = new CloseTicketOnPermanentlyFixed(permanentlyFixed);
-                    System.out.println("  " + closeTicketOnPermanentlyFixed);
-                    try {
-                        objectMapper.writeValue(new File("testCloseTicketOnPermanentlyFixed_1.json"), closeTicketOnPermanentlyFixed);
-                        httpsClient.fixPermanently(closeTicketOnPermanentlyFixed, debugMode);
-                        sendAlert("Ticket " + ticketInfos.getClaimNumber().getCallCenterClaimNumber() + " closed because permanently fixed");
-                        retcode = 1;
-                    } catch (JsonProcessingException | HttpsClientException exception) {
-                        Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
-                        System.out.println("  ERROR : fail to close ticket in Intent Technologies");
-                    } catch (IOException exception) {
-                        System.out.println("  ERROR : Fail to write Json to file");
-//                        Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                callPurpose = convertCallPurpose(mongoDatabase, clientUuid, ticketInfos.getCallPurposeUid());
+                if (callPurpose != null) {
+                    if (callPurpose.isAuthorizedToUseAPI()) {
+                        System.out.println("  PermanentlyFixed event can be sent to Intent Technologies");
+                        contractReference = getContractReference(mongoDatabase, clientUuid, ticketInfos.getAssetReference(), ticketInfos.getCallPurposeUid());
+                        closeTicketOnPermanentlyFixed = new CloseTicketOnPermanentlyFixed(permanentlyFixed, callPurpose, contractReference);
+                        System.out.println("  " + closeTicketOnPermanentlyFixed);
+                        try {
+                            objectMapper.writeValue(new File("testCloseTicketOnPermanentlyFixed_1.json"), closeTicketOnPermanentlyFixed);
+                            httpsClient.fixPermanently(closeTicketOnPermanentlyFixed, debugMode);
+                            sendAlert("Ticket " + ticketInfos.getClaimNumber().getCallCenterClaimNumber() + " closed because permanently fixed");
+                            retcode = 1;
+                        } catch (JsonProcessingException | HttpsClientException exception) {
+                            Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                            System.out.println("  ERROR : fail to close ticket in Intent Technologies");
+                        } catch (IOException exception) {
+                            System.out.println("  ERROR : Fail to write Json to file");
+                            //                        Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                        }
+                    } else {
+                        System.out.println("  ERROR : call purpose :" + callPurpose.getName() + " not authorized to use API");
                     }
+                } else {
+                    System.out.println("  ERROR : cannot find call purpose Uid:" + ticketInfos.getCallPurposeUid());
                 }
             }
         }
@@ -941,7 +934,8 @@ public class A2ITClient {
         TicketInfos ticketInfos;
         String clientUuid;
         CloseTicketOnQuoteRequested closeTicketOnQuoteRequested;
-
+        CallPurpose callPurpose;
+        String contractReference;
         int retcode;
 
         retcode = -1;
@@ -949,35 +943,35 @@ public class A2ITClient {
         clientUuid = ticketInfos.getCompanyUid();
         if (isClientAuthorizedToUseAPI(mongoDatabase, clientUuid)) {
             if (isAssetAuthorizedToUseAPI(mongoDatabase, clientUuid, ticketInfos.getAssetReference())) {
-                if (isCallPurposeAuthorizedToUseAPI(mongoDatabase, clientUuid, ticketInfos.getCallPurposeUid())) {
-                    System.out.println("  ClosedQuoteRequested event can be sent to Intent Technologies");
-                    closeTicketOnQuoteRequested = new CloseTicketOnQuoteRequested(closedQuoteRequested);
-                    System.out.println("  " + closeTicketOnQuoteRequested);
-                    try {
-                        objectMapper.writeValue(new File("testCloseTicketOnQuoteRequested_1.json"), closeTicketOnQuoteRequested);
-                        httpsClient.requestQuote(closeTicketOnQuoteRequested, debugMode);
-                        sendAlert("Ticket " + ticketInfos.getClaimNumber().getCallCenterClaimNumber() + " closed because a quote is requested");
-                        retcode = 1;
-                    } catch (JsonProcessingException | HttpsClientException exception) {
-                        Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
-                        System.out.println("  ERROR : fail to close ticket in Intent Technologies");
-                    } catch (IOException exception) {
-                        System.out.println("  ERROR : Fail to write Json to file");
-//                        Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                callPurpose = convertCallPurpose(mongoDatabase, clientUuid, ticketInfos.getCallPurposeUid());
+                if (callPurpose != null) {
+                    if (callPurpose.isAuthorizedToUseAPI()) {
+                        System.out.println("  ClosedQuoteRequested event can be sent to Intent Technologies");
+                        contractReference = getContractReference(mongoDatabase, clientUuid, ticketInfos.getAssetReference(), ticketInfos.getCallPurposeUid());
+                        closeTicketOnQuoteRequested = new CloseTicketOnQuoteRequested(closedQuoteRequested, callPurpose, contractReference);
+                        System.out.println("  " + closeTicketOnQuoteRequested);
+                        try {
+                            objectMapper.writeValue(new File("testCloseTicketOnQuoteRequested_1.json"), closeTicketOnQuoteRequested);
+                            httpsClient.requestQuote(closeTicketOnQuoteRequested, debugMode);
+                            sendAlert("Ticket " + ticketInfos.getClaimNumber().getCallCenterClaimNumber() + " closed because a quote is requested");
+                            retcode = 1;
+                        } catch (JsonProcessingException | HttpsClientException exception) {
+                            Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                            System.out.println("  ERROR : fail to close ticket in Intent Technologies");
+                        } catch (IOException exception) {
+                            System.out.println("  ERROR : Fail to write Json to file");
+                            //                        Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                        }
+                    } else {
+                        System.out.println("  ERROR : call purpose :" + callPurpose.getName() + " not authorized to use API");
                     }
+                } else {
+                    System.out.println("  ERROR : cannot find call purpose Uid:" + ticketInfos.getCallPurposeUid());
                 }
             }
         }
 
         return retcode;
-    }
-
-    private int processClosedBeyondCallCenterScope(MongoDatabase mongoDatabase, ClosedBeyondCallCenterScope closedBeyondCallCenterScope) {
-        return -1;
-    }
-
-    private int processClosedAfterSeveralUnsuccessfulRecalls(MongoDatabase mongoDatabase, ClosedAfterSeveralUnsuccessfulRecalls closedAfterSeveralUnsuccessfulRecalls) {
-        return -1;
     }
 
     /**
@@ -991,7 +985,8 @@ public class A2ITClient {
         TicketInfos ticketInfos;
         String clientUuid;
         CloseTicket closeTicket;
-
+        CallPurpose callPurpose;
+        String contractReference;
         int retcode;
 
         retcode = -1;
@@ -999,22 +994,30 @@ public class A2ITClient {
         clientUuid = ticketInfos.getCompanyUid();
         if (isClientAuthorizedToUseAPI(mongoDatabase, clientUuid)) {
             if (isAssetAuthorizedToUseAPI(mongoDatabase, clientUuid, ticketInfos.getAssetReference())) {
-                if (isCallPurposeAuthorizedToUseAPI(mongoDatabase, clientUuid, ticketInfos.getCallPurposeUid())) {
-                    System.out.println("  Ticket can be sent to Intent Technologies");
-                    closeTicket = new CloseTicket(ticketClosed);
-                    System.out.println("  " + closeTicket);
-                    try {
-                        objectMapper.writeValue(new File("testCloseTicket_1.json"), closeTicket);
-                        httpsClient.closeTicket(closeTicket, debugMode);
-                        sendAlert("Ticket " + ticketInfos.getClaimNumber().getCallCenterClaimNumber() + " closed");
-                        retcode = 1;
-                    } catch (JsonProcessingException | HttpsClientException exception) {
-                        Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
-                        System.out.println("  ERROR : fail to close ticket in Intent Technologies");
-                    } catch (IOException exception) {
-                        System.out.println("  ERROR : Fail to write Json to file");
-//                        Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                callPurpose = convertCallPurpose(mongoDatabase, clientUuid, ticketInfos.getCallPurposeUid());
+                if (callPurpose != null) {
+                    if (callPurpose.isAuthorizedToUseAPI()) {
+                        System.out.println("  Ticket can be sent to Intent Technologies");
+                        contractReference = getContractReference(mongoDatabase, clientUuid, ticketInfos.getAssetReference(), ticketInfos.getCallPurposeUid());
+                        closeTicket = new CloseTicket(ticketClosed, callPurpose, contractReference);
+                        System.out.println("  " + closeTicket);
+                        try {
+                            objectMapper.writeValue(new File("testCloseTicket_1.json"), closeTicket);
+                            httpsClient.closeTicket(closeTicket, debugMode);
+                            sendAlert("Ticket " + ticketInfos.getClaimNumber().getCallCenterClaimNumber() + " closed");
+                            retcode = 1;
+                        } catch (JsonProcessingException | HttpsClientException exception) {
+                            Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                            System.out.println("  ERROR : fail to close ticket in Intent Technologies");
+                        } catch (IOException exception) {
+                            System.out.println("  ERROR : Fail to write Json to file");
+                            //                        Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                        }
+                    } else {
+                        System.out.println("  ERROR : call purpose :" + callPurpose.getName() + " not authorized to use API");
                     }
+                } else {
+                    System.out.println("  ERROR : cannot find call purpose Uid:" + ticketInfos.getCallPurposeUid());
                 }
             }
         }
@@ -1022,4 +1025,36 @@ public class A2ITClient {
         return retcode;
     }
 
+    /**
+     * Recupère le numéro de contrat à partir de :
+     */
+    private String getContractReference(MongoDatabase mongoDatabase, String clientUuid, String assetReference, String callPurposeUuid) {
+        String contractReference;
+        
+        MongoCollection<Document> collection;
+        MongoCursor<Document> cursor;
+        int nbClient;
+        BasicDBObject filter;
+        Contract2 contract2;
+
+        contractReference = "NPM_ANSTEL";
+
+        filter = new BasicDBObject("clientUuid", clientUuid).append("assetReference", assetReference).append("callPurposeUuid", callPurposeUuid);
+        collection = mongoDatabase.getCollection("contracts");
+        cursor = collection.find(filter).iterator();
+        if (cursor.hasNext()) {
+            try {
+                contract2 = objectMapper.readValue(cursor.next().toJson(), Contract2.class);
+                contractReference = contract2.getReference();
+                System.out.println("  contrat trouvé : " + contract2.getReference());
+            } catch (IOException exception) {
+                System.out.println("  contrat non trouvé, clientUuid:" + clientUuid 
+                        + ", assetReference:" + assetReference
+                        + ", callPurposeUuid:" + callPurposeUuid);
+//                Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+            }
+        }
+    
+        return contractReference;
+    }
 }
