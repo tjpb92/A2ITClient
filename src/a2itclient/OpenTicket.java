@@ -14,7 +14,7 @@ import java.util.List;
  * Classe décrivant la commande d'ouverture de ticket
  *
  * @author Thierry Baribaud
- * @version 1.22
+ * @version 1.25
  */
 public class OpenTicket {
 
@@ -51,7 +51,7 @@ public class OpenTicket {
      *
      * @param ticketOpened événement d'ouverture de ticket
      */
-    public OpenTicket(TicketOpened ticketOpened) {
+    public OpenTicket(TicketOpened ticketOpened, CallPurpose callPurpose) {
         TicketInfos ticketInfos;
         Location thisLocation;
 
@@ -64,7 +64,8 @@ public class OpenTicket {
         this.eventDate = ticketOpened.getOpenedDate();
         this.logDate = ticketOpened.getDate();
 //        this.serviceCode = ticketInfos.getCallPurposeExtId() + " " + ticketInfos.getCallPurposeLabel();
-        this.serviceCode = ticketInfos.getCallPurposeLabel();
+//        this.serviceCode = ticketInfos.getCallPurposeLabel();
+        this.serviceCode = callPurpose.getReference();
         thisLocation = new Location();
         thisLocation.setAssetReference(ticketInfos.getAssetReference());
         thisLocation.setAddress(new Address(ticketInfos.getAddress()));
