@@ -14,7 +14,7 @@ import java.util.List;
  * Classe décrivant la commande d'ouverture de ticket
  *
  * @author Thierry Baribaud
- * @version 1.25
+ * @version 1.27
  */
 public class OpenTicket {
 
@@ -50,15 +50,17 @@ public class OpenTicket {
      * Constructeur secondaire de la classe OpenTicket
      *
      * @param ticketOpened événement d'ouverture de ticket
+     * @param callPurpose raison d'appel
+     * @param contractReference référence du contrant
      */
-    public OpenTicket(TicketOpened ticketOpened, CallPurpose callPurpose) {
+    public OpenTicket(TicketOpened ticketOpened, CallPurpose callPurpose, String contractReference) {
         TicketInfos ticketInfos;
         Location thisLocation;
 
         ticketInfos = ticketOpened.getTicketInfos();
         this.reference = ticketInfos.getClaimNumber().getCallCenterClaimNumber();
         this.description = ticketInfos.getRequest();
-        this.contractReference = ticketInfos.getContractReference();
+        this.contractReference = contractReference;
         this.status = "open";
         this.event = "requested";
         this.eventDate = ticketOpened.getOpenedDate();

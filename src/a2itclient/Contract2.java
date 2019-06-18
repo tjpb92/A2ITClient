@@ -1,16 +1,21 @@
 package a2itclient;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * Classe décrivant un contrat
  *
  * @author Thierry Baribaud
- * @version 1.26
+ * @version 1.27
  */
+@JsonIgnoreProperties({"_id"})
 public class Contract2 {
 
     private String clientUuid;
     private String assetReference;
     private String callPurposeUuid;
+    private int extId;
+    private int code;
     private String callPurpose;
     private String reference;
 
@@ -63,6 +68,34 @@ public class Contract2 {
     }
 
     /**
+     * @return the extId
+     */
+    public int getExtId() {
+        return extId;
+    }
+
+    /**
+     * @param extId the extId to set
+     */
+    public void setExtId(int extId) {
+        this.extId = extId;
+    }
+
+    /**
+     * @return the code
+     */
+    public int getCode() {
+        return code;
+    }
+
+    /**
+     * @param code the code to set
+     */
+    public void setCode(int code) {
+        this.code = code;
+    }
+
+    /**
      * @return the callPurpose
      */
     public String getCallPurpose() {
@@ -101,6 +134,8 @@ public class Contract2 {
                 + "clientUuid:" + clientUuid
                 + ", assetReference:" + assetReference
                 + ", callPurposeUuid:" + callPurposeUuid
+                + ", extId:" + extId
+                + ", code:" + code
                 + ", callPurpose:" + callPurpose
                 + ", reference:" + reference
                 + "}";

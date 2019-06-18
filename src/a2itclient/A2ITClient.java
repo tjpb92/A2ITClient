@@ -37,7 +37,7 @@ import utils.Md5;
  * Connecteur Anstel / Intent Technologies (lien montant)
  *
  * @author Thierry Baribaud
- * @version 1.26
+ * @version 1.27
  */
 public class A2ITClient {
 
@@ -731,7 +731,7 @@ public class A2ITClient {
         String clientUuid;
         OpenTicket openTicket;
         CallPurpose callPurpose;
-
+        String contractReference;
         int retcode;
 
         retcode = -1;
@@ -743,7 +743,8 @@ public class A2ITClient {
                 if (callPurpose != null) {
                     if (callPurpose.isAuthorizedToUseAPI()) {
                         System.out.println("  Ticket can be sent to Intent Technologies");
-                        openTicket = new OpenTicket(ticketOpened, callPurpose);
+                        contractReference = getContractReference(mongoDatabase, clientUuid, ticketInfos.getAssetReference(), ticketInfos.getCallPurposeUid());
+                        openTicket = new OpenTicket(ticketOpened, callPurpose, contractReference);
                         System.out.println("  " + openTicket);
                         try {
                             objectMapper.writeValue(new File("testOpenTicket_1.json"), openTicket);
@@ -802,7 +803,7 @@ public class A2ITClient {
                             httpsClient.startIntervention(startIntervention, debugMode);
                             retcode = 1;
                         } catch (JsonProcessingException | HttpsClientException exception) {
-    //                    } catch (JsonProcessingException  exception) {
+                            //                    } catch (JsonProcessingException  exception) {
                             //                      Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
                             System.out.println("  ERROR : fail to sent ticket to Intent Technologies");
                         } catch (IOException exception) {
@@ -853,7 +854,7 @@ public class A2ITClient {
                             httpsClient.finishIntervention(finishIntervention, debugMode);
                             retcode = 1;
                         } catch (JsonProcessingException | HttpsClientException exception) {
-    //                    } catch (JsonProcessingException  exception) {
+                            //                    } catch (JsonProcessingException  exception) {
                             //                      Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
                             System.out.println("  ERROR : fail to sent ticket to Intent Technologies");
                         } catch (IOException exception) {
@@ -1030,7 +1031,7 @@ public class A2ITClient {
      */
     private String getContractReference(MongoDatabase mongoDatabase, String clientUuid, String assetReference, String callPurposeUuid) {
         String contractReference;
-        
+
         MongoCollection<Document> collection;
         MongoCursor<Document> cursor;
         int nbClient;
@@ -1039,7 +1040,12 @@ public class A2ITClient {
 
         contractReference = "NPM_ANSTEL";
 
+        System.out.println("  getContractReference(mongoDatabase"
+                + ", clientUuid:" + clientUuid
+                + ", assetReference:" + assetReference
+                + ", callPurposeUuid:" + callPurposeUuid);
         filter = new BasicDBObject("clientUuid", clientUuid).append("assetReference", assetReference).append("callPurposeUuid", callPurposeUuid);
+        System.out.println("  filter:" + filter);
         collection = mongoDatabase.getCollection("contracts");
         cursor = collection.find(filter).iterator();
         if (cursor.hasNext()) {
@@ -1048,13 +1054,18 @@ public class A2ITClient {
                 contractReference = contract2.getReference();
                 System.out.println("  contrat trouvé : " + contract2.getReference());
             } catch (IOException exception) {
-                System.out.println("  contrat non trouvé, clientUuid:" + clientUuid 
+                System.out.println("  ERROR : lecture contrat impossible, clientUuid:" + clientUuid
                         + ", assetReference:" + assetReference
-                        + ", callPurposeUuid:" + callPurposeUuid);
+                        + ", callPurposeUuid:" + callPurposeUuid
+                        + ", exception:"+ exception);
 //                Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
             }
+        } else {
+            System.out.println("  contrat non trouvé, clientUuid:" + clientUuid
+                    + ", assetReference:" + assetReference
+                    + ", callPurposeUuid:" + callPurposeUuid);
         }
-    
+
         return contractReference;
     }
 }

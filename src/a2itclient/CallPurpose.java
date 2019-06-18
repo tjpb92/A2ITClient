@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * Classe décrivant une raison d'appel modélisée dans la base MongoDb
  *
  * @author Thierry Baribaud
- * @version 1.25
+ * @version 1.27
  */
 @JsonIgnoreProperties({"_id"})
 public class CallPurpose {
@@ -155,7 +155,7 @@ public class CallPurpose {
                 + ", uuid:" + uuid
                 + ", extId:" + extId
                 + ", code:" + getCode()
-                + ", name" + name
+                + ", name:" + name
                 + ", useApi:" + useApi
                 + ", reference:" + reference
                 + ", referenceCode:" + referenceCode

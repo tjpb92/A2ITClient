@@ -11,23 +11,23 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Jeux de tests pour la classe CallPurpose
+ * Jeux de tests pour la classe Contract2
  *
  * @author Thierry Baribaud
  * @version 1.27
  */
-public class CallPurposeTest {
+public class Contract2Test {
 
     /**
      * Common Jackson object mapper
      */
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    private CallPurpose callPurpose;
+    private Contract2 contract2;
 
-    public CallPurposeTest() {
-        callPurpose = new CallPurpose();
-        callPurpose.setName("Toto Lito");
+    public Contract2Test() {
+        contract2 = new Contract2();
+        contract2.setCallPurpose("Toto Lito");
     }
 
     @BeforeClass
@@ -39,45 +39,45 @@ public class CallPurposeTest {
     }
 
     /**
-     * Test of getName method, of class CallPurpose.
+     * Test of getCallPurpose method, of class Contract2.
      */
     @Test
-    public void testGetName() {
-        System.out.println("getName");
+    public void testGetCallPurpose() {
+        System.out.println("getCallPurpose");
         String expResult = "Toto Lito";
-        String result = callPurpose.getName();
+        String result = contract2.getCallPurpose();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of setName method, of class CallPurpose.
+     * Test of setCallPurpose method, of class Contract2.
      */
     @Test
-    public void testSetName() {
-        System.out.println("setName");
+    public void testSetCallPurpose() {
+        System.out.println("setCallPurpose");
         String expResult = "Turlu Tutu";
-        callPurpose.setName(expResult);
-        String result = callPurpose.getName();
+        contract2.setCallPurpose(expResult);
+        String result = contract2.getCallPurpose();
         assertEquals(expResult, result);
     }
 
     /**
      * Test of serialization from and to a file in Json format, of class
-     * CallPurpose.
+     * Contract2.
      */
     @Test
     public void testJsonSerialization() {
-        Object expCallPurpose;
+        Object expContract2;
 
-        System.out.println("CallPurpose.jsonSerialization");
-        expCallPurpose = null;
+        System.out.println("Contract2.jsonSerialization");
+        expContract2 = null;
         try {
-            expCallPurpose = objectMapper.readValue(new File("CallPurpose.json"), CallPurpose.class);
-            System.out.println(expCallPurpose);
+            expContract2 = objectMapper.readValue(new File("Contract2.json"), Contract2.class);
+            System.out.println(expContract2);
         } catch (IOException ex) {
-            Logger.getLogger(CallPurposeTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Contract2Test.class.getName()).log(Level.SEVERE, null, ex);
             fail(ex.getMessage());
         }
-        assertNotNull(expCallPurpose);
+        assertNotNull(expContract2);
     }
 }
