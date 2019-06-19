@@ -4,14 +4,13 @@ import bkgpi2a.BasicAddress;
 import bkgpi2a.ClaimNumber;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
  * Classe définissant les informations d'un ticket
  *
  * @author Thierry Baribaud
- * @version 1.21
+ * @version 1.28
  */
 public class TicketInfos {
 
@@ -87,6 +86,13 @@ public class TicketInfos {
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String technicalReason;
+    
+    /**
+     * Niveau de criticité du ticket : min=default=0 à max=5
+     * ... définition
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private int criticalLevel;
 
 //    /**
 //     * Données additionnelles
@@ -98,6 +104,7 @@ public class TicketInfos {
     public TicketInfos() {
 //        additionalData = new HashMap<>();
         altCallPurpose = new HashMap<>();
+        criticalLevel = 0;
     }
 
     /**
@@ -296,6 +303,20 @@ public class TicketInfos {
         this.technicalReason = technicalReason;
     }
 
+    /**
+     * @return retourne le niveau de criticité du ticket
+     */
+    public int getCriticalLevel() {
+        return criticalLevel;
+    }
+
+    /**
+     * @param criticalLevel définit le niveau de criticité du ticket
+     */
+    public void setCriticalLevel(int criticalLevel) {
+        this.criticalLevel = criticalLevel;
+    }
+
 //    /**
 //     * @return les données additionnelles
 //     */
@@ -349,6 +370,7 @@ public class TicketInfos {
                 + ", callPurposeLabel:" + getCallPurposeLabel()
                 + ", altCallPurpose:" + getAltCallPurpose()
                 + ", technicalReason:" + getTechnicalReason()
+                + ", criticalLevel:" + getCriticalLevel()
                 //                + ", additionalData:" + getAdditionalData()
                 + "}";
     }

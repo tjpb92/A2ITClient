@@ -6,9 +6,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * Classe décrivant la commande de clôture de ticket
  *
  * @author Thierry Baribaud
- * @version 1.26
+ * @version 1.28
  */
-public class CloseTicket {
+public class CloseTicket extends TicketCommand {
 
     private String reference;
     private String description;
@@ -31,7 +31,7 @@ public class CloseTicket {
      * Entité à l'origine de la demande
      */
     private String origin;
-
+    
     /**
      * Contructeur principal de la classe CloseTicket
      */
@@ -43,23 +43,24 @@ public class CloseTicket {
      *
      * @param ticketClosed événement d'ouvert de ticket
      * @param callPurpose raison d'appel
-     * @param contractReference référence du contrant
+     * @param currentContract contrant courant
      */
-    public CloseTicket(TicketClosed ticketClosed, CallPurpose callPurpose, String contractReference) {
+    public CloseTicket(TicketClosed ticketClosed, CallPurpose callPurpose, Contract2 currentContract) {
         TicketInfos ticketInfos;
         Location thisLocation;
 
         ticketInfos = ticketClosed.getTicketInfos();
         this.reference = ticketInfos.getClaimNumber().getCallCenterClaimNumber();
         this.description = ticketInfos.getRequest();
-        this.contractReference = contractReference;
+        this.contractReference = currentContract.getReference();
         this.status = "closed";
         this.event = "done";
         this.eventDate = ticketClosed.getClosedDate();
         this.logDate = ticketClosed.getDate();
 //        this.serviceCode = ticketInfos.getCallPurposeExtId() + " " + ticketInfos.getCallPurposeLabel();
 //        this.serviceCode = ticketInfos.getCallPurposeLabel();
-        this.serviceCode = callPurpose.getReference();
+//        this.serviceCode = callPurpose.getReference();
+        this.serviceCode = String.valueOf(callPurpose.getReferenceCode());
         thisLocation = new Location();
         thisLocation.setAssetReference(ticketInfos.getAssetReference());
         thisLocation.setAddress(new Address(ticketInfos.getAddress()));
@@ -67,6 +68,7 @@ public class CloseTicket {
         this.workType = "corrective";
         this.origin = "other";
         this.technicalReason = ticketInfos.getTechnicalReason();
+        this.setCriticalLevel(ticketInfos.getCriticalLevel());
     }
 
     /**

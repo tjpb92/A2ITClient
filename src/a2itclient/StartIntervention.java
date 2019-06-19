@@ -3,9 +3,9 @@ package a2itclient;
 /**
  * Classe décrivant la commande de début d'intervention
  * @author Thierry Baribaud
- * @version 1.26
+ * @version 1.28
  */
-public class StartIntervention {
+public class StartIntervention extends TicketCommand {
     
     private String reference;
     private String contractReference;
@@ -32,27 +32,29 @@ public class StartIntervention {
      * Constructeur secondaire de la classe StartIntervention
      * @param interventionStarted événement de début d'intervention
      * @param callPurpose raison d'appel
-     * @param contractReference référence du contrant
+     * @param currentContract contrant courant
      */
-    public StartIntervention(InterventionStarted interventionStarted, CallPurpose callPurpose, String contractReference) {
+    public StartIntervention(InterventionStarted interventionStarted, CallPurpose callPurpose, Contract2 currentContract) {
         TicketInfos ticketInfos;
         Location thisLocation;
         
         ticketInfos = interventionStarted.getTicketInfos();
         this.reference = ticketInfos.getClaimNumber().getCallCenterClaimNumber();
-        this.contractReference = contractReference;
+        this.contractReference = currentContract.getReference();
         this.status = "pending";
         this.event = "start";
         this.eventDate = interventionStarted.getStartedDate();
         this.logDate = interventionStarted.getDate();
 //        this.serviceCode = ticketInfos.getCallPurposeExtId() + " " + ticketInfos.getCallPurposeLabel();
-        this.serviceCode = callPurpose.getReference();
+//        this.serviceCode = callPurpose.getReference();
+        this.serviceCode = String.valueOf(callPurpose.getReferenceCode());
         thisLocation = new Location();
         thisLocation.setAssetReference(ticketInfos.getAssetReference());
         thisLocation.setAddress(new Address(ticketInfos.getAddress()));
         this.location = thisLocation;
         this.workType = "corrective";
         this.origin = "other";
+        this.setCriticalLevel(ticketInfos.getCriticalLevel());
     }
 
     /**

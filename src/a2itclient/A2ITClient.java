@@ -37,7 +37,7 @@ import utils.Md5;
  * Connecteur Anstel / Intent Technologies (lien montant)
  *
  * @author Thierry Baribaud
- * @version 1.27
+ * @version 1.28
  */
 public class A2ITClient {
 
@@ -353,6 +353,8 @@ public class A2ITClient {
                         retcode = processClosedQuoteRequested(mongoDatabase, (ClosedQuoteRequested) event, httpsClient);
                     } else if (event instanceof TicketClosed) {
                         retcode = processTicketClosed(mongoDatabase, (TicketClosed) event, httpsClient);
+                    } else if (event instanceof TicketCancelled) {
+                        retcode = processTicketCancelled(mongoDatabase, (TicketCancelled) event, httpsClient);
                     }
                 } catch (IOException exception) {
                     retcode = -1;
@@ -731,7 +733,7 @@ public class A2ITClient {
         String clientUuid;
         OpenTicket openTicket;
         CallPurpose callPurpose;
-        String contractReference;
+        Contract2 currentContract;
         int retcode;
 
         retcode = -1;
@@ -743,8 +745,8 @@ public class A2ITClient {
                 if (callPurpose != null) {
                     if (callPurpose.isAuthorizedToUseAPI()) {
                         System.out.println("  Ticket can be sent to Intent Technologies");
-                        contractReference = getContractReference(mongoDatabase, clientUuid, ticketInfos.getAssetReference(), ticketInfos.getCallPurposeUid());
-                        openTicket = new OpenTicket(ticketOpened, callPurpose, contractReference);
+                        currentContract = getCurrentContract(mongoDatabase, clientUuid, ticketInfos.getAssetReference(), ticketInfos.getCallPurposeUid());
+                        openTicket = new OpenTicket(ticketOpened, callPurpose, currentContract);
                         System.out.println("  " + openTicket);
                         try {
                             objectMapper.writeValue(new File("testOpenTicket_1.json"), openTicket);
@@ -782,7 +784,7 @@ public class A2ITClient {
         String clientUuid;
         StartIntervention startIntervention;
         CallPurpose callPurpose;
-        String contractReference;
+        Contract2 currentContract;
 
         int retcode;
 
@@ -795,8 +797,8 @@ public class A2ITClient {
                 if (callPurpose != null) {
                     if (callPurpose.isAuthorizedToUseAPI()) {
                         System.out.println("  Ticket can be sent to Intent Technologies");
-                        contractReference = getContractReference(mongoDatabase, clientUuid, ticketInfos.getAssetReference(), ticketInfos.getCallPurposeUid());
-                        startIntervention = new StartIntervention(interventionStarted, callPurpose, contractReference);
+                        currentContract = getCurrentContract(mongoDatabase, clientUuid, ticketInfos.getAssetReference(), ticketInfos.getCallPurposeUid());
+                        startIntervention = new StartIntervention(interventionStarted, callPurpose, currentContract);
                         System.out.println("  " + startIntervention);
                         try {
                             objectMapper.writeValue(new File("testStartIntervention_1.json"), startIntervention);
@@ -834,7 +836,7 @@ public class A2ITClient {
         String clientUuid;
         FinishIntervention finishIntervention;
         CallPurpose callPurpose;
-        String contractReference;
+        Contract2 currentContract;
         int retcode;
 
         retcode = -1;
@@ -846,8 +848,8 @@ public class A2ITClient {
                 if (callPurpose != null) {
                     if (callPurpose.isAuthorizedToUseAPI()) {
                         System.out.println("  Ticket can be sent to Intent Technologies");
-                        contractReference = getContractReference(mongoDatabase, clientUuid, ticketInfos.getAssetReference(), ticketInfos.getCallPurposeUid());
-                        finishIntervention = new FinishIntervention(interventionFinished, callPurpose, contractReference);
+                        currentContract = getCurrentContract(mongoDatabase, clientUuid, ticketInfos.getAssetReference(), ticketInfos.getCallPurposeUid());
+                        finishIntervention = new FinishIntervention(interventionFinished, callPurpose, currentContract);
                         System.out.println("  " + finishIntervention);
                         try {
                             objectMapper.writeValue(new File("testFinishIntervention_1.json"), finishIntervention);
@@ -885,7 +887,7 @@ public class A2ITClient {
         String clientUuid;
         CloseTicketOnPermanentlyFixed closeTicketOnPermanentlyFixed;
         CallPurpose callPurpose;
-        String contractReference;
+        Contract2 currentContract;
         int retcode;
 
         retcode = -1;
@@ -897,8 +899,8 @@ public class A2ITClient {
                 if (callPurpose != null) {
                     if (callPurpose.isAuthorizedToUseAPI()) {
                         System.out.println("  PermanentlyFixed event can be sent to Intent Technologies");
-                        contractReference = getContractReference(mongoDatabase, clientUuid, ticketInfos.getAssetReference(), ticketInfos.getCallPurposeUid());
-                        closeTicketOnPermanentlyFixed = new CloseTicketOnPermanentlyFixed(permanentlyFixed, callPurpose, contractReference);
+                        currentContract = getCurrentContract(mongoDatabase, clientUuid, ticketInfos.getAssetReference(), ticketInfos.getCallPurposeUid());
+                        closeTicketOnPermanentlyFixed = new CloseTicketOnPermanentlyFixed(permanentlyFixed, callPurpose, currentContract);
                         System.out.println("  " + closeTicketOnPermanentlyFixed);
                         try {
                             objectMapper.writeValue(new File("testCloseTicketOnPermanentlyFixed_1.json"), closeTicketOnPermanentlyFixed);
@@ -936,7 +938,7 @@ public class A2ITClient {
         String clientUuid;
         CloseTicketOnQuoteRequested closeTicketOnQuoteRequested;
         CallPurpose callPurpose;
-        String contractReference;
+        Contract2 currentContract;
         int retcode;
 
         retcode = -1;
@@ -948,8 +950,8 @@ public class A2ITClient {
                 if (callPurpose != null) {
                     if (callPurpose.isAuthorizedToUseAPI()) {
                         System.out.println("  ClosedQuoteRequested event can be sent to Intent Technologies");
-                        contractReference = getContractReference(mongoDatabase, clientUuid, ticketInfos.getAssetReference(), ticketInfos.getCallPurposeUid());
-                        closeTicketOnQuoteRequested = new CloseTicketOnQuoteRequested(closedQuoteRequested, callPurpose, contractReference);
+                        currentContract = getCurrentContract(mongoDatabase, clientUuid, ticketInfos.getAssetReference(), ticketInfos.getCallPurposeUid());
+                        closeTicketOnQuoteRequested = new CloseTicketOnQuoteRequested(closedQuoteRequested, callPurpose, currentContract);
                         System.out.println("  " + closeTicketOnQuoteRequested);
                         try {
                             objectMapper.writeValue(new File("testCloseTicketOnQuoteRequested_1.json"), closeTicketOnQuoteRequested);
@@ -987,7 +989,7 @@ public class A2ITClient {
         String clientUuid;
         CloseTicket closeTicket;
         CallPurpose callPurpose;
-        String contractReference;
+        Contract2 currentContract;
         int retcode;
 
         retcode = -1;
@@ -999,8 +1001,8 @@ public class A2ITClient {
                 if (callPurpose != null) {
                     if (callPurpose.isAuthorizedToUseAPI()) {
                         System.out.println("  Ticket can be sent to Intent Technologies");
-                        contractReference = getContractReference(mongoDatabase, clientUuid, ticketInfos.getAssetReference(), ticketInfos.getCallPurposeUid());
-                        closeTicket = new CloseTicket(ticketClosed, callPurpose, contractReference);
+                        currentContract = getCurrentContract(mongoDatabase, clientUuid, ticketInfos.getAssetReference(), ticketInfos.getCallPurposeUid());
+                        closeTicket = new CloseTicket(ticketClosed, callPurpose, currentContract);
                         System.out.println("  " + closeTicket);
                         try {
                             objectMapper.writeValue(new File("testCloseTicket_1.json"), closeTicket);
@@ -1027,18 +1029,72 @@ public class A2ITClient {
     }
 
     /**
-     * Recupère le numéro de contrat à partir de :
+     * Traitement de l'annulation d'un ticket
+     *
+     * @param mongoDatabase connexion à la base de données Mongodb
+     * @param ticketCancelled événement de clôture d'un ticket
+     * @return résultat de l'opération 1=succès, 0=abandon, -1=erreur
      */
-    private String getContractReference(MongoDatabase mongoDatabase, String clientUuid, String assetReference, String callPurposeUuid) {
-        String contractReference;
+    private int processTicketCancelled(MongoDatabase mongoDatabase, TicketCancelled ticketCancelled, HttpsClient httpsClient) {
+        TicketInfos ticketInfos;
+        String clientUuid;
+        CancelTicket cancelTicket;
+        CallPurpose callPurpose;
+        Contract2 currentContract;
+        int retcode;
 
+        retcode = -1;
+        ticketInfos = ticketCancelled.getTicketInfos();
+        clientUuid = ticketInfos.getCompanyUid();
+        if (isClientAuthorizedToUseAPI(mongoDatabase, clientUuid)) {
+            if (isAssetAuthorizedToUseAPI(mongoDatabase, clientUuid, ticketInfos.getAssetReference())) {
+                callPurpose = convertCallPurpose(mongoDatabase, clientUuid, ticketInfos.getCallPurposeUid());
+                if (callPurpose != null) {
+                    if (callPurpose.isAuthorizedToUseAPI()) {
+                        System.out.println("  Ticket can be sent to Intent Technologies");
+                        currentContract = getCurrentContract(mongoDatabase, clientUuid, ticketInfos.getAssetReference(), ticketInfos.getCallPurposeUid());
+                        cancelTicket = new CancelTicket(ticketCancelled, callPurpose, currentContract);
+                        System.out.println("  " + cancelTicket);
+                        try {
+                            objectMapper.writeValue(new File("testCloseTicket_1.json"), cancelTicket);
+                            httpsClient.cancelTicket(cancelTicket, debugMode);
+                            sendAlert("Ticket " + ticketInfos.getClaimNumber().getCallCenterClaimNumber() + " cancelled");
+                            retcode = 1;
+                        } catch (JsonProcessingException | HttpsClientException exception) {
+                            Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                            System.out.println("  ERROR : fail to cancel ticket in Intent Technologies");
+                        } catch (IOException exception) {
+                            System.out.println("  ERROR : Fail to write Json to file");
+                            //                        Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                        }
+                    } else {
+                        System.out.println("  ERROR : call purpose :" + callPurpose.getName() + " not authorized to use API");
+                    }
+                } else {
+                    System.out.println("  ERROR : cannot find call purpose Uid:" + ticketInfos.getCallPurposeUid());
+                }
+            }
+        }
+
+        return retcode;
+    }
+
+    /**
+     * Recupère le contrat en vigueur à partir de :
+     * @param mongoDatabase connexion à la base de données Mongodb
+     * @param clientUuid référence du client
+     * @param assetReference référence de l'immeuble
+     * @param callPurposeUuid raison d'appel
+     */
+    private Contract2 getCurrentContract(MongoDatabase mongoDatabase, String clientUuid, String assetReference, String callPurposeUuid) {
         MongoCollection<Document> collection;
         MongoCursor<Document> cursor;
         int nbClient;
         BasicDBObject filter;
         Contract2 contract2;
 
-        contractReference = "NPM_ANSTEL";
+        contract2 = new Contract2();
+        contract2.setReference("NPM_ANSTEL");
 
         System.out.println("  getContractReference(mongoDatabase"
                 + ", clientUuid:" + clientUuid
@@ -1051,7 +1107,6 @@ public class A2ITClient {
         if (cursor.hasNext()) {
             try {
                 contract2 = objectMapper.readValue(cursor.next().toJson(), Contract2.class);
-                contractReference = contract2.getReference();
                 System.out.println("  contrat trouvé : " + contract2.getReference());
             } catch (IOException exception) {
                 System.out.println("  ERROR : lecture contrat impossible, clientUuid:" + clientUuid
@@ -1066,6 +1121,6 @@ public class A2ITClient {
                     + ", callPurposeUuid:" + callPurposeUuid);
         }
 
-        return contractReference;
+        return contract2;
     }
 }

@@ -3,12 +3,12 @@ package a2itclient;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * Classe décrivant la commande de clôture de ticket sur demande de devis
+ * Classe décrivant la commande d'annulation de ticket
  *
  * @author Thierry Baribaud
  * @version 1.28
  */
-public class CloseTicketOnQuoteRequested extends TicketCommand {
+public class CancelTicket extends TicketCommand {
 
     private String reference;
     private String description;
@@ -31,32 +31,32 @@ public class CloseTicketOnQuoteRequested extends TicketCommand {
      * Entité à l'origine de la demande
      */
     private String origin;
-
+    
     /**
-     * Contructeur principal de la classe RequestQuote
+     * Contructeur principal de la classe CancelTicket
      */
-    public CloseTicketOnQuoteRequested() {
+    public CancelTicket() {
     }
 
     /**
-     * Constructeur secondaire de la classe RequestQuote
+     * Constructeur secondaire de la classe CancelTicket
      *
-     * @param closedQuoteRequested événement de clôture du ticket
+     * @param ticketCancelled événement d'annulation de ticket
      * @param callPurpose raison d'appel
      * @param currentContract contrant courant
      */
-    public CloseTicketOnQuoteRequested(ClosedQuoteRequested closedQuoteRequested, CallPurpose callPurpose, Contract2 currentContract) {
+    public CancelTicket(TicketCancelled ticketCancelled, CallPurpose callPurpose, Contract2 currentContract) {
         TicketInfos ticketInfos;
         Location thisLocation;
 
-        ticketInfos = closedQuoteRequested.getTicketInfos();
+        ticketInfos = ticketCancelled.getTicketInfos();
         this.reference = ticketInfos.getClaimNumber().getCallCenterClaimNumber();
         this.description = ticketInfos.getRequest();
         this.contractReference = currentContract.getReference();
-        this.status = "hold";
-        this.event = "quote_request";
-        this.eventDate = closedQuoteRequested.getClosedDate();
-        this.logDate = closedQuoteRequested.getDate();
+        this.status = "denied";
+        this.event = "canceled";
+        this.eventDate = ticketCancelled.getDate();
+        this.logDate = ticketCancelled.getDate();
 //        this.serviceCode = ticketInfos.getCallPurposeExtId() + " " + ticketInfos.getCallPurposeLabel();
 //        this.serviceCode = ticketInfos.getCallPurposeLabel();
 //        this.serviceCode = callPurpose.getReference();

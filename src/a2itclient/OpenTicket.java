@@ -1,12 +1,6 @@
 package a2itclient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import ezvcard.Ezvcard;
-import ezvcard.VCard;
-import ezvcard.VCardVersion;
-import ezvcard.parameter.EmailType;
-import ezvcard.parameter.TelephoneType;
-import ezvcard.property.StructuredName;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,9 +8,9 @@ import java.util.List;
  * Classe décrivant la commande d'ouverture de ticket
  *
  * @author Thierry Baribaud
- * @version 1.27
+ * @version 1.28
  */
-public class OpenTicket {
+public class OpenTicket extends TicketCommand {
 
     private String reference;
     private String description;
@@ -51,23 +45,24 @@ public class OpenTicket {
      *
      * @param ticketOpened événement d'ouverture de ticket
      * @param callPurpose raison d'appel
-     * @param contractReference référence du contrant
+     * @param currentContract contrant courant
      */
-    public OpenTicket(TicketOpened ticketOpened, CallPurpose callPurpose, String contractReference) {
+    public OpenTicket(TicketOpened ticketOpened, CallPurpose callPurpose, Contract2 currentContract) {
         TicketInfos ticketInfos;
         Location thisLocation;
 
         ticketInfos = ticketOpened.getTicketInfos();
         this.reference = ticketInfos.getClaimNumber().getCallCenterClaimNumber();
         this.description = ticketInfos.getRequest();
-        this.contractReference = contractReference;
+        this.contractReference = currentContract.getReference();
         this.status = "open";
         this.event = "requested";
         this.eventDate = ticketOpened.getOpenedDate();
         this.logDate = ticketOpened.getDate();
 //        this.serviceCode = ticketInfos.getCallPurposeExtId() + " " + ticketInfos.getCallPurposeLabel();
 //        this.serviceCode = ticketInfos.getCallPurposeLabel();
-        this.serviceCode = callPurpose.getReference();
+//        this.serviceCode = callPurpose.getReference();
+        this.serviceCode = String.valueOf(callPurpose.getReferenceCode());
         thisLocation = new Location();
         thisLocation.setAssetReference(ticketInfos.getAssetReference());
         thisLocation.setAddress(new Address(ticketInfos.getAddress()));
@@ -76,6 +71,7 @@ public class OpenTicket {
         this.contacts = new ArrayList();
         this.setContacts(ticketInfos.getContacts());
         this.origin = "other";
+        this.setCriticalLevel(ticketInfos.getCriticalLevel());
     }
 
     /**

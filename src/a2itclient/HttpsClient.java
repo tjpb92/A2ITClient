@@ -14,7 +14,7 @@ import okhttp3.Response;
  * Classe décrivant un client se connectant en HTTPS à un serveur
  *
  * @author Thierry Baribaud
- * @version 1.24
+ * @version 1.28
  */
 public class HttpsClient extends OkHttpClient {
 
@@ -492,6 +492,77 @@ public class HttpsClient extends OkHttpClient {
                 .addHeader("accept", "application/json+hal")
                 .addHeader("Authorization", "Bearer " + this.token.getAccess_token())
                 .addHeader("content-type", "application/json; charset=utf-8")
+                .post(body)
+                .build();
+        System.out.println("  request.headers():" + request.headers());
+
+        Response response = this.newCall(request).execute();
+        code = response.code();
+        message = response.message();
+
+        if (debugMode) {
+            System.out.println("  response.code():" + code);
+            System.out.println("  response.message():" + message);
+        }
+
+        if (code == 204) {
+            json = response.body().string();
+            System.out.println("    response.body():" + json);
+        } else {
+            throw new HttpsClientException(code + " " + message);
+        }
+
+    }
+
+    /**
+     * Annuler une intervention sur la plate-forme
+     *
+     * @param cancelTicket commande d'annulation de ticket
+     * @param debugMode indique si l'on est en mode debug ou non
+     * @throws com.fasterxml.jackson.core.JsonProcessingException en cas
+     * d'erreur de convertion au format Json
+     * @throws a2itclient.HttpsClientException en cas d'erreur avec la connexion
+     * Https
+     */
+    public void cancelTicket(CancelTicket cancelTicket, boolean debugMode) throws JsonProcessingException, IOException, HttpsClientException {
+        String url;
+        String json;
+        int code;
+        String message;
+        StringBuffer mediaTypeParams;
+
+        url = this.apiRest.getBaseUrl() + "/operations/v2/interventions/logs";
+        if (debugMode) {
+            System.out.println("  url:" + url);
+        }
+
+//        MediaType mediaType = MediaType.get("application/json+hal; charset=utf-8");
+        MediaType mediaType = MediaType.get("application/json; charset=utf-8");
+
+//        mediaTypeParams = new StringBuffer("authorization=Bearer ");
+//        mediaTypeParams.append(this.token.getAccess_token());
+        objectMapper.writeValue(new File("testCloseTicket_2.json"), cancelTicket);
+//        json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(closeTicket);
+        json = objectMapper.writeValueAsString(cancelTicket);
+        if (debugMode) {
+            System.out.println("  cancelTicket:" + cancelTicket);
+            System.out.println("  cancelTicket(json):" + json);
+        }
+//        mediaTypeParams.append(json);
+//        if (debugMode) {
+//            System.out.println("  mediaTypeParams:" + mediaTypeParams.toString());
+//        }
+
+//        RequestBody body = RequestBody.create(mediaType, mediaTypeParams.toString());
+        RequestBody body = RequestBody.create(mediaType, json);
+        System.out.println("  body.contentType():" + body.contentType() + ", body.contentLength():" + body.contentLength());
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("accept", "application/json+hal")
+                .addHeader("Authorization", "Bearer " + this.token.getAccess_token())
+                .addHeader("content-type", "application/json; charset=utf-8")
+                //                .addHeader("cache-control", "no-cache")
                 .post(body)
                 .build();
         System.out.println("  request.headers():" + request.headers());
