@@ -5,13 +5,17 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 /**
  * Classe décrivant une commande sur les tickets
  * @author Thierry Baribaud
- * @version 1.28
+ * @version 1.29
  */
 public class TicketCommand {
 
     /**
      * Niveau de criticité du ticket : min=default=0 à max=5
-     * ... définition
+     * 0 : Non précisé 
+     * 1 : Non urgente 
+     * 2 : Urgente 
+     * 3 : Stratégique 
+     * 4 : Prioritaire
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private int criticalLevel;

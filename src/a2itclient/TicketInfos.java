@@ -10,7 +10,7 @@ import java.util.Map;
  * Classe définissant les informations d'un ticket
  *
  * @author Thierry Baribaud
- * @version 1.28
+ * @version 1.29
  */
 public class TicketInfos {
 
@@ -89,7 +89,11 @@ public class TicketInfos {
     
     /**
      * Niveau de criticité du ticket : min=default=0 à max=5
-     * ... définition
+     * 0 : Non précisé 
+     * 1 : Non urgente 
+     * 2 : Urgente 
+     * 3 : Stratégique 
+     * 4 : Prioritaire
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private int criticalLevel;
