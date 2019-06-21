@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
  * Jeux de test pour la classe ThierdParty
  *
  * @author Thierry Baribaud
- * @version 1.06
+ * @version 1.30
  */
 public class ThirdPartyTest {
 
@@ -127,7 +127,7 @@ public class ThirdPartyTest {
      */
     @Test
     public void testThirdPartyJsonSerialization() {
-        System.out.println("ThirdParty.jsonSerialization");
+        System.out.println("ThirdPartyJsonSerialization");
         String filename = "ThirdParty.json";
         String testFilename = "testThirdParty.json";
 

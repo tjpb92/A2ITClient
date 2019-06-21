@@ -1,29 +1,21 @@
-package a2itclient;
+package ticketEvents;
 
+import a2itclient.Event;
+import a2itclient.TicketInfos;
 import static bkgpi2a.EventType.TICKET_CLOSED;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import bkgpi2a.Operator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Classe décrivant l'événement de clôture de ticket : TicketClosed, #561
  *
  * @author Thierry Baribaud
- * @version 1.15
+ * @version 1.30
  */
 @JsonIgnoreProperties({"_id", "date", "eventTypeUid"})
 @JsonTypeName("TicketClosed")
 public class TicketClosed extends Event {
-
-//    /**
-//     * Référence à l'agence ou au patrimoine
-//     */
-//    private LocationReference locationRef;
-    /**
-     * Opérateur ayant ajouté le ticketInfos
-     */
-//    private Operator operator;
 
     /**
      * Informations sur le ticket
@@ -38,33 +30,6 @@ public class TicketClosed extends Event {
         setEventTypeUid(TICKET_CLOSED.getUid());
         setEventType(TICKET_CLOSED.getName());
     }
-
-//    /**
-//     * @return la référence à l'agence ou au patrimoine
-//     */
-//    public LocationReference getLocationRef() {
-//        return locationRef;
-//    }
-//
-//    /**
-//     * @param locationRef définit la référence à l'agence ou au patrimoine
-//     */
-//    public void setLocationRef(LocationReference locationRef) {
-//        this.locationRef = locationRef;
-//    }
-    /**
-     * @return l'opérateur ayant ajouté le ticketInfos
-     */
-//    public Operator getOperator() {
-//        return operator;
-//    }
-
-    /**
-     * @param operator définit l'opérateur ayant ajouté le ticketInfos
-     */
-//    public void setOperator(Operator operator) {
-//        this.operator = operator;
-//    }
 
     /**
      * @return les informations sur le ticket
@@ -101,8 +66,6 @@ public class TicketClosed extends Event {
     public String toString() {
         return "TicketClosed:{"
                 + super.toString()
-                //                + ", " + getLocationRef()
-//                + ", " + getOperator()
                 + ", " + getTicketInfos()
                 + ", closedDate:" + getClosedDate()
                 + "}";

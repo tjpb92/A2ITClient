@@ -1,5 +1,13 @@
 package a2itclient;
 
+import ticketEvents.TicketUpdated;
+import ticketEvents.TicketOpened;
+import ticketEvents.TicketClosed;
+import ticketEvents.TicketCancelled;
+import ticketEvents.PermanentlyFixed;
+import ticketEvents.InterventionStarted;
+import ticketEvents.InterventionFinished;
+import ticketEvents.ClosedQuoteRequested;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -8,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  * Classe générique décrivant un événement.
  *
  * @author Thierry Baribaud
- * @version 1.28
+ * @version 1.30
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
@@ -22,7 +30,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @JsonSubTypes.Type(value = PermanentlyFixed.class, name = "PermanentlyFixed"),
     @JsonSubTypes.Type(value = ClosedQuoteRequested.class, name = "ClosedQuoteRequested"),
     @JsonSubTypes.Type(value = TicketCancelled.class, name = "TicketCancelled"),
-        
+    @JsonSubTypes.Type(value = TicketUpdated.class, name = "TicketUpdated")
+
 //    @JsonSubTypes.Type(value = ClosedBeyondCallCenterScope.class, name = "ClosedBeyondCallCenterScope")
 //    @JsonSubTypes.Type(value = ClosedAfterSeveralUnsuccessfulRecalls.class, name = "ClosedAfterSeveralUnsuccessfulRecalls")
 //    @JsonSubTypes.Type(value = InterventionRequested.class, name = "InterventionRequested"),
@@ -57,8 +66,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 //    @JsonSubTypes.Type(value = CallReceived.class, name = "CallReceived"),
 //    @JsonSubTypes.Type(value = TicketArchived.class, name = "TicketArchived"),
 //    @JsonSubTypes.Type(value = TicketReopened.class, name = "TicketReopened"),    
-//    @JsonSubTypes.Type(value = TicketUpdated.class, name = "TicketUpdated")
-    })
+})
 public abstract class Event {
 
     /**
@@ -228,7 +236,7 @@ public abstract class Event {
     @Override
     public String toString() {
         return "Event:{"
-               + "processUid:" + getProcessUid()
+                + "processUid:" + getProcessUid()
                 + ", aggregateUid:" + getAggregateUid()
                 + ", date:" + getDate()
                 + ", sentDate:" + getSentDate()

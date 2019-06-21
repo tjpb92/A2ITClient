@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
  * Jeux de tests pour la classe CallPurpose
  *
  * @author Thierry Baribaud
- * @version 1.27
+ * @version 1.30
  */
 public class CallPurposeTest {
 
@@ -66,10 +66,10 @@ public class CallPurposeTest {
      * CallPurpose.
      */
     @Test
-    public void testJsonSerialization() {
+    public void testCallPurposeJsonSerialization() {
         Object expCallPurpose;
 
-        System.out.println("CallPurpose.jsonSerialization");
+        System.out.println("CallPurposeJsonSerialization");
         expCallPurpose = null;
         try {
             expCallPurpose = objectMapper.readValue(new File("CallPurpose.json"), CallPurpose.class);

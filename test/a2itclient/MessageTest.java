@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
 /**
  * Jeux de test pour la classe Message
  * @author Thierry Baribaud
- * @version 1.05
+ * @version 1.30
  */
 public class MessageTest {
     
@@ -47,8 +47,8 @@ public class MessageTest {
      * Test of serialization to and from a file in Json format, of class Message.
      */
     @Test
-    public void testJsonSerialization() {
-        System.out.println("Message.jsonSerialization");
+    public void testMessageJsonSerialization() {
+        System.out.println("MessageJsonSerialization");
         String fileName = "NotFound.json";
 
         Message message = new Message();

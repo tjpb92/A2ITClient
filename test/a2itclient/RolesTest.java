@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
 /**
  * Programme permettant de tester la classe Roles
  * @author Thierry Baribaud
- * @version 1.03
+ * @version 1.30
  */
 public class RolesTest {
 
@@ -37,8 +37,8 @@ public class RolesTest {
      * Test of serialization from and to a file in Json format, of class Roles.
      */
     @Test
-    public void testJsonSerialization() {
-        System.out.println("Roles.jsonSerialization");
+    public void testRolesJsonSerialization() {
+        System.out.println("RolesJsonSerialization");
 
         String filename = "Roles.json";
         String testFilename = "testRoles.json";

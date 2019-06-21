@@ -16,7 +16,7 @@ import org.junit.Before;
  * Programme permettant de tester la classe User
  *
  * @author Thierry Baribaud
- * @version 1.05
+ * @version 1.30
  */
 public class UserTest {
 
@@ -48,8 +48,8 @@ public class UserTest {
      * Test of serialization from and to a file in Json format, of class User.
      */
     @Test
-    public void testJsonSerialization() {
-        System.out.println("User.jsonSerialization");
+    public void testUserJsonSerialization() {
+        System.out.println("UserJsonSerialization");
 
         String filename = "User.json";
         String testFilename = "testUser.json";

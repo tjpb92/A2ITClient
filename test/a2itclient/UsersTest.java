@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
  * Programme permettant de tester la classe Users
  *
  * @author Thierry Baribaud
- * @version 1.05
+ * @version 1.30
  */
 public class UsersTest {
 
@@ -38,8 +38,8 @@ public class UsersTest {
      * Test of serialization from and to a file in Json format, of class Users.
      */
     @Test
-    public void testJsonSerialization() {
-        System.out.println("Users.jsonSerialization");
+    public void testUsersJsonSerialization() {
+        System.out.println("UsersJsonSerialization");
 
         String filename = "Users.json";
         String testFilename = "testUsers.json";

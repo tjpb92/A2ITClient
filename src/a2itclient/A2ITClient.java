@@ -1,5 +1,21 @@
 package a2itclient;
 
+import ticketCommands.UpdateTicket;
+import ticketEvents.TicketUpdated;
+import ticketEvents.TicketOpened;
+import ticketEvents.TicketClosed;
+import ticketEvents.TicketCancelled;
+import ticketCommands.StartIntervention;
+import ticketEvents.PermanentlyFixed;
+import ticketCommands.OpenTicket;
+import ticketEvents.InterventionStarted;
+import ticketEvents.InterventionFinished;
+import ticketCommands.FinishIntervention;
+import ticketEvents.ClosedQuoteRequested;
+import ticketCommands.CloseTicketOnQuoteRequested;
+import ticketCommands.CloseTicketOnPermanentlyFixed;
+import ticketCommands.CloseTicket;
+import ticketCommands.CancelTicket;
 import a2itclient.MailServer.MailServerException;
 import bdd.Fa2it;
 import bdd.Fa2itDAO;
@@ -37,7 +53,7 @@ import utils.Md5;
  * Connecteur Anstel / Intent Technologies (lien montant)
  *
  * @author Thierry Baribaud
- * @version 1.28
+ * @version 1.30
  */
 public class A2ITClient {
 
@@ -355,7 +371,9 @@ public class A2ITClient {
                         retcode = processTicketClosed(mongoDatabase, (TicketClosed) event, httpsClient);
                     } else if (event instanceof TicketCancelled) {
                         retcode = processTicketCancelled(mongoDatabase, (TicketCancelled) event, httpsClient);
-                    }
+                    } else if (event instanceof TicketUpdated) {
+                        retcode = processTicketUpdated(mongoDatabase, (TicketUpdated) event, httpsClient);
+                    } 
                 } catch (IOException exception) {
                     retcode = -1;
                     System.out.println("  Cannot convert Json to Event, record rejected " + exception);
@@ -1063,6 +1081,57 @@ public class A2ITClient {
                         } catch (JsonProcessingException | HttpsClientException exception) {
                             Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
                             System.out.println("  ERROR : fail to cancel ticket in Intent Technologies");
+                        } catch (IOException exception) {
+                            System.out.println("  ERROR : Fail to write Json to file");
+                            //                        Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                        }
+                    } else {
+                        System.out.println("  ERROR : call purpose :" + callPurpose.getName() + " not authorized to use API");
+                    }
+                } else {
+                    System.out.println("  ERROR : cannot find call purpose Uid:" + ticketInfos.getCallPurposeUid());
+                }
+            }
+        }
+
+        return retcode;
+    }
+
+    /**
+     * Traitement de la mise à jour d'un ticket
+     *
+     * @param mongoDatabase connexion à la base de données Mongodb
+     * @param ticketUpdated événement mise à jour d'un ticket
+     * @return résultat de l'opération 1=succès, 0=abandon, -1=erreur
+     */
+    private int processTicketUpdated(MongoDatabase mongoDatabase, TicketUpdated ticketUpdated, HttpsClient httpsClient) {
+        TicketInfos ticketInfos;
+        String clientUuid;
+        UpdateTicket updateTicket;
+        CallPurpose callPurpose;
+        Contract2 currentContract;
+        int retcode;
+
+        retcode = -1;
+        ticketInfos = ticketUpdated.getTicketInfos();
+        clientUuid = ticketInfos.getCompanyUid();
+        if (isClientAuthorizedToUseAPI(mongoDatabase, clientUuid)) {
+            if (isAssetAuthorizedToUseAPI(mongoDatabase, clientUuid, ticketInfos.getAssetReference())) {
+                callPurpose = convertCallPurpose(mongoDatabase, clientUuid, ticketInfos.getCallPurposeUid());
+                if (callPurpose != null) {
+                    if (callPurpose.isAuthorizedToUseAPI()) {
+                        System.out.println("  Ticket can be sent to Intent Technologies");
+                        currentContract = getCurrentContract(mongoDatabase, clientUuid, ticketInfos.getAssetReference(), ticketInfos.getCallPurposeUid());
+                        updateTicket = new UpdateTicket(ticketUpdated, callPurpose, currentContract);
+                        System.out.println("  " + updateTicket);
+                        try {
+                            objectMapper.writeValue(new File("testUpdateTicket_1.json"), updateTicket);
+                            httpsClient.updateTicket(updateTicket, debugMode);
+                            sendAlert("Ticket " + ticketInfos.getClaimNumber().getCallCenterClaimNumber() + " updated");
+                            retcode = 1;
+                        } catch (JsonProcessingException | HttpsClientException exception) {
+                            Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
+                            System.out.println("  ERROR : fail to update ticket in Intent Technologies");
                         } catch (IOException exception) {
                             System.out.println("  ERROR : Fail to write Json to file");
                             //                        Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);

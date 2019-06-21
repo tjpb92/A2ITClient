@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
 /**
  * Jeux de tests pour la classe HALLinks
  * @author Thierry Baribaud
- * @version 1.06
+ * @version 1.30
  */
 public class HALLinksTest {
     
@@ -47,8 +47,8 @@ public class HALLinksTest {
      * Test of serialization from and to a file in Json format, of class Owner.
      */
     @Test
-    public void testJsonSerialization() {
-        System.out.println("Links.jsonSerialization");
+    public void testHALLinksJsonSerialization() {
+        System.out.println("HALLinksJsonSerialization");
         HALLink anstel = new HALLink("http://www.anstel.com");
         HALLink excelia = new HALLink("http://excelia.fr");
         HALLinks links = new HALLinks();

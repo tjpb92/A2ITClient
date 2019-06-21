@@ -1,14 +1,20 @@
-package a2itclient;
+package ticketCommands;
 
+import ticketEvents.ClosedQuoteRequested;
+import a2itclient.Address;
+import a2itclient.CallPurpose;
+import a2itclient.Contract2;
+import a2itclient.Location;
+import a2itclient.TicketInfos;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * Classe décrivant la commande de clôture de ticket
+ * Classe décrivant la commande de clôture de ticket sur demande de devis
  *
  * @author Thierry Baribaud
- * @version 1.28
+ * @version 1.30
  */
-public class CloseTicket extends TicketCommand {
+public class CloseTicketOnQuoteRequested extends TicketCommand {
 
     private String reference;
     private String description;
@@ -31,32 +37,34 @@ public class CloseTicket extends TicketCommand {
      * Entité à l'origine de la demande
      */
     private String origin;
-    
+
     /**
-     * Contructeur principal de la classe CloseTicket
+     * Contructeur principal de la classe RequestQuote
      */
-    public CloseTicket() {
+    public CloseTicketOnQuoteRequested() {
     }
 
     /**
-     * Constructeur secondaire de la classe CloseTicket
+     * Constructeur secondaire de la classe RequestQuote
      *
-     * @param ticketClosed événement d'ouvert de ticket
+     * @param closedQuoteRequested événement de clôture du ticket
      * @param callPurpose raison d'appel
      * @param currentContract contrant courant
      */
-    public CloseTicket(TicketClosed ticketClosed, CallPurpose callPurpose, Contract2 currentContract) {
+    public CloseTicketOnQuoteRequested(ClosedQuoteRequested closedQuoteRequested, CallPurpose callPurpose, Contract2 currentContract) {
+        super(closedQuoteRequested.getTicketInfos(), callPurpose, currentContract);
+        
         TicketInfos ticketInfos;
         Location thisLocation;
 
-        ticketInfos = ticketClosed.getTicketInfos();
+        ticketInfos = closedQuoteRequested.getTicketInfos();
         this.reference = ticketInfos.getClaimNumber().getCallCenterClaimNumber();
         this.description = ticketInfos.getRequest();
         this.contractReference = currentContract.getReference();
-        this.status = "closed";
-        this.event = "done";
-        this.eventDate = ticketClosed.getClosedDate();
-        this.logDate = ticketClosed.getDate();
+        this.status = "hold";
+        this.event = "quote_request";
+        this.eventDate = closedQuoteRequested.getClosedDate();
+        this.logDate = closedQuoteRequested.getDate();
 //        this.serviceCode = ticketInfos.getCallPurposeExtId() + " " + ticketInfos.getCallPurposeLabel();
 //        this.serviceCode = ticketInfos.getCallPurposeLabel();
 //        this.serviceCode = callPurpose.getReference();
@@ -68,7 +76,6 @@ public class CloseTicket extends TicketCommand {
         this.workType = "corrective";
         this.origin = "other";
         this.technicalReason = ticketInfos.getTechnicalReason();
-        this.setCriticalLevel(ticketInfos.getCriticalLevel());
     }
 
     /**

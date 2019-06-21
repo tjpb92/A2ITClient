@@ -15,7 +15,7 @@ import org.junit.Before;
 /**
  * Jeux de tests pour tester la classe Token
  * @author Thierry Baribaud
- * @version 1.05
+ * @version 1.30
  */
 public class TokenTest {
     
@@ -47,8 +47,8 @@ public class TokenTest {
      * Test of serialization from and to a file in Json format, of class Token.
      */
     @Test
-    public void testJsonSerialization() {
-        System.out.println("Token.jsonSerialization");
+    public void testTokenJsonSerialization() {
+        System.out.println("TokenJsonSerialization");
 
         String filename = "Token.json";
         String testFilename = "testToken.json";

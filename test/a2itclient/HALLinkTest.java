@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
 /**
  * Jeux de test pour la classe HALLink
  * @author Thierry Baribaud
- * @version 1.06
+ * @version 1.30
  */
 public class HALLinkTest {
     
@@ -48,8 +48,8 @@ public class HALLinkTest {
  HALLink.
      */
     @Test
-    public void testJsonSerialization() {
-        System.out.println("Link.jsonSerialization");
+    public void testHALLinkJsonSerialization() {
+        System.out.println("HALLinkJsonSerialization");
         String filename = "Link.json";
         String testFilename = "testLink.json";
 

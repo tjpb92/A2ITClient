@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
 /**
  * Jeux de tests pour la classe Asset
  * @author Thierry Baribaud
- * @version 1.06
+ * @version 1.30
  */
 public class AssetTest {
     
@@ -51,8 +51,8 @@ public class AssetTest {
      * Test of serialization from and to a file in Json format, of class Asset.
      */
     @Test
-    public void testJsonSerialization() {
-        System.out.println("Asset.jsonSerialization");
+    public void testAssetJsonSerialization() {
+        System.out.println("AssetJsonSerialization");
         HALLink self = new HALLink("https://apisandbox.hubintent.com/api/assets/v1/assets/14435");
         Entity owner = new Entity("Nexity PM", "http://hubintent.com/intent/entities/logos/5fa25ed5-693d-402d-b266-84a0ffde1fc1");
         Asset asset = new Asset();

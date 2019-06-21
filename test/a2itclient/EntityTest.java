@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
 /**
  * Programme pour tester la classe Entity
  * @author Thierry Baribaud
- * @version 1.06
+ * @version 1.30
  */
 public class EntityTest {
     
@@ -112,8 +112,8 @@ public class EntityTest {
      * Test of serialization from and to a file in Json format, of class Entity.
      */
     @Test
-    public void testJsonSerialization() {
-        System.out.println("Owner.jsonSerialization");
+    public void testEntityJsonSerialization() {
+        System.out.println("EntityJsonSerialization");
 
         String filename = "Owner.json";
         String testFilename = "testOwner.json";

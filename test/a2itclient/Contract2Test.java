@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
  * Jeux de tests pour la classe Contract2
  *
  * @author Thierry Baribaud
- * @version 1.27
+ * @version 1.30
  */
 public class Contract2Test {
 
@@ -66,10 +66,10 @@ public class Contract2Test {
      * Contract2.
      */
     @Test
-    public void testJsonSerialization() {
+    public void testContract2JsonSerialization() {
         Object expContract2;
 
-        System.out.println("Contract2.jsonSerialization");
+        System.out.println("Contract2JsonSerialization");
         expContract2 = null;
         try {
             expContract2 = objectMapper.readValue(new File("Contract2.json"), Contract2.class);

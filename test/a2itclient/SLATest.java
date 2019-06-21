@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
 /**
  * Jeux de tests pour tester la classe SLA
  * @author Thierry Baribaud
- * @version 1.05
+ * @version 1.30
  */
 public class SLATest {
     
@@ -37,8 +37,8 @@ public class SLATest {
      * Test of serialization from and to a file in Json format, of class SLA.
      */
     @Test
-    public void testJsonSerialization() {
-        System.out.println("SLA.jsonSerialization");
+    public void testSLAJsonSerialization() {
+        System.out.println("SLAJsonSerialization");
 
         String filename = "SLA.json";
         String testFilename = "testSLA.json";

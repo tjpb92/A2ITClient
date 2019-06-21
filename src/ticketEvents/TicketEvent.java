@@ -1,19 +1,20 @@
-package a2itclient;
+package ticketEvents;
 
+import a2itclient.Event;
+import a2itclient.TicketInfos;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import static bkgpi2a.EventType.CLOSED_QUOTE_REQUESTED;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Classe décrivant une clôture d'appel en attente de devis : ClosedQuoteRequested, #563
+ * Classe encapsulant les événements des tickets
  *
  * @author Thierry Baribaud
- * @version 1.16
+ * @version 1.30
  */
 @JsonIgnoreProperties({"_id", "date", "eventTypeUid"})
-@JsonTypeName("ClosedQuoteRequested")
-public class ClosedQuoteRequested extends Event {
+@JsonTypeName("TicketEvent")
+public class TicketEvent extends Event {
 
     /**
      * Informations sur le ticket
@@ -22,11 +23,9 @@ public class ClosedQuoteRequested extends Event {
     private TicketInfos ticketInfos;
 
     /**
-     * Constructeur de la classe ClosedQuoteRequested
+     * Constructeur de la classe TicketEvent
      */
-    public ClosedQuoteRequested() {
-        setEventTypeUid(CLOSED_QUOTE_REQUESTED.getUid());
-        setEventType(CLOSED_QUOTE_REQUESTED.getName());
+    public TicketEvent() {
     }
 
     /**
@@ -44,28 +43,13 @@ public class ClosedQuoteRequested extends Event {
     }
 
     /**
-     * @return la date à laquelle l'événement a eu lieu
-     */
-    public String getClosedDate() {
-        return getDate();
-    }
-
-    /**
-     * @param closedDate définit la date à laquelle l'événement a eu lieu
-     */
-    public void setClosedDate(String closedDate) {
-        setDate(closedDate);
-    }
-
-    /**
      * @return Retourne l'objet sous forme textuelle
      */
     @Override
     public String toString() {
-        return "ClosedQuoteRequested:{"
+        return "ticketEvent:{"
                 + super.toString()
                 + ", " + getTicketInfos()
-                + ", closedDate:" + getClosedDate()
                 + "}";
     }
 

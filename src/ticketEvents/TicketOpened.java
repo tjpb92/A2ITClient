@@ -1,5 +1,7 @@
-package a2itclient;
+package ticketEvents;
 
+import a2itclient.Event;
+import a2itclient.TicketInfos;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import static bkgpi2a.EventType.TICKET_OPENED;
@@ -10,17 +12,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Classe décrivant l'événement ouverture de ticket : TicketOpened, #500
  *
  * @author Thierry Baribaud
- * @version 1.16
+ * @version 1.30
  */
 @JsonIgnoreProperties({"_id", "date", "eventTypeUid"})
 @JsonTypeName("TicketOpened")
 public class TicketOpened extends Event {
 
-//    /**
-//     * Référence à l'agence ou au patrimoine
-//     */
-//    private LocationReference locationRef;
-    
     /**
      * Opérateur ayant ajouté le ticketInfos
      */
@@ -39,20 +36,6 @@ public class TicketOpened extends Event {
         setEventTypeUid(TICKET_OPENED.getUid());
         setEventType(TICKET_OPENED.getName());
     }
-
-//    /**
-//     * @return la référence à l'agence ou au patrimoine
-//     */
-//    public LocationReference getLocationRef() {
-//        return locationRef;
-//    }
-//
-//    /**
-//     * @param locationRef définit la référence à l'agence ou au patrimoine
-//     */
-//    public void setLocationRef(LocationReference locationRef) {
-//        this.locationRef = locationRef;
-//    }
 
     /**
      * @return l'opérateur ayant ajouté le ticketInfos
@@ -103,7 +86,6 @@ public class TicketOpened extends Event {
     public String toString() {
         return "TicketOpened:{"
                 + super.toString()
-//                + ", " + getLocationRef()
                 + ", " + getOperator()
                 + ", " + getTicketInfos()
                 + ", openedDate:" + getOpenedDate()

@@ -22,7 +22,7 @@ import static org.junit.Assert.*;
  * Jeux de tests pour les listes de contacts
  *
  * @author Thierry Baribaud
- * @version 1.22
+ * @version 1.30
  */
 public class ContactListTest {
 
@@ -101,11 +101,11 @@ public class ContactListTest {
      * Contact.
      */
     @Test
-    public void testJsonSerializationFromObjec() {
+    public void testContactListJsonSerializationFromObjec() {
         ContactList expContactList;
         Contact anotherContact;
 
-        System.out.println("ContactList.jsonSerialization(from Object)");
+        System.out.println("ContactListJsonSerialization(from Object)");
         expContactList = null;
         contactList.add(contact);
         anotherContact = new Contact();

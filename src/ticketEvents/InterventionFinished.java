@@ -1,5 +1,7 @@
-package a2itclient;
+package ticketEvents;
 
+import a2itclient.Event;
+import a2itclient.TicketInfos;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import static bkgpi2a.EventType.INTERVENTION_FINISHED;
@@ -10,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * #534
  *
  * @author Thierry Baribaud
- * @version 1.16
+ * @version 1.30
  */
 @JsonIgnoreProperties({"_id", "date", "eventTypeUid"})
 @JsonTypeName("InterventionFinished")

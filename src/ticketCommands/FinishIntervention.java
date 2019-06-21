@@ -1,17 +1,20 @@
-package a2itclient;
+package ticketCommands;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import a2itclient.Address;
+import a2itclient.CallPurpose;
+import a2itclient.Contract2;
+import ticketEvents.InterventionFinished;
+import a2itclient.Location;
+import a2itclient.TicketInfos;
 
 /**
- * Classe décrivant la commande de clôture de ticket sur demande de devis
- *
+ * Classe décrivant la commande de fin d'intervention
  * @author Thierry Baribaud
- * @version 1.28
+ * @version 1.30
  */
-public class CloseTicketOnQuoteRequested extends TicketCommand {
-
+public class FinishIntervention extends TicketCommand {
+    
     private String reference;
-    private String description;
     private String contractReference;
     private String status;
     private String event;
@@ -20,45 +23,38 @@ public class CloseTicketOnQuoteRequested extends TicketCommand {
     private String serviceCode;
     private Location location;
     private String workType;
-
-    /**
-     * Nature de la panne
-     */
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String technicalReason;
-
+    
     /**
      * Entité à l'origine de la demande
      */
     private String origin;
-
+    
     /**
-     * Contructeur principal de la classe RequestQuote
+     * Contructeur principal de la classe FinishtIntervention
      */
-    public CloseTicketOnQuoteRequested() {
+    public FinishIntervention() {
     }
-
+    
     /**
-     * Constructeur secondaire de la classe RequestQuote
-     *
-     * @param closedQuoteRequested événement de clôture du ticket
+     * Constructeur secondaire de la classe FinishtIntervention
+     * @param interventionFinished événement de début d'intervention
      * @param callPurpose raison d'appel
      * @param currentContract contrant courant
      */
-    public CloseTicketOnQuoteRequested(ClosedQuoteRequested closedQuoteRequested, CallPurpose callPurpose, Contract2 currentContract) {
+    public FinishIntervention(InterventionFinished interventionFinished, CallPurpose callPurpose, Contract2 currentContract) {
+        super(interventionFinished.getTicketInfos(), callPurpose, currentContract);
+        
         TicketInfos ticketInfos;
         Location thisLocation;
-
-        ticketInfos = closedQuoteRequested.getTicketInfos();
+        
+        ticketInfos = interventionFinished.getTicketInfos();
         this.reference = ticketInfos.getClaimNumber().getCallCenterClaimNumber();
-        this.description = ticketInfos.getRequest();
         this.contractReference = currentContract.getReference();
-        this.status = "hold";
-        this.event = "quote_request";
-        this.eventDate = closedQuoteRequested.getClosedDate();
-        this.logDate = closedQuoteRequested.getDate();
+        this.status = "pending";
+        this.event = "end";
+        this.eventDate = interventionFinished.getFinishedDate();
+        this.logDate = interventionFinished.getDate();
 //        this.serviceCode = ticketInfos.getCallPurposeExtId() + " " + ticketInfos.getCallPurposeLabel();
-//        this.serviceCode = ticketInfos.getCallPurposeLabel();
 //        this.serviceCode = callPurpose.getReference();
         this.serviceCode = String.valueOf(callPurpose.getReferenceCode());
         thisLocation = new Location();
@@ -67,8 +63,6 @@ public class CloseTicketOnQuoteRequested extends TicketCommand {
         this.location = thisLocation;
         this.workType = "corrective";
         this.origin = "other";
-        this.technicalReason = ticketInfos.getTechnicalReason();
-        this.setCriticalLevel(ticketInfos.getCriticalLevel());
     }
 
     /**
@@ -83,20 +77,6 @@ public class CloseTicketOnQuoteRequested extends TicketCommand {
      */
     public void setReference(String reference) {
         this.reference = reference;
-    }
-
-    /**
-     * @return the description
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * @param description the description to set
-     */
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     /**
@@ -225,29 +205,13 @@ public class CloseTicketOnQuoteRequested extends TicketCommand {
         this.origin = origin;
 
     }
-
-    /**
-     * @return retourne la nature de la panne
-     */
-    public String getTechnicalReason() {
-        return technicalReason;
-    }
-
-    /**
-     * @param technicalReason définit la nature de la panne
-     */
-    public void setTechnicalReason(String technicalReason) {
-        this.technicalReason = technicalReason;
-    }
-
     /**
      * @return Retourne la commande CloseTicket sous forme textuelle
      */
     @Override
     public String toString() {
-        return "closeTicket:{"
+        return "finishIntervention:{"
                 + "reference:" + getReference()
-                + ", description:" + getDescription()
                 + ", contractReference:" + getContractReference()
                 + ", status:" + getStatus()
                 + ", event:" + getEvent()
@@ -257,7 +221,6 @@ public class CloseTicketOnQuoteRequested extends TicketCommand {
                 + ", location:" + getLocation()
                 + ", workType:" + getWorkType()
                 + ", origin:" + getOrigin()
-                + ", technicalReason:" + getTechnicalReason()
                 + "}";
     }
 }

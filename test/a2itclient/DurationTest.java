@@ -39,8 +39,8 @@ public class DurationTest {
      * Duration.
      */
     @Test
-    public void testJsonSerialization() {
-        System.out.println("Duration.jsonSerialization");
+    public void testDurationJsonSerialization() {
+        System.out.println("DurationJsonSerialization");
 
         String filename = "Duration.json";
         String testFilename = "testDuration.json";

@@ -16,7 +16,7 @@ import org.junit.Before;
  * Programme de test de la classe Role
  *
  * @author Thierry Baribaud
- * @version 1.05
+ * @version 1.30
  */
 public class RoleTest {
 
@@ -85,8 +85,8 @@ public class RoleTest {
      * Test of serialization from and to a file in Json format, of class Role.
      */
     @Test
-    public void testJsonSerialization() {
-        System.out.println("Role.jsonSerialization");
+    public void testRoleJsonSerialization() {
+        System.out.println("RoleJsonSerialization");
 
         String filename = "Role.json";
         String testFilename = "testRole.json";

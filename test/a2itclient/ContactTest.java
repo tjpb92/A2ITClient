@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
  * Jeux de tests pour la classe Contact
  *
  * @author Thierry Baribaud
- * @version 1.22
+ * @version 1.30
  */
 public class ContactTest {
 
@@ -186,10 +186,10 @@ public class ContactTest {
      * Contact.
      */
     @Test
-    public void testJsonSerialization() {
+    public void testContactJsonSerialization() {
         Object expContact;
 
-        System.out.println("Contact.jsonSerialization");
+        System.out.println("ContactJsonSerialization");
         expContact = null;
         try {
             objectMapper.writeValue(new File("ContactFromObject.json"), contact);

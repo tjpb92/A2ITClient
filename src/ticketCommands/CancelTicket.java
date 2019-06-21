@@ -1,12 +1,18 @@
-package a2itclient;
+package ticketCommands;
 
+import a2itclient.Address;
+import a2itclient.CallPurpose;
+import a2itclient.Contract2;
+import a2itclient.Location;
+import ticketEvents.TicketCancelled;
+import a2itclient.TicketInfos;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * Classe décrivant la commande d'annulation de ticket
  *
  * @author Thierry Baribaud
- * @version 1.28
+ * @version 1.30
  */
 public class CancelTicket extends TicketCommand {
 
@@ -31,7 +37,7 @@ public class CancelTicket extends TicketCommand {
      * Entité à l'origine de la demande
      */
     private String origin;
-    
+
     /**
      * Contructeur principal de la classe CancelTicket
      */
@@ -46,6 +52,8 @@ public class CancelTicket extends TicketCommand {
      * @param currentContract contrant courant
      */
     public CancelTicket(TicketCancelled ticketCancelled, CallPurpose callPurpose, Contract2 currentContract) {
+        super(ticketCancelled.getTicketInfos(), callPurpose, currentContract);
+
         TicketInfos ticketInfos;
         Location thisLocation;
 
@@ -68,7 +76,6 @@ public class CancelTicket extends TicketCommand {
         this.workType = "corrective";
         this.origin = "other";
         this.technicalReason = ticketInfos.getTechnicalReason();
-        this.setCriticalLevel(ticketInfos.getCriticalLevel());
     }
 
     /**

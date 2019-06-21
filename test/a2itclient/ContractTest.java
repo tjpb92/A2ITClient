@@ -3,7 +3,6 @@ package a2itclient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.After;
@@ -17,7 +16,7 @@ import static org.junit.Assert.*;
  * Jeux de tests pour la classe Contract
  *
  * @author Thierry Baribaud
- * @version 1.05
+ * @version 1.30
  */
 public class ContractTest {
 
@@ -50,8 +49,8 @@ public class ContractTest {
      * Contract.
      */
     @Test
-    public void testThirdPartyJsonSerialization() {
-        System.out.println("Contract.jsonSerialization");
+    public void testContractJsonSerialization() {
+        System.out.println("ContractJsonSerialization");
         String filename = "Contract.json";
         String testFilename = "testContract.json";
 

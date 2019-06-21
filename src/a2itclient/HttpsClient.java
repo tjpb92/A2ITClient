@@ -1,5 +1,13 @@
 package a2itclient;
 
+import ticketCommands.UpdateTicket;
+import ticketCommands.StartIntervention;
+import ticketCommands.OpenTicket;
+import ticketCommands.FinishIntervention;
+import ticketCommands.CloseTicketOnQuoteRequested;
+import ticketCommands.CloseTicketOnPermanentlyFixed;
+import ticketCommands.CloseTicket;
+import ticketCommands.CancelTicket;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
@@ -14,7 +22,7 @@ import okhttp3.Response;
  * Classe décrivant un client se connectant en HTTPS à un serveur
  *
  * @author Thierry Baribaud
- * @version 1.28
+ * @version 1.30
  */
 public class HttpsClient extends OkHttpClient {
 
@@ -547,6 +555,77 @@ public class HttpsClient extends OkHttpClient {
         if (debugMode) {
             System.out.println("  cancelTicket:" + cancelTicket);
             System.out.println("  cancelTicket(json):" + json);
+        }
+//        mediaTypeParams.append(json);
+//        if (debugMode) {
+//            System.out.println("  mediaTypeParams:" + mediaTypeParams.toString());
+//        }
+
+//        RequestBody body = RequestBody.create(mediaType, mediaTypeParams.toString());
+        RequestBody body = RequestBody.create(mediaType, json);
+        System.out.println("  body.contentType():" + body.contentType() + ", body.contentLength():" + body.contentLength());
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("accept", "application/json+hal")
+                .addHeader("Authorization", "Bearer " + this.token.getAccess_token())
+                .addHeader("content-type", "application/json; charset=utf-8")
+                //                .addHeader("cache-control", "no-cache")
+                .post(body)
+                .build();
+        System.out.println("  request.headers():" + request.headers());
+
+        Response response = this.newCall(request).execute();
+        code = response.code();
+        message = response.message();
+
+        if (debugMode) {
+            System.out.println("  response.code():" + code);
+            System.out.println("  response.message():" + message);
+        }
+
+        if (code == 204) {
+            json = response.body().string();
+            System.out.println("    response.body():" + json);
+        } else {
+            throw new HttpsClientException(code + " " + message);
+        }
+
+    }
+
+    /**
+     * Modifier une intervention sur la plate-forme
+     *
+     * @param updateTicket commande d'annulation de ticket
+     * @param debugMode indique si l'on est en mode debug ou non
+     * @throws com.fasterxml.jackson.core.JsonProcessingException en cas
+     * d'erreur de convertion au format Json
+     * @throws a2itclient.HttpsClientException en cas d'erreur avec la connexion
+     * Https
+     */
+    public void updateTicket(UpdateTicket updateTicket, boolean debugMode) throws JsonProcessingException, IOException, HttpsClientException {
+        String url;
+        String json;
+        int code;
+        String message;
+        StringBuffer mediaTypeParams;
+
+        url = this.apiRest.getBaseUrl() + "/operations/v2/interventions/logs";
+        if (debugMode) {
+            System.out.println("  url:" + url);
+        }
+
+//        MediaType mediaType = MediaType.get("application/json+hal; charset=utf-8");
+        MediaType mediaType = MediaType.get("application/json; charset=utf-8");
+
+//        mediaTypeParams = new StringBuffer("authorization=Bearer ");
+//        mediaTypeParams.append(this.token.getAccess_token());
+        objectMapper.writeValue(new File("testUpdateTicket_2.json"), updateTicket);
+//        json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(closeTicket);
+        json = objectMapper.writeValueAsString(updateTicket);
+        if (debugMode) {
+            System.out.println("  updateTicket:" + updateTicket);
+            System.out.println("  updateTicket(json):" + json);
         }
 //        mediaTypeParams.append(json);
 //        if (debugMode) {

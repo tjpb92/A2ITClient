@@ -1,16 +1,20 @@
-package a2itclient;
+package ticketCommands;
 
+import a2itclient.Address;
+import a2itclient.CallPurpose;
+import a2itclient.Contract2;
+import a2itclient.Location;
+import ticketEvents.TicketClosed;
+import a2itclient.TicketInfos;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * Classe décrivant la commande d'ouverture de ticket
+ * Classe décrivant la commande de clôture de ticket
  *
  * @author Thierry Baribaud
- * @version 1.28
+ * @version 1.30
  */
-public class OpenTicket extends TicketCommand {
+public class CloseTicket extends TicketCommand {
 
     private String reference;
     private String description;
@@ -24,41 +28,43 @@ public class OpenTicket extends TicketCommand {
     private String workType;
 
     /**
-     * Personnes à contacter sur le ticket
+     * Nature de la panne
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private List<String> contacts;
+    private String technicalReason;
 
     /**
      * Entité à l'origine de la demande
      */
     private String origin;
-
+    
     /**
-     * Contructeur principal de la classe OpenTicket
+     * Contructeur principal de la classe CloseTicket
      */
-    public OpenTicket() {
+    public CloseTicket() {
     }
 
     /**
-     * Constructeur secondaire de la classe OpenTicket
+     * Constructeur secondaire de la classe CloseTicket
      *
-     * @param ticketOpened événement d'ouverture de ticket
+     * @param ticketClosed événement d'ouvert de ticket
      * @param callPurpose raison d'appel
      * @param currentContract contrant courant
      */
-    public OpenTicket(TicketOpened ticketOpened, CallPurpose callPurpose, Contract2 currentContract) {
+    public CloseTicket(TicketClosed ticketClosed, CallPurpose callPurpose, Contract2 currentContract) {
+        super(ticketClosed.getTicketInfos(), callPurpose, currentContract);
+        
         TicketInfos ticketInfos;
         Location thisLocation;
 
-        ticketInfos = ticketOpened.getTicketInfos();
+        ticketInfos = ticketClosed.getTicketInfos();
         this.reference = ticketInfos.getClaimNumber().getCallCenterClaimNumber();
         this.description = ticketInfos.getRequest();
         this.contractReference = currentContract.getReference();
-        this.status = "open";
-        this.event = "requested";
-        this.eventDate = ticketOpened.getOpenedDate();
-        this.logDate = ticketOpened.getDate();
+        this.status = "closed";
+        this.event = "done";
+        this.eventDate = ticketClosed.getClosedDate();
+        this.logDate = ticketClosed.getDate();
 //        this.serviceCode = ticketInfos.getCallPurposeExtId() + " " + ticketInfos.getCallPurposeLabel();
 //        this.serviceCode = ticketInfos.getCallPurposeLabel();
 //        this.serviceCode = callPurpose.getReference();
@@ -68,173 +74,148 @@ public class OpenTicket extends TicketCommand {
         thisLocation.setAddress(new Address(ticketInfos.getAddress()));
         this.location = thisLocation;
         this.workType = "corrective";
-        this.contacts = new ArrayList();
-        this.setContacts(ticketInfos.getContacts());
         this.origin = "other";
-        this.setCriticalLevel(ticketInfos.getCriticalLevel());
+        this.technicalReason = ticketInfos.getTechnicalReason();
     }
 
     /**
-     * @param contacts définit les contacts sur le ticket
-     */
-    public void setContacts(ContactList contacts) {
-        for (Contact contact : contacts) {
-            this.contacts.add(contact.toVCard());
-        }
-    }
-
-    /**
-     * @return retourne la référence de l'asset
+     * @return the reference
      */
     public String getReference() {
         return reference;
     }
 
     /**
-     * @param reference définit la référence de l'asset
+     * @param reference the reference to set
      */
     public void setReference(String reference) {
         this.reference = reference;
     }
 
     /**
-     * @return retourne la description
+     * @return the description
      */
     public String getDescription() {
         return description;
     }
 
     /**
-     * @param description définit la description
+     * @param description the description to set
      */
     public void setDescription(String description) {
         this.description = description;
     }
 
     /**
-     * @return retourne la référence du contrat
+     * @return the contractReference
      */
     public String getContractReference() {
         return contractReference;
     }
 
     /**
-     * @param contractReference définit la référence du contrat
+     * @param contractReference the contractReference to set
      */
     public void setContractReference(String contractReference) {
         this.contractReference = contractReference;
     }
 
     /**
-     * @return retourne le status
+     * @return the status
      */
     public String getStatus() {
         return status;
     }
 
     /**
-     * @param status définit le status
+     * @param status the status to set
      */
     public void setStatus(String status) {
         this.status = status;
     }
 
     /**
-     * @return retourne l'événement
+     * @return the event
      */
     public String getEvent() {
         return event;
     }
 
     /**
-     * @param event définit l'événement
+     * @param event the event to set
      */
     public void setEvent(String event) {
         this.event = event;
     }
 
     /**
-     * @return retourne la date de l'événement
+     * @return the eventDate
      */
     public String getEventDate() {
         return eventDate;
     }
 
     /**
-     * @param eventDate définit la date de l'événement
+     * @param eventDate the eventDate to set
      */
     public void setEventDate(String eventDate) {
         this.eventDate = eventDate;
     }
 
     /**
-     * @return retourne la date de traitement de l'événement
+     * @return the logDate
      */
     public String getLogDate() {
         return logDate;
     }
 
     /**
-     * @param logDate définit la date de traitement de l'événement
+     * @param logDate the logDate to set
      */
     public void setLogDate(String logDate) {
         this.logDate = logDate;
     }
 
     /**
-     * @return retourne le serviceCode
+     * @return the serviceCode
      */
     public String getServiceCode() {
         return serviceCode;
     }
 
     /**
-     * @param serviceCode définit le serviceCode
+     * @param serviceCode the serviceCode to set
      */
     public void setServiceCode(String serviceCode) {
         this.serviceCode = serviceCode;
     }
 
     /**
-     * @return retourne la localisation
+     * @return the location
      */
     public Location getLocation() {
         return location;
     }
 
     /**
-     * @param location définit la localisation
+     * @param location the location to set
      */
     public void setLocation(Location location) {
         this.location = location;
     }
 
     /**
-     * @return retourne le workType
+     * @return the workType
      */
     public String getWorkType() {
         return workType;
     }
 
     /**
-     * @param workType définit le workType
+     * @param workType the workType to set
      */
     public void setWorkType(String workType) {
         this.workType = workType;
-    }
-
-    /**
-     * @return retourne les contacts
-     */
-    public List<String> getContacts() {
-        return contacts;
-    }
-
-    /**
-     * @param contacts définit les contacts
-     */
-    public void setContacts(List<String> contacts) {
-        this.contacts = contacts;
     }
 
     /**
@@ -253,11 +234,25 @@ public class OpenTicket extends TicketCommand {
     }
 
     /**
-     * @return Retourne la commande OpenTicket sous forme textuelle
+     * @return retourne la nature de la panne
+     */
+    public String getTechnicalReason() {
+        return technicalReason;
+    }
+
+    /**
+     * @param technicalReason définit la nature de la panne
+     */
+    public void setTechnicalReason(String technicalReason) {
+        this.technicalReason = technicalReason;
+    }
+
+    /**
+     * @return Retourne la commande CloseTicket sous forme textuelle
      */
     @Override
     public String toString() {
-        return "openTicket:{"
+        return "closeTicket:{"
                 + "reference:" + getReference()
                 + ", description:" + getDescription()
                 + ", contractReference:" + getContractReference()
@@ -268,8 +263,8 @@ public class OpenTicket extends TicketCommand {
                 + ", serviceCode:" + getServiceCode()
                 + ", location:" + getLocation()
                 + ", workType:" + getWorkType()
-                //                + ", contacts:" + contacts.replace("\r", " ").replace("\n", "")
                 + ", origin:" + getOrigin()
+                + ", technicalReason:" + getTechnicalReason()
                 + "}";
     }
 }
