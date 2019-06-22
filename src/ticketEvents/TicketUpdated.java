@@ -8,9 +8,9 @@ import static bkgpi2a.EventType.TICKET_UPDATED;
  * Classe décrivant l'événement de mise à jour du ticket : TicketUpdated, #510
  *
  * @author Thierry Baribaud
- * @version 1.30
+ * @version 1.31
  */
-@JsonIgnoreProperties({"_id", "date", "eventTypeUid"})
+@JsonIgnoreProperties({"_id", "eventTypeUid"})
 @JsonTypeName("TicketUpdated")
 public class TicketUpdated extends TicketEvent {
 

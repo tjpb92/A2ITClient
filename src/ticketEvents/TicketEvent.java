@@ -10,9 +10,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Classe encapsulant les événements des tickets
  *
  * @author Thierry Baribaud
- * @version 1.30
+ * @version 1.31
  */
-@JsonIgnoreProperties({"_id", "date", "eventTypeUid"})
+@JsonIgnoreProperties({"_id", "eventTypeUid"})
 @JsonTypeName("TicketEvent")
 public class TicketEvent extends Event {
 

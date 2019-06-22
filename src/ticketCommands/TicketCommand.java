@@ -9,9 +9,19 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * Classe décrivant une commande sur les tickets
  *
  * @author Thierry Baribaud
- * @version 1.30
+ * @version 1.31
  */
 public class TicketCommand {
+
+    /**
+     * Type d'opération
+     */
+    private String workType;
+
+    /**
+     * Entité à l'origine de la demande
+     */
+    private String origin;
 
     /**
      * Niveau de criticité du ticket : min=default=0 à max=5 0 : Non précisé 1 :
@@ -24,6 +34,8 @@ public class TicketCommand {
      * Contructeur principal de la classe TicketCommand
      */
     public TicketCommand() {
+        workType = "corrective";
+        origin = "other";
         criticalLevel = 0;
     }
 
@@ -36,8 +48,37 @@ public class TicketCommand {
      */
     public TicketCommand(TicketInfos ticketInfos, CallPurpose callPurpose, Contract2 currentContract) {
         this();
-        
+
         criticalLevel = ticketInfos.getCriticalLevel();
+    }
+
+    /**
+     * @return retourne le type d'opération
+     */
+    public String getWorkType() {
+        return workType;
+    }
+
+    /**
+     * @param workType définit le type d'opération
+     */
+    public void setWorkType(String workType) {
+        this.workType = workType;
+    }
+
+    /**
+     * @return retourne l'entité à l'origine de la demande
+     */
+    public String getOrigin() {
+        return origin;
+    }
+
+    /**
+     * @param origin définit l'entité à l'origine de la demande
+     */
+    public void setOrigin(String origin) {
+        this.origin = origin;
+
     }
 
     /**
@@ -60,7 +101,9 @@ public class TicketCommand {
     @Override
     public String toString() {
         return "ticketCommand:{"
-                + "criticalLevel:" + getCriticalLevel()
+                + "workType:" + getWorkType()
+                + ", origin:" + getOrigin()
+                + ", criticalLevel:" + getCriticalLevel()
                 + "}";
     }
 }

@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * Classe décrivant la commande d'annulation de ticket
  *
  * @author Thierry Baribaud
- * @version 1.30
+ * @version 1.31
  */
 public class CancelTicket extends TicketCommand {
 
@@ -25,7 +25,7 @@ public class CancelTicket extends TicketCommand {
     private String logDate;
     private String serviceCode;
     private Location location;
-    private String workType;
+//    private String workType;
 
     /**
      * Nature de la panne
@@ -36,7 +36,7 @@ public class CancelTicket extends TicketCommand {
     /**
      * Entité à l'origine de la demande
      */
-    private String origin;
+//    private String origin;
 
     /**
      * Contructeur principal de la classe CancelTicket
@@ -73,8 +73,8 @@ public class CancelTicket extends TicketCommand {
         thisLocation.setAssetReference(ticketInfos.getAssetReference());
         thisLocation.setAddress(new Address(ticketInfos.getAddress()));
         this.location = thisLocation;
-        this.workType = "corrective";
-        this.origin = "other";
+//        this.workType = "corrective";
+//        this.origin = "other";
         this.technicalReason = ticketInfos.getTechnicalReason();
     }
 
@@ -207,31 +207,31 @@ public class CancelTicket extends TicketCommand {
     /**
      * @return the workType
      */
-    public String getWorkType() {
-        return workType;
-    }
+//    public String getWorkType() {
+//        return workType;
+//    }
 
     /**
      * @param workType the workType to set
      */
-    public void setWorkType(String workType) {
-        this.workType = workType;
-    }
+//    public void setWorkType(String workType) {
+//        this.workType = workType;
+//    }
 
     /**
      * @return retourne l'entité à l'origine de la demande
      */
-    public String getOrigin() {
-        return origin;
-    }
+//    public String getOrigin() {
+//        return origin;
+//    }
 
     /**
      * @param origin définit l'entité à l'origine de la demande
      */
-    public void setOrigin(String origin) {
-        this.origin = origin;
-
-    }
+//    public void setOrigin(String origin) {
+//        this.origin = origin;
+//
+//    }
 
     /**
      * @return retourne la nature de la panne
@@ -253,7 +253,8 @@ public class CancelTicket extends TicketCommand {
     @Override
     public String toString() {
         return "closeTicket:{"
-                + "reference:" + getReference()
+                + super.toString()
+                + ", reference:" + getReference()
                 + ", description:" + getDescription()
                 + ", contractReference:" + getContractReference()
                 + ", status:" + getStatus()
@@ -262,8 +263,8 @@ public class CancelTicket extends TicketCommand {
                 + ", logDate:" + getLogDate()
                 + ", serviceCode:" + getServiceCode()
                 + ", location:" + getLocation()
-                + ", workType:" + getWorkType()
-                + ", origin:" + getOrigin()
+//                + ", workType:" + getWorkType()
+//                + ", origin:" + getOrigin()
                 + ", technicalReason:" + getTechnicalReason()
                 + "}";
     }

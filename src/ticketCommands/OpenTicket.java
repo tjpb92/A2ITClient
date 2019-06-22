@@ -17,7 +17,7 @@ import java.util.List;
  * Classe décrivant la commande d'ouverture de ticket
  *
  * @author Thierry Baribaud
- * @version 1.30
+ * @version 1.31
  */
 public class OpenTicket extends TicketCommand {
 
@@ -30,7 +30,7 @@ public class OpenTicket extends TicketCommand {
     private String logDate;
     private String serviceCode;
     private Location location;
-    private String workType;
+//    private String workType;
 
     /**
      * Personnes à contacter sur le ticket
@@ -41,7 +41,7 @@ public class OpenTicket extends TicketCommand {
     /**
      * Entité à l'origine de la demande
      */
-    private String origin;
+//    private String origin;
 
     /**
      * Contructeur principal de la classe OpenTicket
@@ -78,10 +78,10 @@ public class OpenTicket extends TicketCommand {
         thisLocation.setAssetReference(ticketInfos.getAssetReference());
         thisLocation.setAddress(new Address(ticketInfos.getAddress()));
         this.location = thisLocation;
-        this.workType = "corrective";
+//        this.workType = "corrective";
         this.contacts = new ArrayList();
         this.setContacts(ticketInfos.getContacts());
-        this.origin = "other";
+//        this.origin = "other";
     }
 
     /**
@@ -222,16 +222,16 @@ public class OpenTicket extends TicketCommand {
     /**
      * @return retourne le workType
      */
-    public String getWorkType() {
-        return workType;
-    }
+//    public String getWorkType() {
+//        return workType;
+//    }
 
     /**
      * @param workType définit le workType
      */
-    public void setWorkType(String workType) {
-        this.workType = workType;
-    }
+//    public void setWorkType(String workType) {
+//        this.workType = workType;
+//    }
 
     /**
      * @return retourne les contacts
@@ -248,20 +248,20 @@ public class OpenTicket extends TicketCommand {
         this.contacts = contacts;
     }
 
-    /**
-     * @return retourne l'entité à l'origine de la demande
-     */
-    public String getOrigin() {
-        return origin;
-    }
-
-    /**
-     * @param origin définit l'entité à l'origine de la demande
-     */
-    public void setOrigin(String origin) {
-        this.origin = origin;
-
-    }
+//    /**
+//     * @return retourne l'entité à l'origine de la demande
+//     */
+//    public String getOrigin() {
+//        return origin;
+//    }
+//
+//    /**
+//     * @param origin définit l'entité à l'origine de la demande
+//     */
+//    public void setOrigin(String origin) {
+//        this.origin = origin;
+//
+//    }
 
     /**
      * @return Retourne la commande OpenTicket sous forme textuelle
@@ -269,7 +269,8 @@ public class OpenTicket extends TicketCommand {
     @Override
     public String toString() {
         return "openTicket:{"
-                + "reference:" + getReference()
+                + super.toString()
+                + ", reference:" + getReference()
                 + ", description:" + getDescription()
                 + ", contractReference:" + getContractReference()
                 + ", status:" + getStatus()
@@ -278,9 +279,9 @@ public class OpenTicket extends TicketCommand {
                 + ", logDate:" + getLogDate()
                 + ", serviceCode:" + getServiceCode()
                 + ", location:" + getLocation()
-                + ", workType:" + getWorkType()
+//                + ", workType:" + getWorkType()
                 //                + ", contacts:" + contacts.replace("\r", " ").replace("\n", "")
-                + ", origin:" + getOrigin()
+//                + ", origin:" + getOrigin()
                 + "}";
     }
 }

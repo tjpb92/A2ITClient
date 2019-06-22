@@ -2,17 +2,22 @@ package ticketCommands;
 
 import a2itclient.Address;
 import a2itclient.CallPurpose;
+import a2itclient.Contact;
+import a2itclient.ContactList;
 import a2itclient.Contract2;
 import a2itclient.Location;
 import a2itclient.TicketInfos;
 import ticketEvents.TicketUpdated;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Classe décrivant la commande de mise à jour de ticket
  *
  * @author Thierry Baribaud
- * @version 1.30
+ * @version 1.31
  */
 public class UpdateTicket extends TicketCommand {
 
@@ -25,7 +30,13 @@ public class UpdateTicket extends TicketCommand {
     private String logDate;
     private String serviceCode;
     private Location location;
-    private String workType;
+//    private String workType;
+
+    /**
+     * Personnes à contacter sur le ticket
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private List<String> contacts;
 
     /**
      * Nature de la panne
@@ -36,7 +47,7 @@ public class UpdateTicket extends TicketCommand {
     /**
      * Entité à l'origine de la demande
      */
-    private String origin;
+//    private String origin;
 
     /**
      * Contructeur principal de la classe UpdateTicket
@@ -61,8 +72,8 @@ public class UpdateTicket extends TicketCommand {
         this.reference = ticketInfos.getClaimNumber().getCallCenterClaimNumber();
         this.description = ticketInfos.getRequest();
         this.contractReference = currentContract.getReference();
-        this.status = "denied";
-        this.event = "canceled";
+        this.status = "open";
+        this.event = "requested";
         this.eventDate = ticketUpdated.getDate();
         this.logDate = ticketUpdated.getDate();
         this.serviceCode = String.valueOf(callPurpose.getReferenceCode());
@@ -70,9 +81,35 @@ public class UpdateTicket extends TicketCommand {
         thisLocation.setAssetReference(ticketInfos.getAssetReference());
         thisLocation.setAddress(new Address(ticketInfos.getAddress()));
         this.location = thisLocation;
-        this.workType = "corrective";
-        this.origin = "other";
+//        this.workType = "corrective";
+        this.contacts = new ArrayList();
+        this.setContacts(ticketInfos.getContacts());
+//        this.origin = "other";
         this.technicalReason = ticketInfos.getTechnicalReason();
+    }
+
+    /**
+     * @return retourne les contacts
+     */
+    public List<String> getContacts() {
+        return contacts;
+    }
+
+    /**
+     * @param contacts définit les contacts
+     */
+    @JsonSetter("contacts")
+    public void setContacts(List<String> contacts) {
+        this.contacts = contacts;
+    }
+    
+    /**
+     * @param contacts définit les contacts sur le ticket
+     */
+    public void setContacts(ContactList contacts) {
+        for (Contact contact : contacts) {
+            this.contacts.add(contact.toVCard());
+        }
     }
 
     /**
@@ -204,31 +241,31 @@ public class UpdateTicket extends TicketCommand {
     /**
      * @return the workType
      */
-    public String getWorkType() {
-        return workType;
-    }
+//    public String getWorkType() {
+//        return workType;
+//    }
 
     /**
      * @param workType the workType to set
      */
-    public void setWorkType(String workType) {
-        this.workType = workType;
-    }
+//    public void setWorkType(String workType) {
+//        this.workType = workType;
+//    }
 
     /**
      * @return retourne l'entité à l'origine de la demande
      */
-    public String getOrigin() {
-        return origin;
-    }
+//    public String getOrigin() {
+//        return origin;
+//    }
 
     /**
      * @param origin définit l'entité à l'origine de la demande
      */
-    public void setOrigin(String origin) {
-        this.origin = origin;
-
-    }
+//    public void setOrigin(String origin) {
+//        this.origin = origin;
+//
+//    }
 
     /**
      * @return retourne la nature de la panne
@@ -250,7 +287,8 @@ public class UpdateTicket extends TicketCommand {
     @Override
     public String toString() {
         return "updateTicket:{"
-                + "reference:" + getReference()
+                + super.toString()
+                + ", reference:" + getReference()
                 + ", description:" + getDescription()
                 + ", contractReference:" + getContractReference()
                 + ", status:" + getStatus()
@@ -259,10 +297,10 @@ public class UpdateTicket extends TicketCommand {
                 + ", logDate:" + getLogDate()
                 + ", serviceCode:" + getServiceCode()
                 + ", location:" + getLocation()
-                + ", workType:" + getWorkType()
-                + ", origin:" + getOrigin()
+//                + ", workType:" + getWorkType()
+//                + ", origin:" + getOrigin()
                 + ", technicalReason:" + getTechnicalReason()
-                + ", criticalLevel:" + super.getCriticalLevel()
+//                + ", criticalLevel:" + super.getCriticalLevel()
                 + "}";
     }
 }

@@ -11,7 +11,7 @@ import ticketEvents.InterventionStarted;
  * Classe décrivant la commande de début d'intervention
  *
  * @author Thierry Baribaud
- * @version 1.30
+ * @version 1.31
  */
 public class StartIntervention extends TicketCommand {
 
@@ -23,12 +23,12 @@ public class StartIntervention extends TicketCommand {
     private String logDate;
     private String serviceCode;
     private Location location;
-    private String workType;
+//    private String workType;
 
     /**
      * Entité à l'origine de la demande
      */
-    private String origin;
+//    private String origin;
 
     /**
      * Contructeur principal de la classe StartIntervention
@@ -62,8 +62,8 @@ public class StartIntervention extends TicketCommand {
         thisLocation.setAssetReference(ticketInfos.getAssetReference());
         thisLocation.setAddress(new Address(ticketInfos.getAddress()));
         this.location = thisLocation;
-        this.workType = "corrective";
-        this.origin = "other";
+//        this.workType = "corrective";
+//        this.origin = "other";
     }
 
     /**
@@ -181,31 +181,31 @@ public class StartIntervention extends TicketCommand {
     /**
      * @return the workType
      */
-    public String getWorkType() {
-        return workType;
-    }
+//    public String getWorkType() {
+//        return workType;
+//    }
 
     /**
      * @param workType the workType to set
      */
-    public void setWorkType(String workType) {
-        this.workType = workType;
-    }
+//    public void setWorkType(String workType) {
+//        this.workType = workType;
+//    }
 
     /**
      * @return retourne l'entité à l'origine de la demande
      */
-    public String getOrigin() {
-        return origin;
-    }
+//    public String getOrigin() {
+//        return origin;
+//    }
 
     /**
      * @param origin définit l'entité à l'origine de la demande
      */
-    public void setOrigin(String origin) {
-        this.origin = origin;
-
-    }
+//    public void setOrigin(String origin) {
+//        this.origin = origin;
+//
+//    }
 
     /**
      * @return Retourne la commande CloseTicket sous forme textuelle
@@ -213,7 +213,8 @@ public class StartIntervention extends TicketCommand {
     @Override
     public String toString() {
         return "startIntervention:{"
-                + "reference:" + getReference()
+                + super.toString()
+                + ", reference:" + getReference()
                 + ", contractReference:" + getContractReference()
                 + ", status:" + getStatus()
                 + ", event:" + getEvent()
@@ -221,8 +222,8 @@ public class StartIntervention extends TicketCommand {
                 + ", logDate:" + getLogDate()
                 + ", serviceCode:" + getServiceCode()
                 + ", location:" + getLocation()
-                + ", workType:" + getWorkType()
-                + ", origin:" + getOrigin()
+//                + ", workType:" + getWorkType()
+//                + ", origin:" + getOrigin()
                 + "}";
     }
 }
