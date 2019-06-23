@@ -17,20 +17,17 @@ import java.util.List;
  * Classe décrivant la commande de mise à jour de ticket
  *
  * @author Thierry Baribaud
- * @version 1.31
+ * @version 1.32
  */
 public class UpdateTicket extends TicketCommand {
 
-    private String reference;
     private String description;
-    private String contractReference;
     private String status;
     private String event;
     private String eventDate;
     private String logDate;
     private String serviceCode;
     private Location location;
-//    private String workType;
 
     /**
      * Personnes à contacter sur le ticket
@@ -43,11 +40,6 @@ public class UpdateTicket extends TicketCommand {
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String technicalReason;
-
-    /**
-     * Entité à l'origine de la demande
-     */
-//    private String origin;
 
     /**
      * Contructeur principal de la classe UpdateTicket
@@ -69,9 +61,7 @@ public class UpdateTicket extends TicketCommand {
         Location thisLocation;
 
         ticketInfos = ticketUpdated.getTicketInfos();
-        this.reference = ticketInfos.getClaimNumber().getCallCenterClaimNumber();
         this.description = ticketInfos.getRequest();
-        this.contractReference = currentContract.getReference();
         this.status = "open";
         this.event = "requested";
         this.eventDate = ticketUpdated.getDate();
@@ -81,10 +71,8 @@ public class UpdateTicket extends TicketCommand {
         thisLocation.setAssetReference(ticketInfos.getAssetReference());
         thisLocation.setAddress(new Address(ticketInfos.getAddress()));
         this.location = thisLocation;
-//        this.workType = "corrective";
         this.contacts = new ArrayList();
         this.setContacts(ticketInfos.getContacts());
-//        this.origin = "other";
         this.technicalReason = ticketInfos.getTechnicalReason();
     }
 
@@ -102,7 +90,7 @@ public class UpdateTicket extends TicketCommand {
     public void setContacts(List<String> contacts) {
         this.contacts = contacts;
     }
-    
+
     /**
      * @param contacts définit les contacts sur le ticket
      */
@@ -110,20 +98,6 @@ public class UpdateTicket extends TicketCommand {
         for (Contact contact : contacts) {
             this.contacts.add(contact.toVCard());
         }
-    }
-
-    /**
-     * @return the reference
-     */
-    public String getReference() {
-        return reference;
-    }
-
-    /**
-     * @param reference the reference to set
-     */
-    public void setReference(String reference) {
-        this.reference = reference;
     }
 
     /**
@@ -138,20 +112,6 @@ public class UpdateTicket extends TicketCommand {
      */
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    /**
-     * @return the contractReference
-     */
-    public String getContractReference() {
-        return contractReference;
-    }
-
-    /**
-     * @param contractReference the contractReference to set
-     */
-    public void setContractReference(String contractReference) {
-        this.contractReference = contractReference;
     }
 
     /**
@@ -239,35 +199,6 @@ public class UpdateTicket extends TicketCommand {
     }
 
     /**
-     * @return the workType
-     */
-//    public String getWorkType() {
-//        return workType;
-//    }
-
-    /**
-     * @param workType the workType to set
-     */
-//    public void setWorkType(String workType) {
-//        this.workType = workType;
-//    }
-
-    /**
-     * @return retourne l'entité à l'origine de la demande
-     */
-//    public String getOrigin() {
-//        return origin;
-//    }
-
-    /**
-     * @param origin définit l'entité à l'origine de la demande
-     */
-//    public void setOrigin(String origin) {
-//        this.origin = origin;
-//
-//    }
-
-    /**
      * @return retourne la nature de la panne
      */
     public String getTechnicalReason() {
@@ -288,19 +219,14 @@ public class UpdateTicket extends TicketCommand {
     public String toString() {
         return "updateTicket:{"
                 + super.toString()
-                + ", reference:" + getReference()
                 + ", description:" + getDescription()
-                + ", contractReference:" + getContractReference()
                 + ", status:" + getStatus()
                 + ", event:" + getEvent()
                 + ", eventDate:" + getEventDate()
                 + ", logDate:" + getLogDate()
                 + ", serviceCode:" + getServiceCode()
                 + ", location:" + getLocation()
-//                + ", workType:" + getWorkType()
-//                + ", origin:" + getOrigin()
                 + ", technicalReason:" + getTechnicalReason()
-//                + ", criticalLevel:" + super.getCriticalLevel()
                 + "}";
     }
 }

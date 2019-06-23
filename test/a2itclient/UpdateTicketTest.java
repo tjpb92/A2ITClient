@@ -9,16 +9,14 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import ticketCommands.OpenTicket;
 import ticketCommands.UpdateTicket;
-import ticketEvents.TicketOpened;
 import ticketEvents.TicketUpdated;
 
 /**
  * Jeux de tests pour la classe UpdateTicket
  *
  * @author Thierry Baribaud
- * @version 1.30
+ * @version 1.32
  */
 public class UpdateTicketTest {
 

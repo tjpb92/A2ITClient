@@ -12,31 +12,23 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * Classe décrivant la commande d'annulation de ticket
  *
  * @author Thierry Baribaud
- * @version 1.31
+ * @version 1.32
  */
 public class CancelTicket extends TicketCommand {
 
-    private String reference;
     private String description;
-    private String contractReference;
     private String status;
     private String event;
     private String eventDate;
     private String logDate;
     private String serviceCode;
     private Location location;
-//    private String workType;
 
     /**
      * Nature de la panne
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String technicalReason;
-
-    /**
-     * Entité à l'origine de la demande
-     */
-//    private String origin;
 
     /**
      * Contructeur principal de la classe CancelTicket
@@ -58,38 +50,17 @@ public class CancelTicket extends TicketCommand {
         Location thisLocation;
 
         ticketInfos = ticketCancelled.getTicketInfos();
-        this.reference = ticketInfos.getClaimNumber().getCallCenterClaimNumber();
         this.description = ticketInfos.getRequest();
-        this.contractReference = currentContract.getReference();
         this.status = "denied";
         this.event = "canceled";
         this.eventDate = ticketCancelled.getDate();
         this.logDate = ticketCancelled.getDate();
-//        this.serviceCode = ticketInfos.getCallPurposeExtId() + " " + ticketInfos.getCallPurposeLabel();
-//        this.serviceCode = ticketInfos.getCallPurposeLabel();
-//        this.serviceCode = callPurpose.getReference();
         this.serviceCode = String.valueOf(callPurpose.getReferenceCode());
         thisLocation = new Location();
         thisLocation.setAssetReference(ticketInfos.getAssetReference());
         thisLocation.setAddress(new Address(ticketInfos.getAddress()));
         this.location = thisLocation;
-//        this.workType = "corrective";
-//        this.origin = "other";
         this.technicalReason = ticketInfos.getTechnicalReason();
-    }
-
-    /**
-     * @return the reference
-     */
-    public String getReference() {
-        return reference;
-    }
-
-    /**
-     * @param reference the reference to set
-     */
-    public void setReference(String reference) {
-        this.reference = reference;
     }
 
     /**
@@ -104,20 +75,6 @@ public class CancelTicket extends TicketCommand {
      */
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    /**
-     * @return the contractReference
-     */
-    public String getContractReference() {
-        return contractReference;
-    }
-
-    /**
-     * @param contractReference the contractReference to set
-     */
-    public void setContractReference(String contractReference) {
-        this.contractReference = contractReference;
     }
 
     /**
@@ -205,35 +162,6 @@ public class CancelTicket extends TicketCommand {
     }
 
     /**
-     * @return the workType
-     */
-//    public String getWorkType() {
-//        return workType;
-//    }
-
-    /**
-     * @param workType the workType to set
-     */
-//    public void setWorkType(String workType) {
-//        this.workType = workType;
-//    }
-
-    /**
-     * @return retourne l'entité à l'origine de la demande
-     */
-//    public String getOrigin() {
-//        return origin;
-//    }
-
-    /**
-     * @param origin définit l'entité à l'origine de la demande
-     */
-//    public void setOrigin(String origin) {
-//        this.origin = origin;
-//
-//    }
-
-    /**
      * @return retourne la nature de la panne
      */
     public String getTechnicalReason() {
@@ -254,17 +182,13 @@ public class CancelTicket extends TicketCommand {
     public String toString() {
         return "closeTicket:{"
                 + super.toString()
-                + ", reference:" + getReference()
                 + ", description:" + getDescription()
-                + ", contractReference:" + getContractReference()
                 + ", status:" + getStatus()
                 + ", event:" + getEvent()
                 + ", eventDate:" + getEventDate()
                 + ", logDate:" + getLogDate()
                 + ", serviceCode:" + getServiceCode()
                 + ", location:" + getLocation()
-//                + ", workType:" + getWorkType()
-//                + ", origin:" + getOrigin()
                 + ", technicalReason:" + getTechnicalReason()
                 + "}";
     }

@@ -17,31 +17,23 @@ import java.util.List;
  * Classe décrivant la commande d'ouverture de ticket
  *
  * @author Thierry Baribaud
- * @version 1.31
+ * @version 1.32
  */
 public class OpenTicket extends TicketCommand {
 
-    private String reference;
     private String description;
-    private String contractReference;
     private String status;
     private String event;
     private String eventDate;
     private String logDate;
     private String serviceCode;
     private Location location;
-//    private String workType;
 
     /**
      * Personnes à contacter sur le ticket
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<String> contacts;
-
-    /**
-     * Entité à l'origine de la demande
-     */
-//    private String origin;
 
     /**
      * Contructeur principal de la classe OpenTicket
@@ -58,30 +50,23 @@ public class OpenTicket extends TicketCommand {
      */
     public OpenTicket(TicketOpened ticketOpened, CallPurpose callPurpose, Contract2 currentContract) {
         super(ticketOpened.getTicketInfos(), callPurpose, currentContract);
-        
+
         TicketInfos ticketInfos;
         Location thisLocation;
 
         ticketInfos = ticketOpened.getTicketInfos();
-        this.reference = ticketInfos.getClaimNumber().getCallCenterClaimNumber();
         this.description = ticketInfos.getRequest();
-        this.contractReference = currentContract.getReference();
         this.status = "open";
         this.event = "requested";
         this.eventDate = ticketOpened.getOpenedDate();
         this.logDate = ticketOpened.getDate();
-//        this.serviceCode = ticketInfos.getCallPurposeExtId() + " " + ticketInfos.getCallPurposeLabel();
-//        this.serviceCode = ticketInfos.getCallPurposeLabel();
-//        this.serviceCode = callPurpose.getReference();
         this.serviceCode = String.valueOf(callPurpose.getReferenceCode());
         thisLocation = new Location();
         thisLocation.setAssetReference(ticketInfos.getAssetReference());
         thisLocation.setAddress(new Address(ticketInfos.getAddress()));
         this.location = thisLocation;
-//        this.workType = "corrective";
         this.contacts = new ArrayList();
         this.setContacts(ticketInfos.getContacts());
-//        this.origin = "other";
     }
 
     /**
@@ -91,20 +76,6 @@ public class OpenTicket extends TicketCommand {
         for (Contact contact : contacts) {
             this.contacts.add(contact.toVCard());
         }
-    }
-
-    /**
-     * @return retourne la référence de l'asset
-     */
-    public String getReference() {
-        return reference;
-    }
-
-    /**
-     * @param reference définit la référence de l'asset
-     */
-    public void setReference(String reference) {
-        this.reference = reference;
     }
 
     /**
@@ -119,20 +90,6 @@ public class OpenTicket extends TicketCommand {
      */
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    /**
-     * @return retourne la référence du contrat
-     */
-    public String getContractReference() {
-        return contractReference;
-    }
-
-    /**
-     * @param contractReference définit la référence du contrat
-     */
-    public void setContractReference(String contractReference) {
-        this.contractReference = contractReference;
     }
 
     /**
@@ -220,20 +177,6 @@ public class OpenTicket extends TicketCommand {
     }
 
     /**
-     * @return retourne le workType
-     */
-//    public String getWorkType() {
-//        return workType;
-//    }
-
-    /**
-     * @param workType définit le workType
-     */
-//    public void setWorkType(String workType) {
-//        this.workType = workType;
-//    }
-
-    /**
      * @return retourne les contacts
      */
     public List<String> getContacts() {
@@ -248,21 +191,6 @@ public class OpenTicket extends TicketCommand {
         this.contacts = contacts;
     }
 
-//    /**
-//     * @return retourne l'entité à l'origine de la demande
-//     */
-//    public String getOrigin() {
-//        return origin;
-//    }
-//
-//    /**
-//     * @param origin définit l'entité à l'origine de la demande
-//     */
-//    public void setOrigin(String origin) {
-//        this.origin = origin;
-//
-//    }
-
     /**
      * @return Retourne la commande OpenTicket sous forme textuelle
      */
@@ -270,18 +198,14 @@ public class OpenTicket extends TicketCommand {
     public String toString() {
         return "openTicket:{"
                 + super.toString()
-                + ", reference:" + getReference()
                 + ", description:" + getDescription()
-                + ", contractReference:" + getContractReference()
                 + ", status:" + getStatus()
                 + ", event:" + getEvent()
                 + ", eventDate:" + getEventDate()
                 + ", logDate:" + getLogDate()
                 + ", serviceCode:" + getServiceCode()
                 + ", location:" + getLocation()
-//                + ", workType:" + getWorkType()
                 //                + ", contacts:" + contacts.replace("\r", " ").replace("\n", "")
-//                + ", origin:" + getOrigin()
                 + "}";
     }
 }

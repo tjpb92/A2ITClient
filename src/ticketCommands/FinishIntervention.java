@@ -9,88 +9,48 @@ import a2itclient.TicketInfos;
 
 /**
  * Classe décrivant la commande de fin d'intervention
+ *
  * @author Thierry Baribaud
- * @version 1.31
+ * @version 1.32
  */
 public class FinishIntervention extends TicketCommand {
-    
-    private String reference;
-    private String contractReference;
+
     private String status;
     private String event;
     private String eventDate;
     private String logDate;
     private String serviceCode;
     private Location location;
-//    private String workType;
-    
-    /**
-     * Entité à l'origine de la demande
-     */
-//    private String origin;
-    
+
     /**
      * Contructeur principal de la classe FinishtIntervention
      */
     public FinishIntervention() {
     }
-    
+
     /**
      * Constructeur secondaire de la classe FinishtIntervention
+     *
      * @param interventionFinished événement de début d'intervention
      * @param callPurpose raison d'appel
      * @param currentContract contrant courant
      */
     public FinishIntervention(InterventionFinished interventionFinished, CallPurpose callPurpose, Contract2 currentContract) {
         super(interventionFinished.getTicketInfos(), callPurpose, currentContract);
-        
+
         TicketInfos ticketInfos;
         Location thisLocation;
-        
+
         ticketInfos = interventionFinished.getTicketInfos();
-        this.reference = ticketInfos.getClaimNumber().getCallCenterClaimNumber();
-        this.contractReference = currentContract.getReference();
         this.status = "pending";
         this.event = "end";
         this.eventDate = interventionFinished.getFinishedDate();
         this.logDate = interventionFinished.getDate();
-//        this.serviceCode = ticketInfos.getCallPurposeExtId() + " " + ticketInfos.getCallPurposeLabel();
-//        this.serviceCode = callPurpose.getReference();
         this.serviceCode = String.valueOf(callPurpose.getReferenceCode());
         thisLocation = new Location();
         thisLocation.setAssetReference(ticketInfos.getAssetReference());
         thisLocation.setAddress(new Address(ticketInfos.getAddress()));
         this.location = thisLocation;
-//        this.workType = "corrective";
-//        this.origin = "other";
-    }
-
-    /**
-     * @return the reference
-     */
-    public String getReference() {
-        return reference;
-    }
-
-    /**
-     * @param reference the reference to set
-     */
-    public void setReference(String reference) {
-        this.reference = reference;
-    }
-
-    /**
-     * @return the contractReference
-     */
-    public String getContractReference() {
-        return contractReference;
-    }
-
-    /**
-     * @param contractReference the contractReference to set
-     */
-    public void setContractReference(String contractReference) {
-        this.contractReference = contractReference;
     }
 
     /**
@@ -178,51 +138,18 @@ public class FinishIntervention extends TicketCommand {
     }
 
     /**
-     * @return the workType
-     */
-//    public String getWorkType() {
-//        return workType;
-//    }
-
-    /**
-     * @param workType the workType to set
-     */
-//    public void setWorkType(String workType) {
-//        this.workType = workType;
-//    }
-
-    /**
-     * @return retourne l'entité à l'origine de la demande
-     */
-//    public String getOrigin() {
-//        return origin;
-//    }
-
-    /**
-     * @param origin définit l'entité à l'origine de la demande
-     */
-//    public void setOrigin(String origin) {
-//        this.origin = origin;
-//
-//    }
-    
-    /**
      * @return Retourne la commande CloseTicket sous forme textuelle
      */
     @Override
     public String toString() {
         return "finishIntervention:{"
                 + super.toString()
-                + ", reference:" + getReference()
-                + ", contractReference:" + getContractReference()
                 + ", status:" + getStatus()
                 + ", event:" + getEvent()
                 + ", eventDate:" + getEventDate()
                 + ", logDate:" + getLogDate()
                 + ", serviceCode:" + getServiceCode()
                 + ", location:" + getLocation()
-//                + ", workType:" + getWorkType()
-//                + ", origin:" + getOrigin()
                 + "}";
     }
 }

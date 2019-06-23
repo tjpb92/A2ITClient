@@ -9,9 +9,19 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * Classe décrivant une commande sur les tickets
  *
  * @author Thierry Baribaud
- * @version 1.31
+ * @version 1.32
  */
 public class TicketCommand {
+
+    /**
+     * Référence du ticket
+     */
+    private String reference;
+
+    /**
+     * Référence du contrat
+     */
+    private String contractReference;
 
     /**
      * Type d'opération
@@ -34,6 +44,7 @@ public class TicketCommand {
      * Contructeur principal de la classe TicketCommand
      */
     public TicketCommand() {
+        contractReference = "NPM_ANSTEL";
         workType = "corrective";
         origin = "other";
         criticalLevel = 0;
@@ -48,8 +59,37 @@ public class TicketCommand {
      */
     public TicketCommand(TicketInfos ticketInfos, CallPurpose callPurpose, Contract2 currentContract) {
         this();
-
+        reference = reference = ticketInfos.getClaimNumber().getCallCenterClaimNumber();
+        contractReference = currentContract.getReference();
         criticalLevel = ticketInfos.getCriticalLevel();
+    }
+
+    /**
+     * @return retourne la référence du ticket
+     */
+    public String getReference() {
+        return reference;
+    }
+
+    /**
+     * @param reference définit la référence du ticket
+     */
+    public void setReference(String reference) {
+        this.reference = reference;
+    }
+
+    /**
+     * @return retourne la référence du contrat
+     */
+    public String getContractReference() {
+        return contractReference;
+    }
+
+    /**
+     * @param contractReference définit la référence du contrat
+     */
+    public void setContractReference(String contractReference) {
+        this.contractReference = contractReference;
     }
 
     /**
@@ -101,7 +141,9 @@ public class TicketCommand {
     @Override
     public String toString() {
         return "ticketCommand:{"
-                + "workType:" + getWorkType()
+                + "reference:" + getReference()
+                + ", contractReference:" + getContractReference()
+                + ", workType:" + getWorkType()
                 + ", origin:" + getOrigin()
                 + ", criticalLevel:" + getCriticalLevel()
                 + "}";
