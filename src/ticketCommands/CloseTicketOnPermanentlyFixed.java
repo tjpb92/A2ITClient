@@ -12,17 +12,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * Classe décrivant la commande de clôture de ticket sur réparation définitive
  *
  * @author Thierry Baribaud
- * @version 1.32
+ * @version 1.33
  */
 public class CloseTicketOnPermanentlyFixed extends TicketCommand {
-
-    private String description;
-    private String status;
-    private String event;
-    private String eventDate;
-    private String logDate;
-    private String serviceCode;
-    private Location location;
 
     /**
      * Nature de la panne
@@ -44,121 +36,11 @@ public class CloseTicketOnPermanentlyFixed extends TicketCommand {
      * @param currentContract contrant courant
      */
     public CloseTicketOnPermanentlyFixed(PermanentlyFixed permanentlyFixed, CallPurpose callPurpose, Contract2 currentContract) {
-        super(permanentlyFixed.getTicketInfos(), callPurpose, currentContract);
+        super(permanentlyFixed.getClosedDate(), permanentlyFixed.getDate(), permanentlyFixed.getTicketInfos(), callPurpose, currentContract);
 
-        TicketInfos ticketInfos;
-        Location thisLocation;
-
-        ticketInfos = permanentlyFixed.getTicketInfos();
-        this.description = ticketInfos.getRequest();
-        this.status = "closed";
-        this.event = "solved";
-        this.eventDate = permanentlyFixed.getClosedDate();
-        this.logDate = permanentlyFixed.getDate();
-        this.serviceCode = String.valueOf(callPurpose.getReferenceCode());
-        thisLocation = new Location();
-        thisLocation.setAssetReference(ticketInfos.getAssetReference());
-        thisLocation.setAddress(new Address(ticketInfos.getAddress()));
-        this.location = thisLocation;
-        this.technicalReason = ticketInfos.getTechnicalReason();
-    }
-
-    /**
-     * @return the description
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * @param description the description to set
-     */
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    /**
-     * @return the status
-     */
-    public String getStatus() {
-        return status;
-    }
-
-    /**
-     * @param status the status to set
-     */
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    /**
-     * @return the event
-     */
-    public String getEvent() {
-        return event;
-    }
-
-    /**
-     * @param event the event to set
-     */
-    public void setEvent(String event) {
-        this.event = event;
-    }
-
-    /**
-     * @return the eventDate
-     */
-    public String getEventDate() {
-        return eventDate;
-    }
-
-    /**
-     * @param eventDate the eventDate to set
-     */
-    public void setEventDate(String eventDate) {
-        this.eventDate = eventDate;
-    }
-
-    /**
-     * @return the logDate
-     */
-    public String getLogDate() {
-        return logDate;
-    }
-
-    /**
-     * @param logDate the logDate to set
-     */
-    public void setLogDate(String logDate) {
-        this.logDate = logDate;
-    }
-
-    /**
-     * @return the serviceCode
-     */
-    public String getServiceCode() {
-        return serviceCode;
-    }
-
-    /**
-     * @param serviceCode the serviceCode to set
-     */
-    public void setServiceCode(String serviceCode) {
-        this.serviceCode = serviceCode;
-    }
-
-    /**
-     * @return the location
-     */
-    public Location getLocation() {
-        return location;
-    }
-
-    /**
-     * @param location the location to set
-     */
-    public void setLocation(Location location) {
-        this.location = location;
+        setStatus("closed");
+        setEvent("solved");
+        this.technicalReason = permanentlyFixed.getTicketInfos().getTechnicalReason();
     }
 
     /**
@@ -182,13 +64,6 @@ public class CloseTicketOnPermanentlyFixed extends TicketCommand {
     public String toString() {
         return "closeTicket:{"
                 + super.toString()
-                + ", description:" + getDescription()
-                + ", status:" + getStatus()
-                + ", event:" + getEvent()
-                + ", eventDate:" + getEventDate()
-                + ", logDate:" + getLogDate()
-                + ", serviceCode:" + getServiceCode()
-                + ", location:" + getLocation()
                 + ", technicalReason:" + getTechnicalReason()
                 + "}";
     }
