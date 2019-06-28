@@ -53,7 +53,7 @@ import utils.Md5;
  * Connecteur Anstel / Intent Technologies (lien montant)
  *
  * @author Thierry Baribaud
- * @version 1.30
+ * @version 1.34
  */
 public class A2ITClient {
 
@@ -373,7 +373,7 @@ public class A2ITClient {
                         retcode = processTicketCancelled(mongoDatabase, (TicketCancelled) event, httpsClient);
                     } else if (event instanceof TicketUpdated) {
                         retcode = processTicketUpdated(mongoDatabase, (TicketUpdated) event, httpsClient);
-                    } 
+                    }
                 } catch (IOException exception) {
                     retcode = -1;
                     System.out.println("  Cannot convert Json to Event, record rejected " + exception);
@@ -433,7 +433,8 @@ public class A2ITClient {
                     break;
                 case "-ifxserver":
                     if (ip1 < n) {
-                        if (args[ip1].equals("pre-prod") || args[ip1].equals("prod")) {
+                        if (args[ip1].equals("pre-prod") || args[ip1].equals("prod")
+                                || args[ip1].equals("pre-prod2") || args[ip1].equals("prod2")) {
                             this.ifxDbServerType = args[ip1];
                         } else {
                             throw new GetArgsException("ERREUR : Mauvais serveur Informix : " + args[ip1]);
@@ -1150,6 +1151,7 @@ public class A2ITClient {
 
     /**
      * Recupère le contrat en vigueur à partir de :
+     *
      * @param mongoDatabase connexion à la base de données Mongodb
      * @param clientUuid référence du client
      * @param assetReference référence de l'immeuble
@@ -1181,7 +1183,7 @@ public class A2ITClient {
                 System.out.println("  ERROR : lecture contrat impossible, clientUuid:" + clientUuid
                         + ", assetReference:" + assetReference
                         + ", callPurposeUuid:" + callPurposeUuid
-                        + ", exception:"+ exception);
+                        + ", exception:" + exception);
 //                Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
             }
         } else {
