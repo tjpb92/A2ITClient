@@ -22,7 +22,7 @@ import okhttp3.Response;
  * Classe décrivant un client se connectant en HTTPS à un serveur
  *
  * @author Thierry Baribaud
- * @version 1.30
+ * @version 1.35
  */
 public class HttpsClient extends OkHttpClient {
 
@@ -71,7 +71,8 @@ public class HttpsClient extends OkHttpClient {
         }
         RequestBody body = RequestBody.create(mediaType, mediaTypeParams.toString());
         Request request = new Request.Builder()
-                .url("https://accountsandbox.hubintent.com/oauth/token")
+//                .url("https://accountsandbox.hubintent.com/oauth/token")
+                .url(apiRest.getAuthUrl())
                 .post(body)
                 .addHeader("content-type", "application/x-www-form-urlencoded")
                 .addHeader("cache-control", "no-cache")
