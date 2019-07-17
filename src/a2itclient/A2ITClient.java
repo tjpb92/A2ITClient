@@ -53,7 +53,7 @@ import utils.Md5;
  * Connecteur Anstel / Intent Technologies (lien montant)
  *
  * @author Thierry Baribaud
- * @version 1.34
+ * @version 1.36
  */
 public class A2ITClient {
 
@@ -621,9 +621,16 @@ public class A2ITClient {
     }
 
     /**
-     * Envoie une alerte par mail
+     * Envoie une alerte simple par mail
      */
     private void sendAlert(String alertMessage) {
+        sendAlert(alertMessage, alertMessage);
+    }
+    
+    /**
+     * Envoie une alerte par mail
+     */
+    private void sendAlert(String alertSubject, String alertMessage) {
         try {
             Properties properties = System.getProperties();
             properties.put("mail.smtp.host", mailServer.getIpAddress());
@@ -633,7 +640,7 @@ public class A2ITClient {
             InternetAddress[] internetAddresses = new InternetAddress[1];
             internetAddresses[0] = new InternetAddress(mailServer.getToAddress());
             message.setRecipients(javax.mail.Message.RecipientType.TO, internetAddresses);
-            message.setSubject(alertMessage);
+            message.setSubject(alertSubject);
             message.setText(alertMessage);
             message.setHeader("X-Mailer", "Java");
             message.setSentDate(new Date());
@@ -723,6 +730,7 @@ public class A2ITClient {
         int nbClient;
         BasicDBObject filter;
         CallPurpose callPurpose;
+        String errMsg;
 
         callPurpose = null;
         filter = new BasicDBObject("clientUuid", clientUuid).append("uuid", callPurposeUuid);
@@ -731,9 +739,11 @@ public class A2ITClient {
         if (cursor.hasNext()) {
             try {
                 callPurpose = objectMapper.readValue(cursor.next().toJson(), CallPurpose.class);
-                System.out.println("  raison d'appel trouvée : " + callPurpose.getName() + ", useApi:" + callPurpose.getUseApi());
+                System.out.println("  Raison d'appel trouvée : " + callPurpose.getName() + ", useApi:" + callPurpose.getUseApi());
             } catch (IOException exception) {
-                System.out.println("  raison d'appel non trouvée, clientUuid:" + clientUuid + ", uuid:" + callPurposeUuid);
+                errMsg = "Raison d'appel non trouvée, clientUuid:" + clientUuid + ", uuid:" + callPurposeUuid + ", exception:" + exception;
+                System.out.println("  " + errMsg);
+                sendAlert("Raison d'appel non trouvée, uuid:" + callPurposeUuid, errMsg);
 //                Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
             }
         }
