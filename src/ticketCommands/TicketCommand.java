@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * Classe décrivant une commande sur les tickets
  *
  * @author Thierry Baribaud
- * @version 1.33
+ * @version 1.37
  */
 public class TicketCommand {
 
@@ -25,17 +25,17 @@ public class TicketCommand {
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String description;
-    
+
     /**
      * Référence du contrat
      */
     private String contractReference;
-    
+
     /**
      * Statut du ticket
      */
     private String status;
-    
+
     /**
      * Evénement courant sur le ticket
      */
@@ -45,22 +45,21 @@ public class TicketCommand {
      * Date de l'événement
      */
     private String eventDate;
-    
+
     /**
      * Date d'envoi de l'événement
      */
     private String logDate;
-    
+
     /**
      * Code de la raison d'appel
      */
     private String serviceCode;
-    
+
     /**
      * Localisation de la panne
      */
     private Location location;
-
 
     /**
      * Type d'opération
@@ -100,15 +99,15 @@ public class TicketCommand {
      */
     public TicketCommand(String eventDate, String logDate, TicketInfos ticketInfos, CallPurpose callPurpose, Contract2 currentContract) {
         this();
-        
+
         Location thisLocation;
-        
+
         reference = reference = ticketInfos.getClaimNumber().getCallCenterClaimNumber();
         description = ticketInfos.getRequest();
         contractReference = currentContract.getReference();
         this.eventDate = eventDate;
         this.logDate = logDate;
-        serviceCode = String.valueOf(callPurpose.getReferenceCode());
+        serviceCode = callPurpose.getReferenceCode();
         thisLocation = new Location();
         thisLocation.setAssetReference(ticketInfos.getAssetReference());
         thisLocation.setAddress(new Address(ticketInfos.getAddress()));
@@ -129,7 +128,7 @@ public class TicketCommand {
     public void setReference(String reference) {
         this.reference = reference;
     }
-    
+
     /**
      * @return retourne la description de le demande
      */
@@ -143,7 +142,6 @@ public class TicketCommand {
     public void setDescription(String description) {
         this.description = description;
     }
-
 
     /**
      * @return retourne la référence du contrat
@@ -186,6 +184,7 @@ public class TicketCommand {
     public void setEvent(String event) {
         this.event = event;
     }
+
     /**
      * @return la date de l'événement courant
      */

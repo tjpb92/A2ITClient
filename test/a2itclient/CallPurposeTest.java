@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
  * Jeux de tests pour la classe CallPurpose
  *
  * @author Thierry Baribaud
- * @version 1.30
+ * @version 1.37
  */
 public class CallPurposeTest {
 
