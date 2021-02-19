@@ -19,6 +19,7 @@ import ticketCommands.CancelTicket;
 import a2itclient.MailServer.MailServerException;
 import bdd.Fa2it;
 import bdd.Fa2itDAO;
+import bkgpi2a.BasicAddress;
 import bkgpi2a.EventType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
@@ -55,7 +56,7 @@ import utils.Md5;
  * Connecteur Anstel / Intent Technologies (lien montant)
  *
  * @author Thierry Baribaud
- * @version 1.38
+ * @version 1.39
  */
 public class A2ITClient {
 
@@ -116,8 +117,8 @@ public class A2ITClient {
      * @throws java.io.IOException en cas d'erreur d'entrée/sortie.
      * @throws utils.DBServerException en cas d'erreur avec le serveur de base
      * de données.
-     * @throws utils.GetArgsException en cas d'erreur avec les
-     * paramètres en ligne de commande
+     * @throws utils.GetArgsException en cas d'erreur avec les paramètres en
+     * ligne de commande
      * @throws a2itclient.APIREST.APIServerException en cas de problème avec les
      * paramètres du serveur API
      * @throws a2itclient.HttpsClientException en cas de problème avec la
@@ -604,7 +605,64 @@ public class A2ITClient {
     private void sendAlert(String alertMessage) {
         sendAlert(alertMessage, alertMessage);
     }
-    
+
+    /**
+     * Envoie une alerte par mail pour un ticket ouvert
+     */
+    private void sendAlert(TicketOpened ticketOpened) {
+        String alertSubject;
+        StringBuffer alertMessage;
+        TicketInfos ticketInfos = ticketOpened.getTicketInfos();
+        String reference;
+        String callPurposeLabel;
+        String request;
+        BasicAddress address;
+        String quality;
+        String street;
+        String complement;
+        String zipCode;
+        String city;
+        ContactList contacts;
+        Contact contact;
+
+        alertSubject = "Ticket " + ticketInfos.getClaimNumber().getCallCenterClaimNumber() + " opened";
+
+        alertMessage = new StringBuffer(alertSubject);
+        if ((callPurposeLabel = ticketInfos.getCallPurposeLabel()) != null) {
+            alertMessage.append("\nObjet : ").append(callPurposeLabel);
+        }
+        if ((reference = ticketInfos.getAssetReference()) != null) {
+            alertMessage.append("\nReference : ").append(reference);
+        }
+        contacts = ticketInfos.getContacts();
+        if (contacts.size() > 0) {
+            contact = contacts.get(0);
+            alertMessage.append("\nContact :")
+                    .append("\n").append(contact.getName())
+                    .append("\n").append(contact.getPhone());
+        }
+
+        address = ticketInfos.getAddress();
+        alertMessage.append("\nAdresse :");
+        if ((quality = address.getQuality()) != null) {
+            alertMessage.append("\n\t").append(quality);
+        }
+        if ((street = address.getStreet()) != null) {
+            alertMessage.append("\n\t").append(street);
+        }
+        if ((complement = address.getComplement()) != null) {
+            alertMessage.append("\n\t").append(complement);
+        }
+        if ((zipCode = address.getZipCode()) != null && (city = address.getCity()) != null) {
+            alertMessage.append("\n\t").append(zipCode).append(" ").append(city);
+        }
+        if ((request = ticketInfos.getRequest()) != null) {
+            alertMessage.append("\nMotif : ").append("\n").append(request);
+        }
+
+        sendAlert(alertSubject, alertMessage.toString());
+    }
+
     /**
      * Envoie une alerte par mail
      */
@@ -758,7 +816,8 @@ public class A2ITClient {
                         try {
                             objectMapper.writeValue(new File("testOpenTicket_1.json"), openTicket);
                             httpsClient.openTicket(openTicket, debugMode);
-                            sendAlert("Ticket " + ticketInfos.getClaimNumber().getCallCenterClaimNumber() + " opened");
+//                            sendAlert("Ticket " + ticketInfos.getClaimNumber().getCallCenterClaimNumber() + " opened");
+                            sendAlert(ticketOpened);
                             retcode = 1;
                         } catch (JsonProcessingException | HttpsClientException exception) {
                             //                      Logger.getLogger(A2ITClient.class.getName()).log(Level.SEVERE, null, exception);
