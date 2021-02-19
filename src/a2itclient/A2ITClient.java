@@ -47,13 +47,15 @@ import javax.mail.internet.*;
 import javax.mail.*;
 import org.bson.Document;
 import utils.DBManager;
+import utils.GetArgsException;
+import utils.HttpsClientException;
 import utils.Md5;
 
 /**
  * Connecteur Anstel / Intent Technologies (lien montant)
  *
  * @author Thierry Baribaud
- * @version 1.36
+ * @version 1.38
  */
 public class A2ITClient {
 
@@ -108,39 +110,13 @@ public class A2ITClient {
     private Map<Integer, EventType> eventTypeByUid;
 
     /**
-     * Exception pouvant être lancée en cas de problème avec un paramètre de la
-     * ligne de commande
-     */
-    public class GetArgsException extends Exception {
-
-        private final static String ERRMSG
-                = "Problem during command line parameters parsing";
-
-        /**
-         * Constructeur principal de l'exception
-         */
-        public GetArgsException() {
-            super(ERRMSG);
-        }
-
-        /**
-         * Constructeur secondaire de l'exception
-         *
-         * @param errMsg message d'erreur à diffuser
-         */
-        public GetArgsException(String errMsg) {
-            super(ERRMSG + " : " + errMsg);
-        }
-    }
-
-    /**
      * Constructeur de la classe A2ITClient
      *
      * @param args arguments en ligne de commande
      * @throws java.io.IOException en cas d'erreur d'entrée/sortie.
      * @throws utils.DBServerException en cas d'erreur avec le serveur de base
      * de données.
-     * @throws a2itclient.A2ITClient.GetArgsException en cas d'erreur avec les
+     * @throws utils.GetArgsException en cas d'erreur avec les
      * paramètres en ligne de commande
      * @throws a2itclient.APIREST.APIServerException en cas de problème avec les
      * paramètres du serveur API
@@ -149,6 +125,8 @@ public class A2ITClient {
      * @throws java.lang.ClassNotFoundException en cas de problème avec une
      * classe inconnue
      * @throws java.sql.SQLException en cas d'erreur d'entrée/sortie.
+     * @throws a2itclient.MailServer.MailServerException en cas de problème sur
+     * l'envoi des mails.
      */
     public A2ITClient(String[] args) throws IOException, DBServerException, GetArgsException,
             APIREST.APIServerException, HttpsClientException, ClassNotFoundException, SQLException, MailServer.MailServerException {

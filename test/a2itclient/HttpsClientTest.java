@@ -10,12 +10,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import utils.ApplicationProperties;
+import utils.HttpsClientException;
 
 /**
  * Jeux de tests pour tester la classe HttpsClient
  *
  * @author Thierry Baribaud
- * @version 1.09
+ * @version 1.38
  */
 public class HttpsClientTest {
 

@@ -10,12 +10,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.Before;
 import utils.DBServerException;
+import utils.GetArgsException;
+import utils.HttpsClientException;
 
 /**
  * Jeux de test pour tester la classe A2ITClient.
  *
  * @author Thierry Baribaud
- * @version 1.20
+ * @version 1.38
  */
 public class A2ITClientTest {
 
@@ -57,7 +59,7 @@ public class A2ITClientTest {
         try {
             instance = new A2ITClient(args);
             fail("Expected GetArgsException");
-        } catch (IOException | DBServerException | A2ITClient.GetArgsException |
+        } catch (IOException | DBServerException | GetArgsException |
                 MailServer.MailServerException |
                 APIREST.APIServerException | HttpsClientException | ClassNotFoundException |
                 SQLException ex) {
@@ -78,7 +80,7 @@ public class A2ITClientTest {
         try {
             instance = new A2ITClient(args);
             fail("Expected GetArgsException");
-        } catch (IOException | DBServerException | A2ITClient.GetArgsException |
+        } catch (IOException | DBServerException | GetArgsException |
                 MailServer.MailServerException |
                 APIREST.APIServerException | HttpsClientException | ClassNotFoundException |
                 SQLException ex) {
@@ -99,7 +101,7 @@ public class A2ITClientTest {
         try {
             instance = new A2ITClient(args);
             fail("Expected GetArgsException");
-        } catch (IOException | DBServerException | A2ITClient.GetArgsException |
+        } catch (IOException | DBServerException | GetArgsException |
                 MailServer.MailServerException |
                 APIREST.APIServerException | HttpsClientException | ClassNotFoundException |
                 SQLException ex) {
@@ -120,7 +122,7 @@ public class A2ITClientTest {
         try {
             instance = new A2ITClient(args);
             fail("Expected GetArgsException");
-        } catch (IOException | DBServerException | A2ITClient.GetArgsException |
+        } catch (IOException | DBServerException | GetArgsException |
                 MailServer.MailServerException |
                 APIREST.APIServerException | HttpsClientException | ClassNotFoundException |
                 SQLException ex) {
@@ -141,7 +143,7 @@ public class A2ITClientTest {
         try {
             instance = new A2ITClient(args);
             fail("Expected GetArgsException");
-        } catch (IOException | DBServerException | A2ITClient.GetArgsException |
+        } catch (IOException | DBServerException | GetArgsException |
                 MailServer.MailServerException |
                 APIREST.APIServerException | HttpsClientException | ClassNotFoundException |
                 SQLException ex) {
@@ -162,7 +164,7 @@ public class A2ITClientTest {
         try {
             instance = new A2ITClient(args);
             fail("Expected GetArgsException");
-        } catch (IOException | DBServerException | A2ITClient.GetArgsException |
+        } catch (IOException | DBServerException | GetArgsException |
                 MailServer.MailServerException |
                 APIREST.APIServerException | HttpsClientException | ClassNotFoundException |
                 SQLException ex) {

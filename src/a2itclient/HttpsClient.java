@@ -17,12 +17,13 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import utils.HttpsClientException;
 
 /**
  * Classe décrivant un client se connectant en HTTPS à un serveur
  *
  * @author Thierry Baribaud
- * @version 1.35
+ * @version 1.38
  */
 public class HttpsClient extends OkHttpClient {
 
@@ -48,8 +49,7 @@ public class HttpsClient extends OkHttpClient {
      * @param debugMode indique si l'on est en mode debug ou non
      * @throws java.io.IOException en cas d'erreur de lecture du fichier des
      * propriétés
-     * @throws a2itclient.HttpsClientException en cas d'erreur avec la connexion
-     * Https
+     * @throws HttpsClientException en cas d'erreur avec la connexion Https
      */
     public HttpsClient(APIREST apiRest, boolean debugMode) throws IOException, HttpsClientException {
         super();
